@@ -58,7 +58,8 @@
     - `BI-RULE-ITEM-001`（`PATCH /items/{item_id}` での total_quantity 下限検証）
     - `PATCH /resources/{resource_id}` / `PATCH /items/{item_id}` を API 実装
     - hold 作成時 `Idempotency-Key` ヘッダを受理
+    - `GET /api/v1/audit-logs` を追加（監査ログの検索・制限取得）
 - テスト:
   - 受入基準 + 追加ケースを `tests/booking-inventory-engine.test.js` に実装
-  - API スモーク/永続化/入力検証/patch/idempotency を server テストに追加
-  - `npm test` 17/17 pass
+  - API スモーク/永続化/入力検証/patch/idempotency/audit を server テストに追加
+  - `npm test` 19/19 pass

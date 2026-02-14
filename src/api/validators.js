@@ -54,6 +54,13 @@ function optionalEnum(value, field, allowed, code = 'INVALID_BODY') {
   }
 }
 
+function optionalString(value, field, code = 'INVALID_BODY') {
+  if (value === undefined) return;
+  if (typeof value !== 'string' || value.length === 0) {
+    throw new DomainError(code, `${field} must be non-empty string`, 400, { field, value });
+  }
+}
+
 export function validateCreateResourceBody(body) {
   requireObject(body, 'INVALID_RESOURCE');
   requireString(body.tenant_id, 'tenant_id', 'INVALID_RESOURCE');
@@ -176,4 +183,26 @@ export function validateResourceAvailabilityQuery(query) {
   if (query.granularity_minutes !== undefined) {
     requireInteger(query.granularity_minutes, 'granularity_minutes', { min: 1, code: 'INVALID_RANGE' });
   }
+}
+
+export function validateAuditLogsQuery(query) {
+  if (query.from_at !== undefined) {
+    requireDateTime(query.from_at, 'from_at', 'INVALID_AUDIT_QUERY');
+  }
+  if (query.to_at !== undefined) {
+    requireDateTime(query.to_at, 'to_at', 'INVALID_AUDIT_QUERY');
+  }
+  if (query.from_at !== undefined && query.to_at !== undefined) {
+    if (new Date(query.from_at).getTime() > new Date(query.to_at).getTime()) {
+      throw new DomainError('INVALID_AUDIT_QUERY', 'from_at must be <= to_at', 400);
+    }
+  }
+  if (query.limit !== undefined) {
+    requireInteger(query.limit, 'limit', { min: 1, max: 1000, code: 'INVALID_AUDIT_QUERY' });
+  }
+  optionalString(query.tenant_id, 'tenant_id', 'INVALID_AUDIT_QUERY');
+  optionalString(query.actor_user_id, 'actor_user_id', 'INVALID_AUDIT_QUERY');
+  optionalString(query.action, 'action', 'INVALID_AUDIT_QUERY');
+  optionalString(query.target_type, 'target_type', 'INVALID_AUDIT_QUERY');
+  optionalString(query.target_id, 'target_id', 'INVALID_AUDIT_QUERY');
 }

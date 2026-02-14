@@ -785,6 +785,27 @@ export class BookingInventoryEngine {
     return list;
   }
 
+  listAuditLogs(filters = {}) {
+    const fromAt = filters.from_at ? new Date(filters.from_at).getTime() : null;
+    const toAt = filters.to_at ? new Date(filters.to_at).getTime() : null;
+    const limit = filters.limit ?? null;
+    const list = [];
+    for (const audit of this.auditLogs) {
+      if (filters.tenant_id && audit.tenant_id !== filters.tenant_id) continue;
+      if (filters.actor_user_id && audit.actor_user_id !== filters.actor_user_id) continue;
+      if (filters.action && audit.action !== filters.action) continue;
+      if (filters.target_type && audit.target_type !== filters.target_type) continue;
+      if (filters.target_id && audit.target_id !== filters.target_id) continue;
+      const createdAtMs = new Date(audit.created_at).getTime();
+      if (fromAt !== null && createdAtMs < fromAt) continue;
+      if (toAt !== null && createdAtMs > toAt) continue;
+      list.push(clone(audit));
+    }
+    list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    if (limit === null || limit === undefined) return list;
+    return list.slice(0, limit);
+  }
+
   cancelBooking(input) {
     const booking = this.bookings.get(input.booking_id);
     if (!booking) {

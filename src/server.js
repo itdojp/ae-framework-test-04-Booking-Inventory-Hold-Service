@@ -4,6 +4,7 @@ import { DomainError, isDomainError } from './domain/errors.js';
 import { AsyncMutex } from './infra/async-mutex.js';
 import { JsonStateStore } from './infra/json-state-store.js';
 import {
+  validateAuditLogsQuery,
   validateCancelBody,
   validateConfirmBody,
   validateCreateHoldBody,
@@ -86,6 +87,7 @@ function parsePath(pathname) {
   if (pathname === '/api/v1/holds') return { route: 'holds' };
   if (pathname === '/api/v1/bookings') return { route: 'bookings' };
   if (pathname === '/api/v1/reservations') return { route: 'reservations' };
+  if (pathname === '/api/v1/audit-logs') return { route: 'auditLogs' };
   if (pathname === '/api/v1/system/expire') return { route: 'systemExpire' };
   if (pathname === '/healthz') return { route: 'healthz' };
   return null;
@@ -287,6 +289,22 @@ const server = http.createServer(async (req, res) => {
         engine.cancelReservation({ reservation_id: matched.params.reservation_id, ...body })
       );
       sendJson(res, 200, result);
+      return;
+    }
+
+    if (matched.route === 'auditLogs' && req.method === 'GET') {
+      const query = {
+        tenant_id: url.searchParams.get('tenant_id') ?? undefined,
+        actor_user_id: url.searchParams.get('actor_user_id') ?? undefined,
+        action: url.searchParams.get('action') ?? undefined,
+        target_type: url.searchParams.get('target_type') ?? undefined,
+        target_id: url.searchParams.get('target_id') ?? undefined,
+        from_at: url.searchParams.get('from_at') ?? undefined,
+        to_at: url.searchParams.get('to_at') ?? undefined,
+        limit: url.searchParams.has('limit') ? Number(url.searchParams.get('limit')) : undefined
+      };
+      validateAuditLogsQuery(query);
+      sendJson(res, 200, engine.listAuditLogs(query));
       return;
     }
 
