@@ -180,6 +180,21 @@ function formalStatusCounts(runs) {
   return counts;
 }
 
+function buildFormalDelta(latestFormal, previousFormal) {
+  const tools = ['csp', 'tla', 'smt', 'alloy'];
+  const delta = {};
+  for (const tool of tools) {
+    const previous = previousFormal?.[tool]?.status ?? null;
+    const latest = latestFormal?.[tool]?.status ?? 'unknown';
+    delta[tool] = {
+      previous,
+      latest,
+      changed: previous !== null && previous !== latest
+    };
+  }
+  return delta;
+}
+
 function buildActionItems(summary) {
   const items = [];
   const latestFormal = summary.latestFormal ?? {};
@@ -215,6 +230,7 @@ function buildSummary(runs) {
   const totalBytes = runs.reduce((acc, run) => acc + run.totalBytes, 0);
   const totalFiles = runs.reduce((acc, run) => acc + run.fileCount, 0);
   const latest = runs[0] ?? null;
+  const previous = runs.length > 1 ? runs[1] : null;
   const oldest = runs.length > 0 ? runs[runs.length - 1] : null;
   const projectFormalInputs = collectProjectFormalInputs();
 
@@ -248,6 +264,7 @@ function buildSummary(runs) {
     nodeVersionCounts: countBy(runs, (run) => run.node),
     formalStatusCounts: formalStatusCounts(runs),
     latestFormal: latest?.formal ?? {},
+    formalDelta: buildFormalDelta(latest?.formal ?? {}, previous?.formal ?? null),
     projectFormalInputs,
     actionItems: [],
     runs
@@ -298,6 +315,16 @@ function buildMarkdown(summary, limit) {
   }
   if (formalRowCount === 0) {
     lines.push('| (none) | (none) | 0 |');
+  }
+
+  lines.push('');
+  lines.push('## Formal Status Delta (latest vs previous)');
+  lines.push('');
+  lines.push('| tool | previous | latest | changed |');
+  lines.push('| --- | --- | --- | --- |');
+  for (const tool of ['csp', 'tla', 'smt', 'alloy']) {
+    const row = summary.formalDelta?.[tool] ?? {};
+    lines.push(`| ${tool} | ${row.previous ?? '-'} | ${row.latest ?? 'unknown'} | ${row.changed ? 'yes' : 'no'} |`);
   }
 
   lines.push('');

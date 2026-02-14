@@ -1,9 +1,9 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-14T10:19:32.675Z
+- generatedAt: 2026-02-14T10:20:55.161Z
 - runCount: 25
-- totalSize: 43 MB (44651685 bytes)
-- totalFiles: 8071
+- totalSize: 42 MB (43857157 bytes)
+- totalFiles: 8065
 - latestRun: 20260214T101932Z-22015647906-1 (runId=22015647906, generatedAt=2026-02-14T10:19:32Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
@@ -23,6 +23,15 @@
 | smt | solver_not_available | 1 |
 | tla | tool_not_available | 25 |
 
+## Formal Status Delta (latest vs previous)
+
+| tool | previous | latest | changed |
+| --- | --- | --- | --- |
+| csp | tool_not_available | tool_not_available | no |
+| tla | tool_not_available | tool_not_available | no |
+| smt | file_not_found | solver_not_available | yes |
+| alloy | tool_not_available | tool_not_available | no |
+
 ## Project Formal Inputs
 
 - smtInputDir: spec/formal/smt
@@ -41,7 +50,7 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260214T101932Z-22015647906-1 | 22015647906 | 1 | 2026-02-14T10:19:32Z | 2.4 MB | 331 | c18860e3a794 | csp:tool_not_available, tla:tool_not_available |
+| 20260214T101932Z-22015647906-1 | 22015647906 | 1 | 2026-02-14T10:19:32Z | 1.7 MB | 325 | c18860e3a794 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T101232Z-22015548894-1 | 22015548894 | 1 | 2026-02-14T10:12:32Z | 1.7 MB | 324 | 666c62f716df | csp:tool_not_available, tla:tool_not_available |
 | 20260214T100406Z-22015435943-1 | 22015435943 | 1 | 2026-02-14T10:04:06Z | 1.7 MB | 323 | 53d837b72e67 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T083717Z-22014307580-1 | 22014307580 | 1 | 2026-02-14T08:37:17Z | 1.7 MB | 323 | ba88da7cd4cd | csp:tool_not_available, tla:tool_not_available |

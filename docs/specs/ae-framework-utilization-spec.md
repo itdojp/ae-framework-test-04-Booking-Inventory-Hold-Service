@@ -26,7 +26,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
 | 形式検証（並行性） | `pnpm run verify:csp`, `pnpm run verify:tla` | 二重確保防止など安全性検証 | `artifacts/hermetic-reports/formal/**` |
 | 総合実行（軽量） | `pnpm run codex:run` | setup→qa→spec をプレイブック化 | `artifacts/ae/**`, `artifacts/ae/context.json` |
 | トレンド分析 | `node scripts/pipelines/compare-test-trends.mjs --json-output reports/heavy-test-trends.json` | 継続的な品質劣化の検知 | `reports/heavy-test-trends.json` |
-| run集計サマリ | `node scripts/generate-run-summary.mjs` | run蓄積状況と証跡量の継続監視 | `reports/ae-framework-runs-summary.{json,md}` |
+| run集計サマリ | `node scripts/generate-run-summary.mjs` | run蓄積状況・formal status差分の継続監視 | `reports/ae-framework-runs-summary.{json,md}` |
 | 評価レポート | `node scripts/generate-evaluation-report.mjs` | run集計から評価指標と推奨アクションを生成 | `reports/ae-framework-evaluation.md` |
 
 ## 4. 自動化運用方針

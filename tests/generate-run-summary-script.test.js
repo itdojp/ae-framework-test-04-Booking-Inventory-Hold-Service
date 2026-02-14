@@ -100,6 +100,10 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
   assert.equal(summary.formalStatusCounts.csp.passed, 1);
   assert.equal(summary.formalStatusCounts.tla.tool_not_available, 2);
   assert.equal(summary.formalStatusCounts.smt.file_not_found, 1);
+  assert.equal(summary.formalDelta.csp.previous, 'tool_not_available');
+  assert.equal(summary.formalDelta.csp.latest, 'passed');
+  assert.equal(summary.formalDelta.csp.changed, true);
+  assert.equal(summary.formalDelta.tla.changed, false);
   assert.equal(summary.projectFormalInputs.smt.fileCount, 1);
   assert.ok(Array.isArray(summary.actionItems));
   assert.ok(summary.actionItems.length >= 1);
@@ -109,6 +113,7 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
   const md = fs.readFileSync(outMd, 'utf8');
   assert.match(md, /ae-framework Run Summary/);
   assert.match(md, /Formal Status Counts/);
+  assert.match(md, /Formal Status Delta/);
   assert.match(md, /Project Formal Inputs/);
   assert.match(md, /Action Items/);
   assert.match(md, /csp:passed/);

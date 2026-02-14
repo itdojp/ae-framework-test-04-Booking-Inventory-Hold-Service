@@ -56,6 +56,7 @@ function buildEvaluation(summary) {
     latestRun,
     workflowCount,
     formalReady: formal,
+    formalDelta: summary.formalDelta ?? {},
     projectSmtInputCount: Number(summary.projectFormalInputs?.smt?.fileCount ?? 0),
     actionItems: Array.isArray(summary.actionItems) ? summary.actionItems : []
   };
@@ -93,6 +94,17 @@ function renderMarkdown(evaluation, summary) {
   lines.push(`- tla: ${summary.latestFormal?.tla?.status ?? 'unknown'}`);
   lines.push(`- smt: ${summary.latestFormal?.smt?.status ?? 'unknown'}`);
   lines.push(`- alloy: ${summary.latestFormal?.alloy?.status ?? 'unknown'}`);
+
+  lines.push('');
+  lines.push('## Formal Delta');
+  lines.push('');
+  for (const tool of ['csp', 'tla', 'smt', 'alloy']) {
+    const row = evaluation.formalDelta?.[tool] ?? {};
+    const previous = row.previous ?? '-';
+    const latest = row.latest ?? summary.latestFormal?.[tool]?.status ?? 'unknown';
+    const changed = row.changed ? 'changed' : 'same';
+    lines.push(`- ${tool}: ${previous} -> ${latest} (${changed})`);
+  }
 
   lines.push('');
   lines.push('## Recommended Actions');

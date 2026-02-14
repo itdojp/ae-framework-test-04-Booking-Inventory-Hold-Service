@@ -1,10 +1,10 @@
 # ae-framework Evaluation Report
 
-- generatedAt: 2026-02-14T10:19:32.708Z
+- generatedAt: 2026-02-14T10:20:55.329Z
 - score: 50 / 100
 - rating: C
 - runCount: 25
-- totalArtifactSizeMB: 42.6
+- totalArtifactSizeMB: 41.8
 - autopilotRuns: 25
 
 ## Snapshot
@@ -22,6 +22,13 @@
 - tla: tool_not_available
 - smt: solver_not_available
 - alloy: tool_not_available
+
+## Formal Delta
+
+- csp: tool_not_available -> tool_not_available (same)
+- tla: tool_not_available -> tool_not_available (same)
+- smt: file_not_found -> solver_not_available (changed)
+- alloy: tool_not_available -> tool_not_available (same)
 
 ## Recommended Actions
 

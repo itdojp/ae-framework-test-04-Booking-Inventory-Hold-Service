@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-02-14T10:19:32.675Z",
+  "generatedAt": "2026-02-14T10:20:55.161Z",
   "runCount": 25,
-  "totalBytes": 44651685,
-  "totalFiles": 8071,
-  "averageBytesPerRun": 1786067,
+  "totalBytes": 43857157,
+  "totalFiles": 8065,
+  "averageBytesPerRun": 1754286,
   "latestRun": {
     "runFolder": "20260214T101932Z-22015647906-1",
     "runId": "22015647906",
@@ -67,6 +67,28 @@
       "timestamp": "2025-09-17T19:57:44.834Z"
     }
   },
+  "formalDelta": {
+    "csp": {
+      "previous": "tool_not_available",
+      "latest": "tool_not_available",
+      "changed": false
+    },
+    "tla": {
+      "previous": "tool_not_available",
+      "latest": "tool_not_available",
+      "changed": false
+    },
+    "smt": {
+      "previous": "file_not_found",
+      "latest": "solver_not_available",
+      "changed": true
+    },
+    "alloy": {
+      "previous": "tool_not_available",
+      "latest": "tool_not_available",
+      "changed": false
+    }
+  },
   "projectFormalInputs": {
     "smt": {
       "inputDir": "spec/formal/smt",
@@ -96,8 +118,8 @@
       "sourceSha": "c18860e3a7946110d11fbab26641d69e76cccdc2",
       "node": "22",
       "pnpm": "10",
-      "totalBytes": 2553625,
-      "fileCount": 331,
+      "totalBytes": 1759097,
+      "fileCount": 325,
       "formal": {
         "csp": {
           "status": "tool_not_available",

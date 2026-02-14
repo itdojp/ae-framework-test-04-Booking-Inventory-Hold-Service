@@ -75,6 +75,7 @@
     - 評価レポートスクリプト `scripts/generate-evaluation-report.mjs` を追加（`reports/ae-framework-evaluation.md`）
     - SMT入力シード `spec/formal/smt/bi-hold-invariants.smt2` を追加し、run集計で project formal input として可視化
     - CI workflow に SMT smoke（`verify:smt --file spec/formal/smt/bi-hold-invariants.smt2`）を追加
+    - run summary/evaluation に latest vs previous の formal status 差分を追加
     - CI で run アーカイブ後に評価サマリを自動更新
 - テスト:
   - 受入基準 + 追加ケースを `tests/booking-inventory-engine.test.js` に実装
