@@ -236,6 +236,7 @@ export function validateHoldsQuery(query) {
 
 export function validateBookingsQuery(query) {
   optionalString(query.resource_id, 'resource_id', 'INVALID_BOOKINGS_QUERY');
+  optionalString(query.created_by_user_id, 'created_by_user_id', 'INVALID_BOOKINGS_QUERY');
   optionalEnum(query.status, 'status', ['CONFIRMED', 'CANCELLED'], 'INVALID_BOOKINGS_QUERY');
   if (query.start_at !== undefined) {
     requireDateTime(query.start_at, 'start_at', 'INVALID_BOOKINGS_QUERY');
@@ -252,5 +253,6 @@ export function validateBookingsQuery(query) {
 
 export function validateReservationsQuery(query) {
   optionalString(query.item_id, 'item_id', 'INVALID_RESERVATIONS_QUERY');
+  optionalString(query.created_by_user_id, 'created_by_user_id', 'INVALID_RESERVATIONS_QUERY');
   optionalEnum(query.status, 'status', ['CONFIRMED', 'CANCELLED'], 'INVALID_RESERVATIONS_QUERY');
 }

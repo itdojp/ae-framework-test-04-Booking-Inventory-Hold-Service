@@ -501,16 +501,24 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (matched.route === 'bookings' && req.method === 'GET') {
+      ensureRoleAllowed(context, ['ADMIN', 'MEMBER', 'VIEWER']);
       const status = optionalStatus(url.searchParams.get('status'));
       if (status && !['CONFIRMED', 'CANCELLED'].includes(status)) {
         throw new DomainError('INVALID_QUERY', 'status query is invalid for bookings', 400, { status });
       }
       const query = {
         resource_id: url.searchParams.get('resource_id') ?? undefined,
+        created_by_user_id: url.searchParams.get('created_by_user_id') ?? undefined,
         start_at: url.searchParams.get('start_at') ?? undefined,
         end_at: url.searchParams.get('end_at') ?? undefined,
         status
       };
+      if (context.role && !context.is_admin) {
+        if (query.created_by_user_id && query.created_by_user_id !== context.user_id) {
+          throw new DomainError('FORBIDDEN', 'created_by_user_id mismatch', 403);
+        }
+        query.created_by_user_id = context.user_id ?? undefined;
+      }
       validateBookingsQuery(query);
       let bookings = engine.listBookings(query);
       if (context.tenant_id) {
@@ -545,14 +553,22 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (matched.route === 'reservations' && req.method === 'GET') {
+      ensureRoleAllowed(context, ['ADMIN', 'MEMBER', 'VIEWER']);
       const status = optionalStatus(url.searchParams.get('status'));
       if (status && !['CONFIRMED', 'CANCELLED'].includes(status)) {
         throw new DomainError('INVALID_QUERY', 'status query is invalid for reservations', 400, { status });
       }
       const query = {
         item_id: url.searchParams.get('item_id') ?? undefined,
+        created_by_user_id: url.searchParams.get('created_by_user_id') ?? undefined,
         status
       };
+      if (context.role && !context.is_admin) {
+        if (query.created_by_user_id && query.created_by_user_id !== context.user_id) {
+          throw new DomainError('FORBIDDEN', 'created_by_user_id mismatch', 403);
+        }
+        query.created_by_user_id = context.user_id ?? undefined;
+      }
       validateReservationsQuery(query);
       let reservations = engine.listReservations(query);
       if (context.tenant_id) {

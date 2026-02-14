@@ -812,6 +812,7 @@ export class BookingInventoryEngine {
     const end = filters.end_at ? new Date(filters.end_at).getTime() : null;
     for (const booking of this.bookings.values()) {
       if (filters.resource_id && booking.resource_id !== filters.resource_id) continue;
+      if (filters.created_by_user_id && booking.created_by_user_id !== filters.created_by_user_id) continue;
       if (filters.status && booking.status !== filters.status) continue;
       if (start !== null && new Date(booking.end_at).getTime() <= start) continue;
       if (end !== null && new Date(booking.start_at).getTime() >= end) continue;
@@ -824,6 +825,9 @@ export class BookingInventoryEngine {
     const list = [];
     for (const reservation of this.reservations.values()) {
       if (filters.item_id && reservation.item_id !== filters.item_id) continue;
+      if (filters.created_by_user_id && reservation.created_by_user_id !== filters.created_by_user_id) {
+        continue;
+      }
       if (filters.status && reservation.status !== filters.status) continue;
       list.push(clone(reservation));
     }

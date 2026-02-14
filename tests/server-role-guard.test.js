@@ -429,3 +429,156 @@ test('server booking/reservation cancel guard: MEMBER 非ownerは拒否され AD
     await server.stop();
   }
 });
+
+test('server list guard: MEMBER/VIEWER は自分の booking/reservation のみ取得できる', async () => {
+  const port = 4900 + Math.floor(Math.random() * 100);
+  const stateFile = path.join(os.tmpdir(), `bi-role-list-guard-${process.pid}-${Date.now()}.json`);
+  const server = await startServer({ port, stateFile });
+
+  try {
+    const resourceRes = await fetch(`${server.baseUrl}/api/v1/resources`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        name: 'Room-List-Guard',
+        timezone: 'UTC',
+        slot_granularity_minutes: 15,
+        min_duration_minutes: 15,
+        max_duration_minutes: 120,
+        status: 'ACTIVE'
+      })
+    });
+    assert.equal(resourceRes.status, 201);
+    const resource = await resourceRes.json();
+
+    const itemRes = await fetch(`${server.baseUrl}/api/v1/items`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        name: 'Item-List-Guard',
+        total_quantity: 10
+      })
+    });
+    assert.equal(itemRes.status, 201);
+    const item = await itemRes.json();
+
+    async function createAndConfirmHold(userId, startAt, endAt) {
+      const holdRes = await fetch(`${server.baseUrl}/api/v1/holds`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-tenant-id': 'T1',
+          'x-user-role': 'MEMBER',
+          'x-user-id': userId
+        },
+        body: JSON.stringify({
+          tenant_id: 'T1',
+          created_by_user_id: userId,
+          expires_in_seconds: 600,
+          lines: [
+            {
+              kind: 'RESOURCE_SLOT',
+              resource_id: resource.resource_id,
+              start_at: startAt,
+              end_at: endAt
+            },
+            {
+              kind: 'INVENTORY_QTY',
+              item_id: item.item_id,
+              quantity: 1
+            }
+          ]
+        })
+      });
+      assert.equal(holdRes.status, 201);
+      const hold = await holdRes.json();
+
+      const confirmRes = await fetch(`${server.baseUrl}/api/v1/holds/${hold.hold_id}/confirm`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-tenant-id': 'T1',
+          'x-user-role': 'MEMBER',
+          'x-user-id': userId
+        },
+        body: JSON.stringify({})
+      });
+      assert.equal(confirmRes.status, 200);
+    }
+
+    await createAndConfirmHold('U1', '2026-02-14T10:00:00Z', '2026-02-14T11:00:00Z');
+    await createAndConfirmHold('U2', '2026-02-14T11:00:00Z', '2026-02-14T12:00:00Z');
+
+    const memberBookingsRes = await fetch(`${server.baseUrl}/api/v1/bookings`, {
+      headers: {
+        'x-tenant-id': 'T1',
+        'x-user-role': 'MEMBER',
+        'x-user-id': 'U1'
+      }
+    });
+    assert.equal(memberBookingsRes.status, 200);
+    const memberBookings = await memberBookingsRes.json();
+    assert.equal(memberBookings.length, 1);
+    assert.equal(memberBookings[0].created_by_user_id, 'U1');
+
+    const viewerReservationsRes = await fetch(`${server.baseUrl}/api/v1/reservations`, {
+      headers: {
+        'x-tenant-id': 'T1',
+        'x-user-role': 'VIEWER',
+        'x-user-id': 'U1'
+      }
+    });
+    assert.equal(viewerReservationsRes.status, 200);
+    const viewerReservations = await viewerReservationsRes.json();
+    assert.equal(viewerReservations.length, 1);
+    assert.equal(viewerReservations[0].created_by_user_id, 'U1');
+
+    const mismatchBookingsRes = await fetch(
+      `${server.baseUrl}/api/v1/bookings?created_by_user_id=U2`,
+      {
+        headers: {
+          'x-tenant-id': 'T1',
+          'x-user-role': 'MEMBER',
+          'x-user-id': 'U1'
+        }
+      }
+    );
+    assert.equal(mismatchBookingsRes.status, 403);
+
+    const mismatchReservationsRes = await fetch(
+      `${server.baseUrl}/api/v1/reservations?created_by_user_id=U2`,
+      {
+        headers: {
+          'x-tenant-id': 'T1',
+          'x-user-role': 'VIEWER',
+          'x-user-id': 'U1'
+        }
+      }
+    );
+    assert.equal(mismatchReservationsRes.status, 403);
+
+    const adminBookingsRes = await fetch(`${server.baseUrl}/api/v1/bookings`, {
+      headers: {
+        'x-tenant-id': 'T1',
+        'x-user-role': 'ADMIN'
+      }
+    });
+    assert.equal(adminBookingsRes.status, 200);
+    const adminBookings = await adminBookingsRes.json();
+    assert.equal(adminBookings.length, 2);
+
+    const adminReservationsRes = await fetch(`${server.baseUrl}/api/v1/reservations`, {
+      headers: {
+        'x-tenant-id': 'T1',
+        'x-user-role': 'ADMIN'
+      }
+    });
+    assert.equal(adminReservationsRes.status, 200);
+    const adminReservations = await adminReservationsRes.json();
+    assert.equal(adminReservations.length, 2);
+  } finally {
+    await server.stop();
+  }
+});

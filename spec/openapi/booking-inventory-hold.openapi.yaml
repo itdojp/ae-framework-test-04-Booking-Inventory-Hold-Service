@@ -335,6 +335,10 @@ paths:
           schema:
             type: string
         - in: query
+          name: created_by_user_id
+          schema:
+            type: string
+        - in: query
           name: start_at
           schema:
             type: string
@@ -394,6 +398,10 @@ paths:
       parameters:
         - in: query
           name: item_id
+          schema:
+            type: string
+        - in: query
+          name: created_by_user_id
           schema:
             type: string
         - in: query

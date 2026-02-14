@@ -68,6 +68,7 @@
     - 期限切れバッチ CLI `scripts/expire-holds.mjs` を追加（`STATE_FILE` を直接更新）
     - `GET /api/v1/holds` を追加（tenant/owner/status/time-range/limit フィルタ）
     - `/bookings` `/reservations` 一覧クエリの入力検証を追加（日時範囲/enum）
+    - `/bookings` `/reservations` に `created_by_user_id` フィルタ追加、role context 時は non-admin を owner スコープに制限
     - 最小UIを追加（`/ui`, `/ui/app.js`, `/ui/styles.css`）
     - UI-BI-02/05 対応として、可用性照会・Booking/Reservation 一覧/取消を UI から実行可能化
 - テスト:
@@ -77,4 +78,5 @@
   - hold 一覧APIテスト `tests/server-holds-list.test.js` を追加
   - UI配信テスト `tests/server-ui.test.js` を追加
   - booking/reservation 取消の owner/admin ガードテストを追加
-  - `npm test` 31/31 pass
+  - booking/reservation 一覧の owner スコープ制御テストを追加
+  - `npm test` 32/32 pass

@@ -48,6 +48,14 @@ test('server validation: 不正リクエストを 400 で返す', async () => {
 
     const invalidBookingsDateRes = await fetch(`${server.baseUrl}/api/v1/bookings?start_at=not-a-date`);
     assert.equal(invalidBookingsDateRes.status, 400);
+
+    const invalidBookingsOwnerRes = await fetch(`${server.baseUrl}/api/v1/bookings?created_by_user_id=`);
+    assert.equal(invalidBookingsOwnerRes.status, 400);
+
+    const invalidReservationsOwnerRes = await fetch(
+      `${server.baseUrl}/api/v1/reservations?created_by_user_id=`
+    );
+    assert.equal(invalidReservationsOwnerRes.status, 400);
   } finally {
     await server.stop();
   }
