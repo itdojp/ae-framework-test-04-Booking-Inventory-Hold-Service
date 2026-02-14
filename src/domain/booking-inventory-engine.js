@@ -35,6 +35,32 @@ function mapValues(map) {
   return Array.from(map.values());
 }
 
+function requireStatus(value, allowed, code, field) {
+  if (!allowed.includes(value)) {
+    throw new DomainError(code, `${field} must be one of ${allowed.join(', ')}`, 400, {
+      field,
+      value,
+      allowed
+    });
+  }
+}
+
+function validateResourceConstraints(resource, code = 'INVALID_RESOURCE') {
+  requirePositiveInt(resource.slot_granularity_minutes, code, 'slot_granularity_minutes');
+  requirePositiveInt(resource.min_duration_minutes, code, 'min_duration_minutes');
+  requirePositiveInt(resource.max_duration_minutes, code, 'max_duration_minutes');
+  if (resource.min_duration_minutes > resource.max_duration_minutes) {
+    throw new DomainError(code, 'min_duration_minutes must be <= max_duration_minutes', 400, {
+      min_duration_minutes: resource.min_duration_minutes,
+      max_duration_minutes: resource.max_duration_minutes
+    });
+  }
+}
+
+function isSlotAligned(epochMs, granularityMinutes) {
+  return Number.isInteger(epochMs) && epochMs % (granularityMinutes * 60_000) === 0;
+}
+
 export class BookingInventoryEngine {
   constructor({ clock = () => new Date(), snapshot = null } = {}) {
     this.clock = clock;
@@ -126,6 +152,8 @@ export class BookingInventoryEngine {
     if (!resource.tenant_id || !resource.name) {
       throw new DomainError('INVALID_RESOURCE', 'tenant_id and name are required', 400);
     }
+    requireStatus(resource.status, ['ACTIVE', 'INACTIVE'], 'INVALID_RESOURCE', 'status');
+    validateResourceConstraints(resource, 'INVALID_RESOURCE');
     this.resources.set(resource.resource_id, resource);
     return clone(resource);
   }
@@ -144,7 +172,113 @@ export class BookingInventoryEngine {
     if (!Number.isInteger(item.total_quantity) || item.total_quantity < 0) {
       throw new DomainError('INVALID_ITEM_QUANTITY', 'total_quantity must be integer >= 0', 400);
     }
+    requireStatus(item.status, ['ACTIVE', 'INACTIVE'], 'INVALID_ITEM', 'status');
     this.items.set(item.item_id, item);
+    return clone(item);
+  }
+
+  updateResource(resource_id, patch, { now = this.clock(), actor_user_id = null } = {}) {
+    const resource = this.resources.get(resource_id);
+    if (!resource) {
+      throw new DomainError('RESOURCE_NOT_FOUND', 'resource not found', 404, { resource_id });
+    }
+    if (patch.name !== undefined) {
+      if (typeof patch.name !== 'string' || patch.name.length === 0) {
+        throw new DomainError('INVALID_RESOURCE', 'name must be non-empty string', 400, {
+          resource_id,
+          name: patch.name
+        });
+      }
+      resource.name = patch.name;
+    }
+    if (patch.status !== undefined) {
+      requireStatus(patch.status, ['ACTIVE', 'INACTIVE'], 'INVALID_RESOURCE', 'status');
+      resource.status = patch.status;
+    }
+    if (patch.slot_granularity_minutes !== undefined) {
+      requirePositiveInt(patch.slot_granularity_minutes, 'INVALID_RESOURCE', 'slot_granularity_minutes');
+      resource.slot_granularity_minutes = patch.slot_granularity_minutes;
+    }
+    if (patch.min_duration_minutes !== undefined) {
+      requirePositiveInt(patch.min_duration_minutes, 'INVALID_RESOURCE', 'min_duration_minutes');
+      resource.min_duration_minutes = patch.min_duration_minutes;
+    }
+    if (patch.max_duration_minutes !== undefined) {
+      requirePositiveInt(patch.max_duration_minutes, 'INVALID_RESOURCE', 'max_duration_minutes');
+      resource.max_duration_minutes = patch.max_duration_minutes;
+    }
+    validateResourceConstraints(resource, 'INVALID_RESOURCE');
+    this.addAudit({
+      tenant_id: resource.tenant_id,
+      actor_user_id,
+      action: 'RESOURCE_UPDATE',
+      target_type: 'RESOURCE',
+      target_id: resource.resource_id,
+      payload: clone(patch),
+      now
+    });
+    return clone(resource);
+  }
+
+  updateItem(item_id, patch, { now = this.clock(), actor_user_id = null } = {}) {
+    const item = this.items.get(item_id);
+    if (!item) {
+      throw new DomainError('ITEM_NOT_FOUND', 'item not found', 404, { item_id });
+    }
+    if (patch.name !== undefined) {
+      if (typeof patch.name !== 'string' || patch.name.length === 0) {
+        throw new DomainError('INVALID_ITEM', 'name must be non-empty string', 400, {
+          item_id,
+          name: patch.name
+        });
+      }
+      item.name = patch.name;
+    }
+    if (patch.status !== undefined) {
+      requireStatus(patch.status, ['ACTIVE', 'INACTIVE'], 'INVALID_ITEM', 'status');
+      item.status = patch.status;
+    }
+    if (patch.total_quantity !== undefined) {
+      if (!Number.isInteger(patch.total_quantity) || patch.total_quantity < 0) {
+        throw new DomainError('INVALID_ITEM_QUANTITY', 'total_quantity must be integer >= 0', 400, {
+          item_id,
+          total_quantity: patch.total_quantity
+        });
+      }
+      let reservedConfirmed = 0;
+      let reservedHolds = 0;
+      for (const reservation of this.reservations.values()) {
+        if (reservation.item_id === item_id && reservation.status === 'CONFIRMED') {
+          reservedConfirmed += reservation.quantity;
+        }
+      }
+      for (const hold of this.holds.values()) {
+        if (hold.status !== 'ACTIVE') continue;
+        for (const line of hold.lines) {
+          if (line.kind === 'INVENTORY_QTY' && line.item_id === item_id && line.status === 'ACTIVE') {
+            reservedHolds += line.quantity;
+          }
+        }
+      }
+      const reservedQuantity = reservedConfirmed + reservedHolds;
+      if (patch.total_quantity < reservedQuantity) {
+        throw new DomainError('ITEM_QUANTITY_CONFLICT', 'total_quantity is lower than reserved quantity', 409, {
+          item_id,
+          total_quantity: patch.total_quantity,
+          reserved_quantity: reservedQuantity
+        });
+      }
+      item.total_quantity = patch.total_quantity;
+    }
+    this.addAudit({
+      tenant_id: item.tenant_id,
+      actor_user_id,
+      action: 'ITEM_UPDATE',
+      target_type: 'ITEM',
+      target_id: item.item_id,
+      payload: clone(patch),
+      now
+    });
     return clone(item);
   }
 
@@ -236,17 +370,17 @@ export class BookingInventoryEngine {
   getResourceAvailability(resource_id, input) {
     const startMs = new Date(input.start_at).getTime();
     const endMs = new Date(input.end_at).getTime();
-    const granularity = Number(input.granularity_minutes ?? 15);
+    const resource = this.resources.get(resource_id);
+    if (!resource) {
+      throw new DomainError('RESOURCE_NOT_FOUND', 'resource not found', 404, { resource_id });
+    }
+    const granularity = Number(input.granularity_minutes ?? resource.slot_granularity_minutes);
     const exclude_hold_id = input.exclude_hold_id ?? null;
     if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || startMs >= endMs) {
       throw new DomainError('INVALID_RANGE', 'start_at and end_at range is invalid', 400);
     }
     if (!Number.isInteger(granularity) || granularity <= 0) {
       throw new DomainError('INVALID_GRANULARITY', 'granularity_minutes must be > 0', 400);
-    }
-    const resource = this.resources.get(resource_id);
-    if (!resource) {
-      throw new DomainError('RESOURCE_NOT_FOUND', 'resource not found', 404, { resource_id });
     }
 
     const slots = [];
@@ -309,11 +443,56 @@ export class BookingInventoryEngine {
         if (!raw.start_at || !raw.end_at) {
           throw new DomainError('INVALID_RESOURCE_SLOT', 'start_at and end_at are required', 400);
         }
-        if (new Date(raw.start_at).getTime() >= new Date(raw.end_at).getTime()) {
+        const startIso = toIso(raw.start_at);
+        const endIso = toIso(raw.end_at);
+        const startMs = new Date(startIso).getTime();
+        const endMs = new Date(endIso).getTime();
+        if (startMs >= endMs) {
           throw new DomainError('INVALID_RESOURCE_SLOT', 'start_at must be before end_at', 400);
         }
+        if (!isSlotAligned(startMs, resource.slot_granularity_minutes)) {
+          throw new DomainError(
+            'INVALID_RESOURCE_SLOT_ALIGNMENT',
+            'start_at must align to resource slot granularity',
+            400,
+            {
+              resource_id: raw.resource_id,
+              slot_granularity_minutes: resource.slot_granularity_minutes,
+              start_at: startIso
+            }
+          );
+        }
+        if (!isSlotAligned(endMs, resource.slot_granularity_minutes)) {
+          throw new DomainError(
+            'INVALID_RESOURCE_SLOT_ALIGNMENT',
+            'end_at must align to resource slot granularity',
+            400,
+            {
+              resource_id: raw.resource_id,
+              slot_granularity_minutes: resource.slot_granularity_minutes,
+              end_at: endIso
+            }
+          );
+        }
+        const durationMinutes = (endMs - startMs) / 60_000;
+        if (
+          durationMinutes < resource.min_duration_minutes ||
+          durationMinutes > resource.max_duration_minutes
+        ) {
+          throw new DomainError(
+            'INVALID_RESOURCE_SLOT_DURATION',
+            'resource slot duration is out of allowed range',
+            400,
+            {
+              resource_id: raw.resource_id,
+              duration_minutes: durationMinutes,
+              min_duration_minutes: resource.min_duration_minutes,
+              max_duration_minutes: resource.max_duration_minutes
+            }
+          );
+        }
 
-        const existing = this.checkResourceAvailability(raw.resource_id, raw.start_at, raw.end_at);
+        const existing = this.checkResourceAvailability(raw.resource_id, startIso, endIso);
         if (!existing.available) {
           throw new DomainError('RESOURCE_CONFLICT', 'resource slot is not available', 409, {
             resource_id: raw.resource_id,
@@ -321,7 +500,7 @@ export class BookingInventoryEngine {
           });
         }
         for (const p of provisionalResource) {
-          if (p.resource_id === raw.resource_id && overlaps(raw.start_at, raw.end_at, p.start_at, p.end_at)) {
+          if (p.resource_id === raw.resource_id && overlaps(startIso, endIso, p.start_at, p.end_at)) {
             throw new DomainError('RESOURCE_CONFLICT', 'resource slot overlaps within request', 409, {
               resource_id: raw.resource_id
             });
@@ -329,19 +508,19 @@ export class BookingInventoryEngine {
         }
         provisionalResource.push({
           resource_id: raw.resource_id,
-          start_at: raw.start_at,
-          end_at: raw.end_at
+          start_at: startIso,
+          end_at: endIso
         });
         normalizedLines.push({
           hold_line_id: this.nextId('HL', 'line'),
           kind: 'RESOURCE_SLOT',
           resource_id: raw.resource_id,
-          start_at: toIso(raw.start_at),
-          end_at: toIso(raw.end_at),
+          start_at: startIso,
+          end_at: endIso,
           item_id: null,
           quantity: null,
           status: 'ACTIVE',
-          conflict_key: `${raw.resource_id}:${toIso(raw.start_at)}:${toIso(raw.end_at)}`
+          conflict_key: `${raw.resource_id}:${startIso}:${endIso}`
         });
       } else if (raw.kind === 'INVENTORY_QTY') {
         requirePositiveInt(raw.quantity, 'INVALID_QUANTITY', 'quantity');

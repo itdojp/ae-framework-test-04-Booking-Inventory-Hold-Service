@@ -9,6 +9,8 @@ import {
   validateCreateHoldBody,
   validateCreateItemBody,
   validateCreateResourceBody,
+  validatePatchItemBody,
+  validatePatchResourceBody,
   validateResourceAvailabilityQuery
 } from './api/validators.js';
 
@@ -62,6 +64,9 @@ function parsePath(pathname) {
     return { route: 'resourceAvailability', params: { resource_id: resourceAvailability[1] } };
   }
 
+  const resourcePatch = pathname.match(/^\/api\/v1\/resources\/([^/]+)$/);
+  if (resourcePatch) return { route: 'resourcePatch', params: { resource_id: resourcePatch[1] } };
+
   const bookingCancel = pathname.match(/^\/api\/v1\/bookings\/([^/]+)\/cancel$/);
   if (bookingCancel) return { route: 'bookingCancel', params: { booking_id: bookingCancel[1] } };
 
@@ -72,6 +77,9 @@ function parsePath(pathname) {
 
   const itemAvailability = pathname.match(/^\/api\/v1\/items\/([^/]+)\/availability$/);
   if (itemAvailability) return { route: 'itemAvailability', params: { item_id: itemAvailability[1] } };
+
+  const itemPatch = pathname.match(/^\/api\/v1\/items\/([^/]+)$/);
+  if (itemPatch) return { route: 'itemPatch', params: { item_id: itemPatch[1] } };
 
   if (pathname === '/api/v1/resources') return { route: 'resources' };
   if (pathname === '/api/v1/items') return { route: 'items' };
@@ -148,6 +156,16 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (matched.route === 'resourcePatch' && req.method === 'PATCH') {
+      const body = await readJson(req);
+      validatePatchResourceBody(body);
+      const resource = await runMutation(() =>
+        engine.updateResource(matched.params.resource_id, body)
+      );
+      sendJson(res, 200, resource);
+      return;
+    }
+
     if (matched.route === 'items' && req.method === 'GET') {
       const status = optionalStatus(url.searchParams.get('status'));
       if (status && !['ACTIVE', 'INACTIVE'].includes(status)) {
@@ -170,10 +188,25 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (matched.route === 'itemPatch' && req.method === 'PATCH') {
+      const body = await readJson(req);
+      validatePatchItemBody(body);
+      const item = await runMutation(() => engine.updateItem(matched.params.item_id, body));
+      sendJson(res, 200, item);
+      return;
+    }
+
     if (matched.route === 'holds' && req.method === 'POST') {
       const body = await readJson(req);
       validateCreateHoldBody(body);
-      const hold = await runMutation(() => engine.createHold(body));
+      const headerIdempotencyKey = req.headers['idempotency-key'];
+      const holdInput = {
+        ...body,
+        idempotency_key:
+          body.idempotency_key ??
+          (typeof headerIdempotencyKey === 'string' ? headerIdempotencyKey : undefined)
+      };
+      const hold = await runMutation(() => engine.createHold(holdInput));
       sendJson(res, 201, hold);
       return;
     }

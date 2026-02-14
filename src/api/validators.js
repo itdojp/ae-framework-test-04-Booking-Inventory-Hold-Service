@@ -43,6 +43,17 @@ function optionalBoolean(value, field, code = 'INVALID_BODY') {
   }
 }
 
+function optionalEnum(value, field, allowed, code = 'INVALID_BODY') {
+  if (value === undefined) return;
+  if (!allowed.includes(value)) {
+    throw new DomainError(code, `${field} must be one of ${allowed.join(', ')}`, 400, {
+      field,
+      value,
+      allowed
+    });
+  }
+}
+
 export function validateCreateResourceBody(body) {
   requireObject(body, 'INVALID_RESOURCE');
   requireString(body.tenant_id, 'tenant_id', 'INVALID_RESOURCE');
@@ -60,6 +71,9 @@ export function validateCreateResourceBody(body) {
     min: 1,
     code: 'INVALID_RESOURCE'
   });
+  if (body.min_duration_minutes > body.max_duration_minutes) {
+    throw new DomainError('INVALID_RESOURCE', 'min_duration_minutes must be <= max_duration_minutes', 400);
+  }
 }
 
 export function validateCreateItemBody(body) {
@@ -67,6 +81,67 @@ export function validateCreateItemBody(body) {
   requireString(body.tenant_id, 'tenant_id', 'INVALID_ITEM');
   requireString(body.name, 'name', 'INVALID_ITEM');
   requireInteger(body.total_quantity, 'total_quantity', { min: 0, code: 'INVALID_ITEM' });
+}
+
+export function validatePatchResourceBody(body) {
+  requireObject(body, 'INVALID_RESOURCE_PATCH');
+  const hasKnownField =
+    body.name !== undefined ||
+    body.status !== undefined ||
+    body.slot_granularity_minutes !== undefined ||
+    body.min_duration_minutes !== undefined ||
+    body.max_duration_minutes !== undefined;
+  if (!hasKnownField) {
+    throw new DomainError('INVALID_RESOURCE_PATCH', 'at least one patch field is required', 400);
+  }
+  if (body.name !== undefined) {
+    requireString(body.name, 'name', 'INVALID_RESOURCE_PATCH');
+  }
+  optionalEnum(body.status, 'status', ['ACTIVE', 'INACTIVE'], 'INVALID_RESOURCE_PATCH');
+  if (body.slot_granularity_minutes !== undefined) {
+    requireInteger(body.slot_granularity_minutes, 'slot_granularity_minutes', {
+      min: 1,
+      code: 'INVALID_RESOURCE_PATCH'
+    });
+  }
+  if (body.min_duration_minutes !== undefined) {
+    requireInteger(body.min_duration_minutes, 'min_duration_minutes', {
+      min: 1,
+      code: 'INVALID_RESOURCE_PATCH'
+    });
+  }
+  if (body.max_duration_minutes !== undefined) {
+    requireInteger(body.max_duration_minutes, 'max_duration_minutes', {
+      min: 1,
+      code: 'INVALID_RESOURCE_PATCH'
+    });
+  }
+  if (
+    body.min_duration_minutes !== undefined &&
+    body.max_duration_minutes !== undefined &&
+    body.min_duration_minutes > body.max_duration_minutes
+  ) {
+    throw new DomainError(
+      'INVALID_RESOURCE_PATCH',
+      'min_duration_minutes must be <= max_duration_minutes',
+      400
+    );
+  }
+}
+
+export function validatePatchItemBody(body) {
+  requireObject(body, 'INVALID_ITEM_PATCH');
+  const hasKnownField = body.total_quantity !== undefined || body.status !== undefined || body.name !== undefined;
+  if (!hasKnownField) {
+    throw new DomainError('INVALID_ITEM_PATCH', 'at least one patch field is required', 400);
+  }
+  if (body.total_quantity !== undefined) {
+    requireInteger(body.total_quantity, 'total_quantity', { min: 0, code: 'INVALID_ITEM_PATCH' });
+  }
+  if (body.name !== undefined) {
+    requireString(body.name, 'name', 'INVALID_ITEM_PATCH');
+  }
+  optionalEnum(body.status, 'status', ['ACTIVE', 'INACTIVE'], 'INVALID_ITEM_PATCH');
 }
 
 export function validateCreateHoldBody(body) {

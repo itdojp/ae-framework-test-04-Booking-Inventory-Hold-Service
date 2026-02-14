@@ -250,3 +250,99 @@ test('BI-AUTH-002: hold cancel は owner または admin のみ許可', () => {
   });
   assert.equal(cancelled.status, 'CANCELLED');
 });
+
+test('BI-HOLD-003/004: ResourceSlot は granularity と duration 制約を満たす', () => {
+  const engine = new BookingInventoryEngine();
+  const resource = engine.createResource({
+    tenant_id: 'T1',
+    name: 'Room-2',
+    timezone: 'UTC',
+    slot_granularity_minutes: 15,
+    min_duration_minutes: 30,
+    max_duration_minutes: 120
+  });
+
+  assert.throws(
+    () =>
+      engine.createHold({
+        tenant_id: 'T1',
+        created_by_user_id: 'U1',
+        expires_in_seconds: 600,
+        lines: [
+          {
+            kind: 'RESOURCE_SLOT',
+            resource_id: resource.resource_id,
+            start_at: '2026-02-14T10:05:00Z',
+            end_at: '2026-02-14T10:35:00Z'
+          }
+        ]
+      }),
+    (error) => {
+      assertDomainError(error, 'INVALID_RESOURCE_SLOT_ALIGNMENT');
+      return true;
+    }
+  );
+
+  assert.throws(
+    () =>
+      engine.createHold({
+        tenant_id: 'T1',
+        created_by_user_id: 'U1',
+        expires_in_seconds: 600,
+        lines: [
+          {
+            kind: 'RESOURCE_SLOT',
+            resource_id: resource.resource_id,
+            start_at: '2026-02-14T10:00:00Z',
+            end_at: '2026-02-14T10:15:00Z'
+          }
+        ]
+      }),
+    (error) => {
+      assertDomainError(error, 'INVALID_RESOURCE_SLOT_DURATION');
+      return true;
+    }
+  );
+
+  const hold = engine.createHold({
+    tenant_id: 'T1',
+    created_by_user_id: 'U1',
+    expires_in_seconds: 600,
+    lines: [
+      {
+        kind: 'RESOURCE_SLOT',
+        resource_id: resource.resource_id,
+        start_at: '2026-02-14T10:00:00Z',
+        end_at: '2026-02-14T10:30:00Z'
+      }
+    ]
+  });
+  assert.equal(hold.status, 'ACTIVE');
+});
+
+test('BI-RULE-ITEM-001: total_quantity は既存確保量未満にできない', () => {
+  const engine = new BookingInventoryEngine();
+  const item = engine.createItem({
+    tenant_id: 'T1',
+    name: 'Projector-2',
+    total_quantity: 5
+  });
+
+  engine.createHold({
+    tenant_id: 'T1',
+    created_by_user_id: 'U1',
+    expires_in_seconds: 600,
+    lines: [{ kind: 'INVENTORY_QTY', item_id: item.item_id, quantity: 4 }]
+  });
+
+  assert.throws(
+    () => engine.updateItem(item.item_id, { total_quantity: 3 }),
+    (error) => {
+      assertDomainError(error, 'ITEM_QUANTITY_CONFLICT');
+      return true;
+    }
+  );
+
+  const updated = engine.updateItem(item.item_id, { total_quantity: 4 });
+  assert.equal(updated.total_quantity, 4);
+});
