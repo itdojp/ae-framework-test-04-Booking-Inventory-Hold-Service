@@ -113,3 +113,175 @@ test('server actor resolution: x-user-id を cancel actor に補完できる', a
     await server.stop();
   }
 });
+
+test('server role guard: VIEWER は hold 作成を実行できない', async () => {
+  const port = 4500 + Math.floor(Math.random() * 100);
+  const stateFile = path.join(os.tmpdir(), `bi-role-viewer-${process.pid}-${Date.now()}.json`);
+  const server = await startServer({ port, stateFile });
+
+  try {
+    const itemRes = await fetch(`${server.baseUrl}/api/v1/items`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        name: 'Item-Viewer',
+        total_quantity: 3
+      })
+    });
+    assert.equal(itemRes.status, 201);
+    const item = await itemRes.json();
+
+    const createHoldRes = await fetch(`${server.baseUrl}/api/v1/holds`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-tenant-id': 'T1',
+        'x-user-role': 'VIEWER',
+        'x-user-id': 'UV1'
+      },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        created_by_user_id: 'UV1',
+        expires_in_seconds: 600,
+        lines: [{ kind: 'INVENTORY_QTY', item_id: item.item_id, quantity: 1 }]
+      })
+    });
+    assert.equal(createHoldRes.status, 403);
+  } finally {
+    await server.stop();
+  }
+});
+
+test('server hold guard: MEMBER は自分の hold のみ参照/confirm できる', async () => {
+  const port = 4600 + Math.floor(Math.random() * 100);
+  const stateFile = path.join(os.tmpdir(), `bi-role-hold-guard-${process.pid}-${Date.now()}.json`);
+  const server = await startServer({ port, stateFile });
+
+  try {
+    const itemRes = await fetch(`${server.baseUrl}/api/v1/items`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        name: 'Item-Hold-Guard',
+        total_quantity: 3
+      })
+    });
+    assert.equal(itemRes.status, 201);
+    const item = await itemRes.json();
+
+    const ownerHoldRes = await fetch(`${server.baseUrl}/api/v1/holds`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-tenant-id': 'T1',
+        'x-user-role': 'MEMBER',
+        'x-user-id': 'U1'
+      },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        created_by_user_id: 'U1',
+        expires_in_seconds: 600,
+        lines: [{ kind: 'INVENTORY_QTY', item_id: item.item_id, quantity: 1 }]
+      })
+    });
+    assert.equal(ownerHoldRes.status, 201);
+    const ownerHold = await ownerHoldRes.json();
+
+    const nonOwnerGetRes = await fetch(`${server.baseUrl}/api/v1/holds/${ownerHold.hold_id}`, {
+      method: 'GET',
+      headers: {
+        'x-tenant-id': 'T1',
+        'x-user-role': 'MEMBER',
+        'x-user-id': 'U2'
+      }
+    });
+    assert.equal(nonOwnerGetRes.status, 403);
+
+    const nonOwnerConfirmRes = await fetch(`${server.baseUrl}/api/v1/holds/${ownerHold.hold_id}/confirm`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-tenant-id': 'T1',
+        'x-user-role': 'MEMBER',
+        'x-user-id': 'U2'
+      },
+      body: JSON.stringify({})
+    });
+    assert.equal(nonOwnerConfirmRes.status, 403);
+
+    const ownerConfirmRes = await fetch(`${server.baseUrl}/api/v1/holds/${ownerHold.hold_id}/confirm`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-tenant-id': 'T1',
+        'x-user-role': 'MEMBER',
+        'x-user-id': 'U1'
+      },
+      body: JSON.stringify({})
+    });
+    assert.equal(ownerConfirmRes.status, 200);
+    const confirmed = await ownerConfirmRes.json();
+    assert.equal(confirmed.status, 'CONFIRMED');
+  } finally {
+    await server.stop();
+  }
+});
+
+test('server hold confirm audit: ADMIN による代理 confirm の actor を記録する', async () => {
+  const port = 4700 + Math.floor(Math.random() * 100);
+  const stateFile = path.join(os.tmpdir(), `bi-role-hold-admin-${process.pid}-${Date.now()}.json`);
+  const server = await startServer({ port, stateFile });
+
+  try {
+    const itemRes = await fetch(`${server.baseUrl}/api/v1/items`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        name: 'Item-Hold-Admin',
+        total_quantity: 3
+      })
+    });
+    assert.equal(itemRes.status, 201);
+    const item = await itemRes.json();
+
+    const holdRes = await fetch(`${server.baseUrl}/api/v1/holds`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        created_by_user_id: 'U1',
+        expires_in_seconds: 600,
+        lines: [{ kind: 'INVENTORY_QTY', item_id: item.item_id, quantity: 1 }]
+      })
+    });
+    assert.equal(holdRes.status, 201);
+    const hold = await holdRes.json();
+
+    const confirmRes = await fetch(`${server.baseUrl}/api/v1/holds/${hold.hold_id}/confirm`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-tenant-id': 'T1',
+        'x-user-role': 'ADMIN',
+        'x-user-id': 'UA',
+        'x-request-id': 'REQ-CONFIRM-ADMIN'
+      },
+      body: JSON.stringify({})
+    });
+    assert.equal(confirmRes.status, 200);
+
+    const auditRes = await fetch(
+      `${server.baseUrl}/api/v1/audit-logs?tenant_id=T1&action=HOLD_CONFIRM&target_id=${hold.hold_id}&request_id=REQ-CONFIRM-ADMIN`
+    );
+    assert.equal(auditRes.status, 200);
+    const logs = await auditRes.json();
+    assert.equal(logs.length, 1);
+    assert.equal(logs[0].actor_user_id, 'UA');
+    assert.equal(logs[0].request_id, 'REQ-CONFIRM-ADMIN');
+  } finally {
+    await server.stop();
+  }
+});

@@ -238,6 +238,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/HoldId'
         - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActorActionRequest'
       responses:
         '200':
           description: Hold confirmed
@@ -256,6 +263,13 @@ paths:
       summary: Cancel hold
       parameters:
         - $ref: '#/components/parameters/HoldId'
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActorActionRequest'
       responses:
         '200':
           description: Hold cancelled
@@ -313,6 +327,13 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActorActionRequest'
       responses:
         '200':
           description: Booking cancelled
@@ -358,6 +379,13 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActorActionRequest'
       responses:
         '200':
           description: Reservation cancelled
@@ -512,8 +540,9 @@ components:
 
     ResourceCreateRequest:
       type: object
-      required: [name, timezone, slot_granularity_minutes, min_duration_minutes, max_duration_minutes]
+      required: [tenant_id, name, timezone, slot_granularity_minutes, min_duration_minutes, max_duration_minutes]
       properties:
+        tenant_id: { type: string }
         name: { type: string }
         timezone: { type: string }
         slot_granularity_minutes: { type: integer, minimum: 1 }
@@ -549,16 +578,17 @@ components:
 
     InventoryItemCreateRequest:
       type: object
-      required: [name, total_quantity]
+      required: [tenant_id, name, total_quantity]
       properties:
+        tenant_id: { type: string }
         name: { type: string }
         total_quantity: { type: integer, minimum: 0 }
 
     InventoryItemPatchRequest:
       type: object
-      required: [total_quantity]
       properties:
         total_quantity: { type: integer, minimum: 0 }
+        name: { type: string }
         status:
           $ref: '#/components/schemas/ActiveInactiveStatus'
 
@@ -603,8 +633,10 @@ components:
 
     HoldCreateRequest:
       type: object
-      required: [expires_in_seconds, lines]
+      required: [tenant_id, created_by_user_id, expires_in_seconds, lines]
       properties:
+        tenant_id: { type: string }
+        created_by_user_id: { type: string }
         expires_in_seconds:
           type: integer
           minimum: 60
@@ -619,6 +651,12 @@ components:
             oneOf:
               - $ref: '#/components/schemas/HoldCreateResourceLine'
               - $ref: '#/components/schemas/HoldCreateInventoryLine'
+
+    ActorActionRequest:
+      type: object
+      properties:
+        actor_user_id: { type: string }
+        is_admin: { type: boolean }
 
     HoldCreateResourceLine:
       type: object

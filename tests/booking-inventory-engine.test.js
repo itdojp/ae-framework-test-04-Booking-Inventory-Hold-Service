@@ -251,6 +251,42 @@ test('BI-AUTH-002: hold cancel は owner または admin のみ許可', () => {
   assert.equal(cancelled.status, 'CANCELLED');
 });
 
+test('hold confirm は owner または admin のみ許可', () => {
+  const engine = new BookingInventoryEngine();
+  const item = engine.createItem({
+    tenant_id: 'T1',
+    name: 'Camera',
+    total_quantity: 3
+  });
+
+  const hold = engine.createHold({
+    tenant_id: 'T1',
+    created_by_user_id: 'U1',
+    expires_in_seconds: 600,
+    lines: [{ kind: 'INVENTORY_QTY', item_id: item.item_id, quantity: 1 }]
+  });
+
+  assert.throws(
+    () =>
+      engine.confirmHold({
+        hold_id: hold.hold_id,
+        actor_user_id: 'U2',
+        is_admin: false
+      }),
+    (error) => {
+      assertDomainError(error, 'FORBIDDEN');
+      return true;
+    }
+  );
+
+  const confirmed = engine.confirmHold({
+    hold_id: hold.hold_id,
+    actor_user_id: 'U2',
+    is_admin: true
+  });
+  assert.equal(confirmed.status, 'CONFIRMED');
+});
+
 test('BI-HOLD-003/004: ResourceSlot は granularity と duration 制約を満たす', () => {
   const engine = new BookingInventoryEngine();
   const resource = engine.createResource({

@@ -167,6 +167,10 @@ export function validateCreateHoldBody(body) {
 
 export function validateConfirmBody(body) {
   requireObject(body, 'INVALID_CONFIRM_REQUEST');
+  if (body.actor_user_id !== undefined) {
+    requireString(body.actor_user_id, 'actor_user_id', 'INVALID_CONFIRM_REQUEST');
+  }
+  optionalBoolean(body.is_admin, 'is_admin', 'INVALID_CONFIRM_REQUEST');
 }
 
 export function validateCancelBody(body, code = 'INVALID_CANCEL_REQUEST') {

@@ -643,9 +643,14 @@ export class BookingInventoryEngine {
   confirmHold(input) {
     const hold_id = input.hold_id;
     const now = input.now ?? this.clock();
+    const actor_user_id = input.actor_user_id ?? null;
+    const is_admin = Boolean(input.is_admin);
     const hold = this.holds.get(hold_id);
     if (!hold) {
       throw new DomainError('HOLD_NOT_FOUND', 'hold not found', 404, { hold_id });
+    }
+    if (!is_admin && actor_user_id && hold.created_by_user_id !== actor_user_id) {
+      throw new DomainError('FORBIDDEN', 'confirm is allowed only for owner or admin', 403, { hold_id });
     }
     if (hold.status === 'CONFIRMED') {
       return this.buildConfirmResponse(hold);
@@ -724,7 +729,7 @@ export class BookingInventoryEngine {
     hold.updated_at = nowIso;
     this.addAudit({
       tenant_id: hold.tenant_id,
-      actor_user_id: hold.created_by_user_id,
+      actor_user_id: actor_user_id ?? hold.created_by_user_id,
       action: 'HOLD_CONFIRM',
       target_type: 'HOLD',
       target_id: hold.hold_id,

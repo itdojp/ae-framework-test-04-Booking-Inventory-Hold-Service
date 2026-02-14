@@ -128,6 +128,28 @@ function getRequestContext(req) {
   };
 }
 
+const allowedRoles = new Set(['ADMIN', 'MEMBER', 'VIEWER']);
+
+function ensureRoleContext(context) {
+  if (!context.role) return;
+  if (!allowedRoles.has(context.role)) {
+    throw new DomainError('INVALID_ROLE', 'x-user-role is invalid', 400, { role: context.role });
+  }
+  if (!context.is_admin && !context.user_id) {
+    throw new DomainError('FORBIDDEN', 'x-user-id is required for MEMBER/VIEWER role', 403);
+  }
+}
+
+function ensureRoleAllowed(context, acceptedRoles) {
+  if (!context.role) return;
+  if (!acceptedRoles.includes(context.role)) {
+    throw new DomainError('FORBIDDEN', 'role is not allowed for this operation', 403, {
+      role: context.role,
+      accepted_roles: acceptedRoles
+    });
+  }
+}
+
 function ensureAdminIfRoleProvided(context) {
   if (context.role && !context.is_admin) {
     throw new DomainError('FORBIDDEN', 'admin role required', 403);
@@ -177,10 +199,21 @@ function ensureEntityForTenant(entity, { code, message, idField, idValue, tenant
   return entity;
 }
 
+function ensureHoldOwnerOrAdmin(context, hold) {
+  if (context.is_admin) return;
+  if (!context.user_id) return;
+  if (hold.created_by_user_id !== context.user_id) {
+    throw new DomainError('FORBIDDEN', 'hold access is allowed only for owner or admin', 403, {
+      hold_id: hold.hold_id
+    });
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? '/', 'http://localhost');
     const context = getRequestContext(req);
+    ensureRoleContext(context);
     const matched = parsePath(url.pathname);
     if (!matched) {
       sendJson(res, 404, {
@@ -322,6 +355,7 @@ const server = http.createServer(async (req, res) => {
     if (matched.route === 'holds' && req.method === 'POST') {
       const body = await readJson(req);
       validateCreateHoldBody(body);
+      ensureRoleAllowed(context, ['ADMIN', 'MEMBER']);
       ensureTenantMatchForCreate(context, body.tenant_id);
       ensureActorMatch(context, body.created_by_user_id);
       const headerIdempotencyKey = req.headers['idempotency-key'];
@@ -339,6 +373,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (matched.route === 'holdGet' && req.method === 'GET') {
+      ensureRoleAllowed(context, ['ADMIN', 'MEMBER', 'VIEWER']);
       const hold = ensureEntityForTenant(engine.holds.get(matched.params.hold_id), {
         code: 'HOLD_NOT_FOUND',
         message: 'hold not found',
@@ -346,6 +381,7 @@ const server = http.createServer(async (req, res) => {
         idValue: matched.params.hold_id,
         tenant_id: context.tenant_id
       });
+      ensureHoldOwnerOrAdmin(context, hold);
       sendJson(res, 200, structuredClone(hold));
       return;
     }
@@ -353,15 +389,23 @@ const server = http.createServer(async (req, res) => {
     if (matched.route === 'holdConfirm' && req.method === 'POST') {
       const body = await readJson(req);
       validateConfirmBody(body);
-      ensureEntityForTenant(engine.holds.get(matched.params.hold_id), {
+      ensureRoleAllowed(context, ['ADMIN', 'MEMBER']);
+      const hold = ensureEntityForTenant(engine.holds.get(matched.params.hold_id), {
         code: 'HOLD_NOT_FOUND',
         message: 'hold not found',
         idField: 'hold_id',
         idValue: matched.params.hold_id,
         tenant_id: context.tenant_id
       });
+      ensureHoldOwnerOrAdmin(context, hold);
       const result = await runMutation(() =>
-        engine.confirmHold({ hold_id: matched.params.hold_id, ...body, request_id: context.request_id ?? undefined })
+        engine.confirmHold({
+          hold_id: matched.params.hold_id,
+          ...body,
+          actor_user_id: resolveActorUserId(context, body.actor_user_id),
+          is_admin: resolveIsAdmin(context, body.is_admin),
+          request_id: context.request_id ?? undefined
+        })
       );
       sendJson(res, 200, result);
       return;
@@ -370,6 +414,7 @@ const server = http.createServer(async (req, res) => {
     if (matched.route === 'holdCancel' && req.method === 'POST') {
       const body = await readJson(req);
       validateCancelBody(body, 'INVALID_HOLD_CANCEL_REQUEST');
+      ensureRoleAllowed(context, ['ADMIN', 'MEMBER']);
       ensureEntityForTenant(engine.holds.get(matched.params.hold_id), {
         code: 'HOLD_NOT_FOUND',
         message: 'hold not found',
@@ -411,6 +456,7 @@ const server = http.createServer(async (req, res) => {
     if (matched.route === 'bookingCancel' && req.method === 'POST') {
       const body = await readJson(req);
       validateCancelBody(body, 'INVALID_BOOKING_CANCEL_REQUEST');
+      ensureRoleAllowed(context, ['ADMIN', 'MEMBER']);
       ensureEntityForTenant(engine.bookings.get(matched.params.booking_id), {
         code: 'BOOKING_NOT_FOUND',
         message: 'booking not found',
@@ -450,6 +496,7 @@ const server = http.createServer(async (req, res) => {
     if (matched.route === 'reservationCancel' && req.method === 'POST') {
       const body = await readJson(req);
       validateCancelBody(body, 'INVALID_RESERVATION_CANCEL_REQUEST');
+      ensureRoleAllowed(context, ['ADMIN', 'MEMBER']);
       ensureEntityForTenant(engine.reservations.get(matched.params.reservation_id), {
         code: 'RESERVATION_NOT_FOUND',
         message: 'reservation not found',
