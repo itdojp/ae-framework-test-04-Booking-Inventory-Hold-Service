@@ -38,8 +38,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: pnpm
-          cache-dependency-path: .tools/ae-framework/pnpm-lock.yaml
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -96,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ae-framework-run-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ steps.collect.outputs.run_dir }}
+          path: artifacts/runs
           if-no-files-found: warn
 
       - name: Commit artifact snapshot to main
@@ -104,6 +102,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ ! -d artifacts/runs ]; then
+            echo "artifacts/runs not found."
+            exit 0
+          fi
           git add artifacts/runs
           if git diff --cached --quiet; then
             echo "No artifact changes to commit."
