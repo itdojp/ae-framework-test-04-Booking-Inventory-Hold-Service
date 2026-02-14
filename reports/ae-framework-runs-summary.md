@@ -1,31 +1,32 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-14T08:26:11.780Z
-- runCount: 20
-- totalSize: 33 MB (35065296 bytes)
-- totalFiles: 6447
-- latestRun: 20260214T082439Z-22014149956-1 (runId=22014149956, generatedAt=2026-02-14T08:24:39Z)
+- generatedAt: 2026-02-14T08:31:27.066Z
+- runCount: 21
+- totalSize: 36 MB (37617990 bytes)
+- totalFiles: 6776
+- latestRun: 20260214T083126Z-22014233651-1 (runId=22014233651, generatedAt=2026-02-14T08:31:26Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 20 |
+| ae-framework-autopilot | 21 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
-| alloy | tool_not_available | 20 |
-| csp | tool_not_available | 20 |
-| smt | file_not_found | 20 |
-| tla | tool_not_available | 20 |
+| alloy | tool_not_available | 21 |
+| csp | tool_not_available | 21 |
+| smt | file_not_found | 21 |
+| tla | tool_not_available | 21 |
 
 ## Recent Runs (latest 20)
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
+| 20260214T083126Z-22014233651-1 | 22014233651 | 1 | 2026-02-14T08:31:26Z | 2.4 MB | 329 | b22bcfcbb351 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T082439Z-22014149956-1 | 22014149956 | 1 | 2026-02-14T08:24:39Z | 1.7 MB | 323 | 7faaa45ad09b | csp:tool_not_available, tla:tool_not_available |
 | 20260214T064030Z-22012828220-1 | 22012828220 | 1 | 2026-02-14T06:40:30Z | 1.7 MB | 323 | f9c7e4e36b5d | csp:tool_not_available, tla:tool_not_available |
 | 20260214T063312Z-22012728540-1 | 22012728540 | 1 | 2026-02-14T06:33:12Z | 1.7 MB | 323 | 4d832f13ca29 | csp:tool_not_available, tla:tool_not_available |
@@ -45,4 +46,3 @@
 | 20260214T005226Z-22007915031-1 | 22007915031 | 1 | 2026-02-14T00:52:27Z | 1.7 MB | 323 | 300ecbda2342 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T004729Z-22007823708-1 | 22007823708 | 1 | 2026-02-14T00:47:30Z | 1.7 MB | 323 | e18ec3dd8a09 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T004209Z-22007730395-1 | 22007730395 | 1 | 2026-02-14T00:42:10Z | 1.7 MB | 323 | 12b8f1e21812 | csp:tool_not_available, tla:tool_not_available |
-| 20260214T002433Z-22007398683-1 | 22007398683 | 1 | 2026-02-14T00:24:33Z | 1.6 MB | 310 | 66ceeb139c6b | csp:tool_not_available, tla:tool_not_available |
