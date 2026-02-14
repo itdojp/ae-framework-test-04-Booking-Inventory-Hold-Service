@@ -67,6 +67,7 @@
     - confirm 監査ログの actor を実行ユーザーで記録
     - 期限切れバッチ CLI `scripts/expire-holds.mjs` を追加（`STATE_FILE` を直接更新）
     - `GET /api/v1/holds` を追加（tenant/owner/status/time-range/limit フィルタ）
+    - `/bookings` `/reservations` 一覧クエリの入力検証を追加（日時範囲/enum）
 - テスト:
   - 受入基準 + 追加ケースを `tests/booking-inventory-engine.test.js` に実装
   - API スモーク/永続化/入力検証/patch/idempotency/audit/role-guard を server テストに追加

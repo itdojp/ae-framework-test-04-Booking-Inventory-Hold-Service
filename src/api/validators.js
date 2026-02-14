@@ -233,3 +233,24 @@ export function validateHoldsQuery(query) {
     requireInteger(query.limit, 'limit', { min: 1, max: 1000, code: 'INVALID_HOLDS_QUERY' });
   }
 }
+
+export function validateBookingsQuery(query) {
+  optionalString(query.resource_id, 'resource_id', 'INVALID_BOOKINGS_QUERY');
+  optionalEnum(query.status, 'status', ['CONFIRMED', 'CANCELLED'], 'INVALID_BOOKINGS_QUERY');
+  if (query.start_at !== undefined) {
+    requireDateTime(query.start_at, 'start_at', 'INVALID_BOOKINGS_QUERY');
+  }
+  if (query.end_at !== undefined) {
+    requireDateTime(query.end_at, 'end_at', 'INVALID_BOOKINGS_QUERY');
+  }
+  if (query.start_at !== undefined && query.end_at !== undefined) {
+    if (new Date(query.start_at).getTime() >= new Date(query.end_at).getTime()) {
+      throw new DomainError('INVALID_BOOKINGS_QUERY', 'start_at must be before end_at', 400);
+    }
+  }
+}
+
+export function validateReservationsQuery(query) {
+  optionalString(query.item_id, 'item_id', 'INVALID_RESERVATIONS_QUERY');
+  optionalEnum(query.status, 'status', ['CONFIRMED', 'CANCELLED'], 'INVALID_RESERVATIONS_QUERY');
+}

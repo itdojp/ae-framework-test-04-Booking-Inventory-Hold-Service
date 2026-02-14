@@ -40,6 +40,14 @@ test('server validation: 不正リクエストを 400 で返す', async () => {
 
     const invalidStatusRes = await fetch(`${server.baseUrl}/api/v1/items?status=UNKNOWN`);
     assert.equal(invalidStatusRes.status, 400);
+
+    const invalidBookingsRangeRes = await fetch(
+      `${server.baseUrl}/api/v1/bookings?start_at=2026-02-14T12:00:00Z&end_at=2026-02-14T11:00:00Z`
+    );
+    assert.equal(invalidBookingsRangeRes.status, 400);
+
+    const invalidBookingsDateRes = await fetch(`${server.baseUrl}/api/v1/bookings?start_at=not-a-date`);
+    assert.equal(invalidBookingsDateRes.status, 400);
   } finally {
     await server.stop();
   }

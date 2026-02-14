@@ -5,6 +5,7 @@ import { AsyncMutex } from './infra/async-mutex.js';
 import { JsonStateStore } from './infra/json-state-store.js';
 import {
   validateAuditLogsQuery,
+  validateBookingsQuery,
   validateCancelBody,
   validateConfirmBody,
   validateCreateHoldBody,
@@ -13,6 +14,7 @@ import {
   validateHoldsQuery,
   validatePatchItemBody,
   validatePatchResourceBody,
+  validateReservationsQuery,
   validateResourceAvailabilityQuery
 } from './api/validators.js';
 
@@ -468,12 +470,14 @@ const server = http.createServer(async (req, res) => {
       if (status && !['CONFIRMED', 'CANCELLED'].includes(status)) {
         throw new DomainError('INVALID_QUERY', 'status query is invalid for bookings', 400, { status });
       }
-      let bookings = engine.listBookings({
+      const query = {
         resource_id: url.searchParams.get('resource_id') ?? undefined,
         start_at: url.searchParams.get('start_at') ?? undefined,
         end_at: url.searchParams.get('end_at') ?? undefined,
         status
-      });
+      };
+      validateBookingsQuery(query);
+      let bookings = engine.listBookings(query);
       if (context.tenant_id) {
         bookings = bookings.filter((booking) => booking.tenant_id === context.tenant_id);
       }
@@ -510,10 +514,12 @@ const server = http.createServer(async (req, res) => {
       if (status && !['CONFIRMED', 'CANCELLED'].includes(status)) {
         throw new DomainError('INVALID_QUERY', 'status query is invalid for reservations', 400, { status });
       }
-      let reservations = engine.listReservations({
+      const query = {
         item_id: url.searchParams.get('item_id') ?? undefined,
         status
-      });
+      };
+      validateReservationsQuery(query);
+      let reservations = engine.listReservations(query);
       if (context.tenant_id) {
         reservations = reservations.filter((reservation) => reservation.tenant_id === context.tenant_id);
       }
