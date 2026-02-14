@@ -72,6 +72,7 @@
     - 最小UIを追加（`/ui`, `/ui/app.js`, `/ui/styles.css`）
     - UI-BI-02/05 対応として、可用性照会・Booking/Reservation 一覧/取消を UI から実行可能化
     - run集計スクリプト `scripts/generate-run-summary.mjs` を追加（`reports/ae-framework-runs-summary.{json,md}`）
+    - 評価レポートスクリプト `scripts/generate-evaluation-report.mjs` を追加（`reports/ae-framework-evaluation.md`）
     - CI で run アーカイブ後に評価サマリを自動更新
 - テスト:
   - 受入基準 + 追加ケースを `tests/booking-inventory-engine.test.js` に実装
@@ -82,4 +83,5 @@
   - booking/reservation 取消の owner/admin ガードテストを追加
   - booking/reservation 一覧の owner スコープ制御テストを追加
   - run集計スクリプトテスト `tests/generate-run-summary-script.test.js` を追加
-  - `npm test` 33/33 pass
+  - 評価レポートスクリプトテスト `tests/generate-evaluation-report-script.test.js` を追加
+  - `npm test` 34/34 pass

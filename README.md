@@ -35,6 +35,7 @@ npm test
 npm start
 npm run expire:holds -- --now 2026-02-14T10:00:00Z
 npm run report:runs
+npm run report:evaluation
 ```
 
 UI:
@@ -50,3 +51,4 @@ UI:
 
 - `reports/ae-framework-runs-summary.json`
 - `reports/ae-framework-runs-summary.md`
+- `reports/ae-framework-evaluation.md`

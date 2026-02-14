@@ -103,7 +103,9 @@ jobs:
 
       - name: Generate evaluation summary
         if: always()
-        run: node scripts/generate-run-summary.mjs
+        run: |
+          node scripts/generate-run-summary.mjs
+          node scripts/generate-evaluation-report.mjs
 
       - name: Upload run artifacts
         if: always()
