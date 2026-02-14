@@ -172,3 +172,81 @@ test('BI-ACC-04: Expire バッチ後に期限切れ hold は可用性へ影響�
   const after = engine.getItemAvailability(item.item_id);
   assert.equal(after.available_quantity, 5);
 });
+
+test('BI-CONFIRM-003: confirm は冪等に動作する', () => {
+  const engine = new BookingInventoryEngine();
+  const resource = engine.createResource({
+    tenant_id: 'T1',
+    name: 'Room-1',
+    timezone: 'UTC',
+    slot_granularity_minutes: 15,
+    min_duration_minutes: 15,
+    max_duration_minutes: 240
+  });
+
+  const hold = engine.createHold({
+    tenant_id: 'T1',
+    created_by_user_id: 'U1',
+    expires_in_seconds: 600,
+    now: at('2026-02-14T10:00:00Z'),
+    lines: [
+      {
+        kind: 'RESOURCE_SLOT',
+        resource_id: resource.resource_id,
+        start_at: '2026-02-14T11:00:00Z',
+        end_at: '2026-02-14T12:00:00Z'
+      }
+    ]
+  });
+
+  const first = engine.confirmHold({
+    hold_id: hold.hold_id,
+    now: at('2026-02-14T10:00:10Z')
+  });
+  const second = engine.confirmHold({
+    hold_id: hold.hold_id,
+    now: at('2026-02-14T10:00:20Z')
+  });
+
+  assert.equal(first.status, 'CONFIRMED');
+  assert.equal(second.status, 'CONFIRMED');
+  assert.equal(first.bookings.length, 1);
+  assert.equal(second.bookings.length, 1);
+  assert.equal(first.bookings[0].booking_id, second.bookings[0].booking_id);
+});
+
+test('BI-AUTH-002: hold cancel は owner または admin のみ許可', () => {
+  const engine = new BookingInventoryEngine();
+  const item = engine.createItem({
+    tenant_id: 'T1',
+    name: 'Camera',
+    total_quantity: 3
+  });
+
+  const hold = engine.createHold({
+    tenant_id: 'T1',
+    created_by_user_id: 'U1',
+    expires_in_seconds: 600,
+    lines: [{ kind: 'INVENTORY_QTY', item_id: item.item_id, quantity: 1 }]
+  });
+
+  assert.throws(
+    () =>
+      engine.cancelHold({
+        hold_id: hold.hold_id,
+        actor_user_id: 'U2',
+        is_admin: false
+      }),
+    (error) => {
+      assertDomainError(error, 'FORBIDDEN');
+      return true;
+    }
+  );
+
+  const cancelled = engine.cancelHold({
+    hold_id: hold.hold_id,
+    actor_user_id: 'U2',
+    is_admin: true
+  });
+  assert.equal(cancelled.status, 'CANCELLED');
+});
