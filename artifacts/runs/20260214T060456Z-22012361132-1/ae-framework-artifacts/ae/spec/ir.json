@@ -1,0 +1,76 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "name": "AE_Framework_Minimal_Spec",
+    "created": "2026-02-14T06:04:55.466Z",
+    "updated": "2026-02-14T06:04:55.466Z",
+    "description": "> 🌍 Language / 言語: English | 日本語\n\nThis is a minimal, valid AE-Spec used to satisfy fail-fast validation in CI."
+  },
+  "glossary": [
+    {
+      "term": "User",
+      "definition": "An actor who uses the system"
+    }
+  ],
+  "domain": [
+    {
+      "name": "User",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true,
+          "description": "Unique identifier"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true,
+          "description": "Email address"
+        },
+        {
+          "name": "createdAt",
+          "type": "date",
+          "required": false,
+          "description": "Created timestamp"
+        }
+      ]
+    }
+  ],
+  "invariants": [],
+  "usecases": [
+    {
+      "name": "Register User",
+      "actor": "User",
+      "steps": [
+        {
+          "step": 1,
+          "description": "User submits email",
+          "type": "action"
+        },
+        {
+          "step": 2,
+          "description": "System validates uniqueness",
+          "type": "action"
+        },
+        {
+          "step": 3,
+          "description": "System creates account",
+          "type": "action"
+        }
+      ]
+    }
+  ],
+  "api": [
+    {
+      "method": "POST",
+      "path": "/users",
+      "summary": "Register user"
+    },
+    {
+      "method": "GET",
+      "path": "/users/:id",
+      "summary": "Get user"
+    }
+  ]
+}
