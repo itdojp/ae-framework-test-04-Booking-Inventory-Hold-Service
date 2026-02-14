@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-02-14T10:12:32.949Z",
+  "generatedAt": "2026-02-14T10:14:39.106Z",
   "runCount": 24,
-  "totalBytes": 42892682,
-  "totalFiles": 7746,
-  "averageBytesPerRun": 1787195,
+  "totalBytes": 42098060,
+  "totalFiles": 7740,
+  "averageBytesPerRun": 1754086,
   "latestRun": {
     "runFolder": "20260214T101232Z-22015548894-1",
     "runId": "22015548894",
@@ -95,8 +95,8 @@
       "sourceSha": "666c62f716df8a78e726e7b5c7c8b755ff262cc3",
       "node": "22",
       "pnpm": "10",
-      "totalBytes": 2553364,
-      "fileCount": 330,
+      "totalBytes": 1758742,
+      "fileCount": 324,
       "formal": {
         "csp": {
           "status": "tool_not_available",

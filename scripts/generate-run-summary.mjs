@@ -193,12 +193,14 @@ function buildActionItems(summary) {
   if (latestFormal.alloy?.status === 'tool_not_available') {
     items.push('Alloy: `ALLOY_JAR` または Alloy CLI を導入する。');
   }
-  if (latestFormal.smt?.status === 'file_not_found') {
+  if (latestFormal.smt?.status === 'file_not_found' || latestFormal.smt?.status === 'no_file') {
     if (smtFileCount > 0) {
       items.push('SMT: `.smt2` は配置済み。`verify:smt` が参照する入力パスを CI で固定する。');
     } else {
       items.push('SMT: 検証対象 `.smt2` ファイルを配置し `verify:smt` 入力を固定する。');
     }
+  } else if (latestFormal.smt?.status === 'solver_not_available') {
+    items.push('SMT: z3 または cvc5 を実行環境へ導入する。');
   }
   if (summary.runCount >= 20) {
     items.push('run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。');

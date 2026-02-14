@@ -70,6 +70,11 @@ jobs:
         run: pnpm run verify:csp -- --file spec/csp/cspx-smoke.cspm --mode typecheck
         continue-on-error: true
 
+      - name: Run formal smoke (SMT input binding)
+        working-directory: .tools/ae-framework
+        run: pnpm run verify:smt -- --solver=cvc5 --file "$GITHUB_WORKSPACE/spec/formal/smt/bi-hold-invariants.smt2"
+        continue-on-error: true
+
       - name: Collect run artifacts
         id: collect
         run: |

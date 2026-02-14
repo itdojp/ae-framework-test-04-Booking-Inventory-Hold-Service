@@ -20,10 +20,11 @@ function bytesToMb(bytes) {
 
 function scoreFormal(latestFormal) {
   const tools = ['csp', 'tla', 'smt', 'alloy'];
+  const notReadyStatuses = new Set(['tool_not_available', 'file_not_found', 'solver_not_available', 'no_file', 'unknown']);
   let ready = 0;
   for (const tool of tools) {
     const status = latestFormal?.[tool]?.status ?? 'unknown';
-    if (!['tool_not_available', 'file_not_found', 'unknown'].includes(status)) {
+    if (!notReadyStatuses.has(status)) {
       ready += 1;
     }
   }

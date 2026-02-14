@@ -114,3 +114,51 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
   assert.match(md, /csp:passed/);
   assert.match(md, /20260214T070000Z-101-1/);
 });
+
+test('generate-run-summary script: smt solver_not_available のとき導入アクションを出力する', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'bi-run-summary-smt-'));
+  const runsDir = path.join(tmp, 'artifacts', 'runs');
+  const outJson = path.join(tmp, 'reports', 'summary.json');
+  const outMd = path.join(tmp, 'reports', 'summary.md');
+  const smtInputDir = path.join(tmp, 'spec', 'formal', 'smt');
+
+  const runA = path.join(runsDir, '20260214T080000Z-200-1');
+  writeJson(path.join(runA, 'run-manifest.json'), {
+    generatedAt: '2026-02-14T08:00:00Z',
+    workflow: 'ae-framework-autopilot',
+    runId: '200',
+    runAttempt: '1',
+    source: 'itdojp/example@cccccccccccccccccccccccccccccccccccccccc',
+    toolchain: { node: '22', pnpm: '10' }
+  });
+  writeJson(path.join(runA, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'smt-summary.json'), {
+    status: 'solver_not_available',
+    ran: false,
+    timestamp: '2026-02-14T08:00:10Z'
+  });
+  fs.mkdirSync(smtInputDir, { recursive: true });
+  fs.writeFileSync(path.join(smtInputDir, 'bi-hold-invariants.smt2'), '(set-logic QF_LIA)\n', 'utf8');
+
+  const testFile = fileURLToPath(import.meta.url);
+  const repoRoot = path.resolve(path.dirname(testFile), '..');
+  const scriptPath = path.join(repoRoot, 'scripts', 'generate-run-summary.mjs');
+
+  const proc = spawnSync(process.execPath, [scriptPath], {
+    cwd: repoRoot,
+    env: {
+      ...process.env,
+      RUNS_DIR: runsDir,
+      OUT_JSON: outJson,
+      OUT_MD: outMd,
+      MAX_ROWS: '10',
+      SMT_INPUT_DIR: smtInputDir
+    },
+    encoding: 'utf8'
+  });
+
+  assert.equal(proc.status, 0, proc.stderr || proc.stdout);
+  const summary = JSON.parse(fs.readFileSync(outJson, 'utf8'));
+  assert.equal(summary.runCount, 1);
+  assert.equal(summary.latestFormal.smt.status, 'solver_not_available');
+  assert.match(summary.actionItems.join('\n'), /z3 または cvc5/);
+});

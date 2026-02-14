@@ -1,9 +1,9 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-14T10:12:32.949Z
+- generatedAt: 2026-02-14T10:14:39.106Z
 - runCount: 24
-- totalSize: 41 MB (42892682 bytes)
-- totalFiles: 7746
+- totalSize: 40 MB (42098060 bytes)
+- totalFiles: 7740
 - latestRun: 20260214T101232Z-22015548894-1 (runId=22015548894, generatedAt=2026-02-14T10:12:32Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
@@ -40,7 +40,7 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260214T101232Z-22015548894-1 | 22015548894 | 1 | 2026-02-14T10:12:32Z | 2.4 MB | 330 | 666c62f716df | csp:tool_not_available, tla:tool_not_available |
+| 20260214T101232Z-22015548894-1 | 22015548894 | 1 | 2026-02-14T10:12:32Z | 1.7 MB | 324 | 666c62f716df | csp:tool_not_available, tla:tool_not_available |
 | 20260214T100406Z-22015435943-1 | 22015435943 | 1 | 2026-02-14T10:04:06Z | 1.7 MB | 323 | 53d837b72e67 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T083717Z-22014307580-1 | 22014307580 | 1 | 2026-02-14T08:37:17Z | 1.7 MB | 323 | ba88da7cd4cd | csp:tool_not_available, tla:tool_not_available |
 | 20260214T083126Z-22014233651-1 | 22014233651 | 1 | 2026-02-14T08:31:26Z | 1.7 MB | 323 | b22bcfcbb351 | csp:tool_not_available, tla:tool_not_available |

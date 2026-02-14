@@ -46,6 +46,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
   - `pnpm install` + `pnpm run build`
   - `pnpm run codex:run` を実行（失敗時も証跡収集は継続）
   - 形式検証の軽量スモーク（CSP typecheck）
+  - SMT smoke を実行し入力ファイルを固定（`spec/formal/smt/bi-hold-invariants.smt2`）
 - 生成物を本リポジトリ `artifacts/runs/<run-id>/` へ集約
   - 集約後に `reports/ae-framework-runs-summary.{json,md}` と `reports/ae-framework-evaluation.md` を自動更新
 
