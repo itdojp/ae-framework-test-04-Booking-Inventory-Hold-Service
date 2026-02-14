@@ -1,38 +1,39 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-14T11:07:46.128Z
-- runCount: 29
-- totalSize: 49 MB (51694227 bytes)
-- totalFiles: 9373
-- latestRun: 20260214T110745Z-22016244105-1 (runId=22016244105, generatedAt=2026-02-14T11:07:45Z)
+- generatedAt: 2026-02-14T11:15:08.922Z
+- runCount: 30
+- totalSize: 51 MB (53459013 bytes)
+- totalFiles: 9700
+- latestRun: 20260214T111508Z-22016333611-1 (runId=22016333611, generatedAt=2026-02-14T11:15:08Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 29 |
+| ae-framework-autopilot | 30 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
 | alloy | tool_not_available | 27 |
-| alloy | ran | 2 |
+| alloy | ran | 3 |
 | csp | tool_not_available | 29 |
+| csp | ran | 1 |
 | smt | file_not_found | 24 |
-| smt | ran | 3 |
+| smt | ran | 4 |
 | smt | solver_not_available | 2 |
 | tla | tool_not_available | 27 |
-| tla | ran | 1 |
+| tla | ran | 2 |
 | tla | failed | 1 |
 
 ## Formal Status Delta (latest vs previous)
 
 | tool | previous | latest | changed |
 | --- | --- | --- | --- |
-| csp | tool_not_available | tool_not_available | no |
-| tla | failed | ran | yes |
+| csp | tool_not_available | ran | yes |
+| tla | ran | ran | no |
 | smt | ran | ran | no |
 | alloy | ran | ran | no |
 
@@ -44,14 +45,14 @@
 
 ## Action Items
 
-- CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。
 - run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。
 
 ## Recent Runs (latest 20)
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260214T110745Z-22016244105-1 | 22016244105 | 1 | 2026-02-14T11:07:45Z | 2.4 MB | 332 | 6787ed20d80d | csp:tool_not_available, tla:ran |
+| 20260214T111508Z-22016333611-1 | 22016333611 | 1 | 2026-02-14T11:15:08Z | 2.4 MB | 333 | 92d9b29b47ab | csp:ran, tla:ran |
+| 20260214T110745Z-22016244105-1 | 22016244105 | 1 | 2026-02-14T11:07:45Z | 1.7 MB | 326 | 6787ed20d80d | csp:tool_not_available, tla:ran |
 | 20260214T105937Z-22016137118-1 | 22016137118 | 1 | 2026-02-14T10:59:37Z | 1.7 MB | 326 | fe74b5e5cf55 | csp:tool_not_available, tla:failed |
 | 20260214T105224Z-22016056764-1 | 22016056764 | 1 | 2026-02-14T10:52:24Z | 1.7 MB | 325 | a5a9f62f87a9 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T102543Z-22015732416-1 | 22015732416 | 1 | 2026-02-14T10:25:44Z | 1.7 MB | 325 | 57a43f98b3ba | csp:tool_not_available, tla:tool_not_available |
@@ -70,4 +71,3 @@
 | 20260214T055453Z-22012231795-1 | 22012231795 | 1 | 2026-02-14T05:54:53Z | 1.7 MB | 323 | c35bdca23eb2 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T054835Z-22012151467-1 | 22012151467 | 1 | 2026-02-14T05:48:36Z | 1.7 MB | 323 | a13cfdac9825 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T053832Z-22012026276-1 | 22012026276 | 1 | 2026-02-14T05:38:33Z | 1.7 MB | 323 | 52bf0a6386c7 | csp:tool_not_available, tla:tool_not_available |
-| 20260214T053256Z-22011955122-1 | 22011955122 | 1 | 2026-02-14T05:32:56Z | 1.7 MB | 323 | f6a9164c7b01 | csp:tool_not_available, tla:tool_not_available |
