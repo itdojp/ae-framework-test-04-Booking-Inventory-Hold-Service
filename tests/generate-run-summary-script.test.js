@@ -90,10 +90,14 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
   assert.equal(summary.formalStatusCounts.csp.tool_not_available, 1);
   assert.equal(summary.formalStatusCounts.csp.passed, 1);
   assert.equal(summary.formalStatusCounts.tla.tool_not_available, 2);
+  assert.ok(Array.isArray(summary.actionItems));
+  assert.ok(summary.actionItems.length >= 1);
+  assert.match(summary.actionItems.join('\n'), /TLA\+/);
 
   const md = fs.readFileSync(outMd, 'utf8');
   assert.match(md, /ae-framework Run Summary/);
   assert.match(md, /Formal Status Counts/);
+  assert.match(md, /Action Items/);
   assert.match(md, /csp:passed/);
   assert.match(md, /20260214T070000Z-101-1/);
 });

@@ -1,9 +1,9 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-14T08:31:27.066Z
+- generatedAt: 2026-02-14T08:32:17.785Z
 - runCount: 21
-- totalSize: 36 MB (37617990 bytes)
-- totalFiles: 6776
+- totalSize: 35 MB (36823302 bytes)
+- totalFiles: 6770
 - latestRun: 20260214T083126Z-22014233651-1 (runId=22014233651, generatedAt=2026-02-14T08:31:26Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
@@ -22,11 +22,19 @@
 | smt | file_not_found | 21 |
 | tla | tool_not_available | 21 |
 
+## Action Items
+
+- CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。
+- TLA+: `TLA_TOOLS_JAR` を設定し TLC 実行可能状態を作る。
+- Alloy: `ALLOY_JAR` または Alloy CLI を導入する。
+- SMT: 検証対象 `.smt2` ファイルを配置し `verify:smt` 入力を固定する。
+- run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。
+
 ## Recent Runs (latest 20)
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260214T083126Z-22014233651-1 | 22014233651 | 1 | 2026-02-14T08:31:26Z | 2.4 MB | 329 | b22bcfcbb351 | csp:tool_not_available, tla:tool_not_available |
+| 20260214T083126Z-22014233651-1 | 22014233651 | 1 | 2026-02-14T08:31:26Z | 1.7 MB | 323 | b22bcfcbb351 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T082439Z-22014149956-1 | 22014149956 | 1 | 2026-02-14T08:24:39Z | 1.7 MB | 323 | 7faaa45ad09b | csp:tool_not_available, tla:tool_not_available |
 | 20260214T064030Z-22012828220-1 | 22012828220 | 1 | 2026-02-14T06:40:30Z | 1.7 MB | 323 | f9c7e4e36b5d | csp:tool_not_available, tla:tool_not_available |
 | 20260214T063312Z-22012728540-1 | 22012728540 | 1 | 2026-02-14T06:33:12Z | 1.7 MB | 323 | 4d832f13ca29 | csp:tool_not_available, tla:tool_not_available |

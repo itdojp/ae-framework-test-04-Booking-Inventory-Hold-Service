@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-02-14T08:31:27.066Z",
+  "generatedAt": "2026-02-14T08:32:17.785Z",
   "runCount": 21,
-  "totalBytes": 37617990,
-  "totalFiles": 6776,
-  "averageBytesPerRun": 1791333,
+  "totalBytes": 36823302,
+  "totalFiles": 6770,
+  "averageBytesPerRun": 1753491,
   "latestRun": {
     "runFolder": "20260214T083126Z-22014233651-1",
     "runId": "22014233651",
@@ -66,6 +66,13 @@
       "timestamp": "2025-09-17T19:57:44.834Z"
     }
   },
+  "actionItems": [
+    "CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。",
+    "TLA+: `TLA_TOOLS_JAR` を設定し TLC 実行可能状態を作る。",
+    "Alloy: `ALLOY_JAR` または Alloy CLI を導入する。",
+    "SMT: 検証対象 `.smt2` ファイルを配置し `verify:smt` 入力を固定する。",
+    "run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。"
+  ],
   "runs": [
     {
       "runFolder": "20260214T083126Z-22014233651-1",
@@ -79,8 +86,8 @@
       "sourceSha": "b22bcfcbb3514f57f4e81532b7abcbf5634ccc74",
       "node": "22",
       "pnpm": "10",
-      "totalBytes": 2552694,
-      "fileCount": 329,
+      "totalBytes": 1758006,
+      "fileCount": 323,
       "formal": {
         "csp": {
           "status": "tool_not_available",

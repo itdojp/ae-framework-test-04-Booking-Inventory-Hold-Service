@@ -148,6 +148,30 @@ function formalStatusCounts(runs) {
   return counts;
 }
 
+function buildActionItems(summary) {
+  const items = [];
+  const latestFormal = summary.latestFormal ?? {};
+  if (latestFormal.csp?.status === 'tool_not_available') {
+    items.push('CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。');
+  }
+  if (latestFormal.tla?.status === 'tool_not_available') {
+    items.push('TLA+: `TLA_TOOLS_JAR` を設定し TLC 実行可能状態を作る。');
+  }
+  if (latestFormal.alloy?.status === 'tool_not_available') {
+    items.push('Alloy: `ALLOY_JAR` または Alloy CLI を導入する。');
+  }
+  if (latestFormal.smt?.status === 'file_not_found') {
+    items.push('SMT: 検証対象 `.smt2` ファイルを配置し `verify:smt` 入力を固定する。');
+  }
+  if (summary.runCount >= 20) {
+    items.push('run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。');
+  }
+  if (items.length === 0) {
+    items.push('現時点で優先アクションはありません。');
+  }
+  return items;
+}
+
 function buildSummary(runs) {
   const totalBytes = runs.reduce((acc, run) => acc + run.totalBytes, 0);
   const totalFiles = runs.reduce((acc, run) => acc + run.fileCount, 0);
@@ -184,6 +208,7 @@ function buildSummary(runs) {
     nodeVersionCounts: countBy(runs, (run) => run.node),
     formalStatusCounts: formalStatusCounts(runs),
     latestFormal: latest?.formal ?? {},
+    actionItems: [],
     runs
   };
 }
@@ -235,6 +260,13 @@ function buildMarkdown(summary, limit) {
   }
 
   lines.push('');
+  lines.push('## Action Items');
+  lines.push('');
+  for (const item of summary.actionItems ?? []) {
+    lines.push(`- ${item}`);
+  }
+
+  lines.push('');
   lines.push(`## Recent Runs (latest ${limit})`);
   lines.push('');
   lines.push('| runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |');
@@ -257,6 +289,7 @@ function buildMarkdown(summary, limit) {
 
 const runs = parseRunDirectories(runsDir);
 const summary = buildSummary(runs);
+summary.actionItems = buildActionItems(summary);
 const markdown = buildMarkdown(summary, Number.isFinite(maxRows) && maxRows > 0 ? maxRows : 20);
 
 ensureDir(outJsonPath);
