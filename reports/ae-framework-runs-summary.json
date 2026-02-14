@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-02-14T08:19:23.034Z",
-  "runCount": 19,
-  "totalBytes": 33307289,
-  "totalFiles": 6124,
-  "averageBytesPerRun": 1753015,
+  "generatedAt": "2026-02-14T08:24:39.621Z",
+  "runCount": 20,
+  "totalBytes": 35860778,
+  "totalFiles": 6453,
+  "averageBytesPerRun": 1793039,
   "latestRun": {
-    "runFolder": "20260214T064030Z-22012828220-1",
-    "runId": "22012828220",
+    "runFolder": "20260214T082439Z-22014149956-1",
+    "runId": "22014149956",
     "runAttempt": "1",
-    "generatedAt": "2026-02-14T06:40:30Z",
-    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@f9c7e4e36b5db8e13634d59a1bacf06153ea2771",
-    "path": "artifacts/runs/20260214T064030Z-22012828220-1"
+    "generatedAt": "2026-02-14T08:24:39Z",
+    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@7faaa45ad09b77f652572195302330195069e13c",
+    "path": "artifacts/runs/20260214T082439Z-22014149956-1"
   },
   "oldestRun": {
     "runFolder": "20260214T002433Z-22007398683-1",
@@ -21,12 +21,27 @@
     "path": "artifacts/runs/20260214T002433Z-22007398683-1"
   },
   "workflowCounts": {
-    "ae-framework-autopilot": 19
+    "ae-framework-autopilot": 20
   },
   "nodeVersionCounts": {
-    "22": 19
+    "22": 20
   },
   "runs": [
+    {
+      "runFolder": "20260214T082439Z-22014149956-1",
+      "runPath": "artifacts/runs/20260214T082439Z-22014149956-1",
+      "runId": "22014149956",
+      "runAttempt": "1",
+      "generatedAt": "2026-02-14T08:24:39Z",
+      "generatedAtMs": 1771057479000,
+      "workflow": "ae-framework-autopilot",
+      "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@7faaa45ad09b77f652572195302330195069e13c",
+      "sourceSha": "7faaa45ad09b77f652572195302330195069e13c",
+      "node": "22",
+      "pnpm": "10",
+      "totalBytes": 2553489,
+      "fileCount": 329
+    },
     {
       "runFolder": "20260214T064030Z-22012828220-1",
       "runPath": "artifacts/runs/20260214T064030Z-22012828220-1",

@@ -1,22 +1,23 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-14T08:19:23.034Z
-- runCount: 19
-- totalSize: 32 MB (33307289 bytes)
-- totalFiles: 6124
-- latestRun: 20260214T064030Z-22012828220-1 (runId=22012828220, generatedAt=2026-02-14T06:40:30Z)
+- generatedAt: 2026-02-14T08:24:39.621Z
+- runCount: 20
+- totalSize: 34 MB (35860778 bytes)
+- totalFiles: 6453
+- latestRun: 20260214T082439Z-22014149956-1 (runId=22014149956, generatedAt=2026-02-14T08:24:39Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 19 |
+| ae-framework-autopilot | 20 |
 
 ## Recent Runs (latest 20)
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha |
 | --- | ---: | ---: | --- | ---: | ---: | --- |
+| 20260214T082439Z-22014149956-1 | 22014149956 | 1 | 2026-02-14T08:24:39Z | 2.4 MB | 329 | 7faaa45ad09b |
 | 20260214T064030Z-22012828220-1 | 22012828220 | 1 | 2026-02-14T06:40:30Z | 1.7 MB | 323 | f9c7e4e36b5d |
 | 20260214T063312Z-22012728540-1 | 22012728540 | 1 | 2026-02-14T06:33:12Z | 1.7 MB | 323 | 4d832f13ca29 |
 | 20260214T062701Z-22012651158-1 | 22012651158 | 1 | 2026-02-14T06:27:01Z | 1.7 MB | 323 | aa480ebcbac8 |
