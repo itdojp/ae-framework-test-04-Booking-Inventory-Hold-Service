@@ -29,6 +29,16 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
     toolchain: { node: '22', pnpm: '10' }
   });
   fs.writeFileSync(path.join(runA, 'dummy.txt'), 'abc', 'utf8');
+  writeJson(path.join(runA, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'csp-summary.json'), {
+    status: 'tool_not_available',
+    ran: false,
+    timestamp: '2026-02-14T06:00:10Z'
+  });
+  writeJson(path.join(runA, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'tla-summary.json'), {
+    status: 'tool_not_available',
+    ran: false,
+    timestamp: '2026-02-14T06:00:12Z'
+  });
 
   writeJson(path.join(runB, 'run-manifest.json'), {
     generatedAt: '2026-02-14T07:00:00Z',
@@ -39,6 +49,17 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
     toolchain: { node: '22', pnpm: '10' }
   });
   fs.writeFileSync(path.join(runB, 'dummy.txt'), 'abcdef', 'utf8');
+  writeJson(path.join(runB, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'csp-summary.json'), {
+    status: 'passed',
+    ran: true,
+    ok: true,
+    timestamp: '2026-02-14T07:00:10Z'
+  });
+  writeJson(path.join(runB, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'tla-summary.json'), {
+    status: 'tool_not_available',
+    ran: false,
+    timestamp: '2026-02-14T07:00:12Z'
+  });
 
   const testFile = fileURLToPath(import.meta.url);
   const repoRoot = path.resolve(path.dirname(testFile), '..');
@@ -66,8 +87,13 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
   assert.equal(summary.oldestRun.runId, '100');
   assert.equal(summary.workflowCounts['ae-framework-autopilot'], 2);
   assert.ok(summary.totalBytes > 0);
+  assert.equal(summary.formalStatusCounts.csp.tool_not_available, 1);
+  assert.equal(summary.formalStatusCounts.csp.passed, 1);
+  assert.equal(summary.formalStatusCounts.tla.tool_not_available, 2);
 
   const md = fs.readFileSync(outMd, 'utf8');
   assert.match(md, /ae-framework Run Summary/);
+  assert.match(md, /Formal Status Counts/);
+  assert.match(md, /csp:passed/);
   assert.match(md, /20260214T070000Z-101-1/);
 });

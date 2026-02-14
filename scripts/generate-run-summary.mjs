@@ -6,6 +6,12 @@ const runsDir = path.resolve(cwd, process.env.RUNS_DIR ?? 'artifacts/runs');
 const outJsonPath = path.resolve(cwd, process.env.OUT_JSON ?? 'reports/ae-framework-runs-summary.json');
 const outMdPath = path.resolve(cwd, process.env.OUT_MD ?? 'reports/ae-framework-runs-summary.md');
 const maxRows = Number(process.env.MAX_ROWS ?? 20);
+const formalToolFiles = {
+  csp: 'csp-summary.json',
+  tla: 'tla-summary.json',
+  smt: 'smt-summary.json',
+  alloy: 'alloy-summary.json'
+};
 
 function ensureDir(filePath) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -52,6 +58,25 @@ function walkDirSizeAndFiles(rootDir) {
   return { totalBytes, fileCount };
 }
 
+function parseFormalSummaries(runPath) {
+  const formalDir = path.join(runPath, 'ae-framework-artifacts', 'hermetic-reports', 'formal');
+  if (!fs.existsSync(formalDir)) return {};
+  const summary = {};
+  for (const [tool, fileName] of Object.entries(formalToolFiles)) {
+    const filePath = path.join(formalDir, fileName);
+    if (!fs.existsSync(filePath)) continue;
+    const payload = readJson(filePath);
+    if (!payload) continue;
+    summary[tool] = {
+      status: typeof payload.status === 'string' ? payload.status : 'unknown',
+      ran: typeof payload.ran === 'boolean' ? payload.ran : null,
+      ok: typeof payload.ok === 'boolean' ? payload.ok : null,
+      timestamp: typeof payload.timestamp === 'string' ? payload.timestamp : null
+    };
+  }
+  return summary;
+}
+
 function parseRunDirectories(dirPath) {
   if (!fs.existsSync(dirPath)) return [];
   const entries = fs.readdirSync(dirPath, { withFileTypes: true });
@@ -72,6 +97,7 @@ function parseRunDirectories(dirPath) {
     const source = String(manifest.source ?? '');
     const sourceSha = source.includes('@') ? source.split('@').at(-1) : null;
     const { totalBytes, fileCount } = walkDirSizeAndFiles(runPath);
+    const formal = parseFormalSummaries(runPath);
 
     runs.push({
       runFolder,
@@ -86,7 +112,8 @@ function parseRunDirectories(dirPath) {
       node: manifest.toolchain?.node ?? null,
       pnpm: manifest.toolchain?.pnpm ?? null,
       totalBytes,
-      fileCount
+      fileCount,
+      formal
     });
   }
 
@@ -107,6 +134,18 @@ function countBy(items, keySelector) {
     map[key] = (map[key] ?? 0) + 1;
   }
   return map;
+}
+
+function formalStatusCounts(runs) {
+  const counts = {};
+  for (const run of runs) {
+    for (const [tool, result] of Object.entries(run.formal ?? {})) {
+      counts[tool] ??= {};
+      const status = result.status ?? 'unknown';
+      counts[tool][status] = (counts[tool][status] ?? 0) + 1;
+    }
+  }
+  return counts;
 }
 
 function buildSummary(runs) {
@@ -143,6 +182,8 @@ function buildSummary(runs) {
       : null,
     workflowCounts: countBy(runs, (run) => run.workflow),
     nodeVersionCounts: countBy(runs, (run) => run.node),
+    formalStatusCounts: formalStatusCounts(runs),
+    latestFormal: latest?.formal ?? {},
     runs
   };
 }
@@ -178,19 +219,37 @@ function buildMarkdown(summary, limit) {
   }
 
   lines.push('');
+  lines.push('## Formal Status Counts');
+  lines.push('');
+  lines.push('| tool | status | count |');
+  lines.push('| --- | --- | ---: |');
+  let formalRowCount = 0;
+  for (const [tool, statusMap] of Object.entries(summary.formalStatusCounts ?? {}).sort()) {
+    for (const [status, count] of Object.entries(statusMap).sort((a, b) => b[1] - a[1])) {
+      lines.push(`| ${tool} | ${status} | ${count} |`);
+      formalRowCount += 1;
+    }
+  }
+  if (formalRowCount === 0) {
+    lines.push('| (none) | (none) | 0 |');
+  }
+
+  lines.push('');
   lines.push(`## Recent Runs (latest ${limit})`);
   lines.push('');
-  lines.push('| runFolder | runId | attempt | generatedAt | size | files | sourceSha |');
-  lines.push('| --- | ---: | ---: | --- | ---: | ---: | --- |');
+  lines.push('| runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |');
+  lines.push('| --- | ---: | ---: | --- | ---: | ---: | --- | --- |');
   for (const run of summary.runs.slice(0, limit)) {
     const sourceSha = run.sourceSha ? run.sourceSha.slice(0, 12) : '';
+    const cspStatus = run.formal?.csp?.status ?? '-';
+    const tlaStatus = run.formal?.tla?.status ?? '-';
     lines.push(
-      `| ${run.runFolder} | ${run.runId || '-'} | ${run.runAttempt || '-'} | ${run.generatedAt || '-'} | ${formatBytes(run.totalBytes)} | ${run.fileCount} | ${sourceSha} |`
+      `| ${run.runFolder} | ${run.runId || '-'} | ${run.runAttempt || '-'} | ${run.generatedAt || '-'} | ${formatBytes(run.totalBytes)} | ${run.fileCount} | ${sourceSha} | csp:${cspStatus}, tla:${tlaStatus} |`
     );
   }
 
   if (summary.runs.length === 0) {
-    lines.push('| (no runs) | - | - | - | 0 B | 0 | - |');
+    lines.push('| (no runs) | - | - | - | 0 B | 0 | - | - |');
   }
 
   return `${lines.join('\n')}\n`;
