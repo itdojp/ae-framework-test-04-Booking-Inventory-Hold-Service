@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-02-14T15:23:03.939Z",
-  "runCount": 30,
-  "totalBytes": 52666769,
-  "totalFiles": 9694,
-  "averageBytesPerRun": 1755559,
+  "generatedAt": "2026-02-14T15:28:06.522Z",
+  "runCount": 31,
+  "totalBytes": 55223443,
+  "totalFiles": 10027,
+  "averageBytesPerRun": 1781401,
   "latestRun": {
-    "runFolder": "20260214T111508Z-22016333611-1",
-    "runId": "22016333611",
+    "runFolder": "20260214T152806Z-22019776127-1",
+    "runId": "22019776127",
     "runAttempt": "1",
-    "generatedAt": "2026-02-14T11:15:08Z",
-    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@92d9b29b47abdda4941331dc1f83594266e50cfb",
-    "path": "artifacts/runs/20260214T111508Z-22016333611-1"
+    "generatedAt": "2026-02-14T15:28:06Z",
+    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@3addc2f23502e5a19e066540525e77cf5446607e",
+    "path": "artifacts/runs/20260214T152806Z-22019776127-1"
   },
   "oldestRun": {
     "runFolder": "20260214T002433Z-22007398683-1",
@@ -21,28 +21,28 @@
     "path": "artifacts/runs/20260214T002433Z-22007398683-1"
   },
   "workflowCounts": {
-    "ae-framework-autopilot": 30
+    "ae-framework-autopilot": 31
   },
   "nodeVersionCounts": {
-    "22": 30
+    "22": 31
   },
   "formalStatusCounts": {
     "csp": {
-      "ran": 1,
+      "ran": 2,
       "tool_not_available": 29
     },
     "tla": {
-      "ran": 2,
+      "ran": 3,
       "failed": 1,
       "tool_not_available": 27
     },
     "smt": {
-      "ran": 4,
+      "ran": 5,
       "solver_not_available": 2,
       "file_not_found": 24
     },
     "alloy": {
-      "ran": 3,
+      "ran": 4,
       "tool_not_available": 27
     }
   },
@@ -51,32 +51,32 @@
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-02-14T11:14:50Z"
+      "timestamp": "2026-02-14T15:27:49Z"
     },
     "tla": {
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-02-14T11:14:56.171Z"
+      "timestamp": "2026-02-14T15:27:54.821Z"
     },
     "smt": {
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-02-14T11:15:08.455Z"
+      "timestamp": "2026-02-14T15:28:06.117Z"
     },
     "alloy": {
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-02-14T11:14:57.691Z"
+      "timestamp": "2026-02-14T15:27:56.167Z"
     }
   },
   "formalDelta": {
     "csp": {
-      "previous": "tool_not_available",
+      "previous": "ran",
       "latest": "ran",
-      "changed": true
+      "changed": false
     },
     "tla": {
       "previous": "ran",
@@ -120,6 +120,47 @@
     "現時点で優先アクションはありません。"
   ],
   "runs": [
+    {
+      "runFolder": "20260214T152806Z-22019776127-1",
+      "runPath": "artifacts/runs/20260214T152806Z-22019776127-1",
+      "runId": "22019776127",
+      "runAttempt": "1",
+      "generatedAt": "2026-02-14T15:28:06Z",
+      "generatedAtMs": 1771082886000,
+      "workflow": "ae-framework-autopilot",
+      "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@3addc2f23502e5a19e066540525e77cf5446607e",
+      "sourceSha": "3addc2f23502e5a19e066540525e77cf5446607e",
+      "node": "22",
+      "pnpm": "10",
+      "totalBytes": 2556674,
+      "fileCount": 333,
+      "formal": {
+        "csp": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-02-14T15:27:49Z"
+        },
+        "tla": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-02-14T15:27:54.821Z"
+        },
+        "smt": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-02-14T15:28:06.117Z"
+        },
+        "alloy": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-02-14T15:27:56.167Z"
+        }
+      }
+    },
     {
       "runFolder": "20260214T111508Z-22016333611-1",
       "runPath": "artifacts/runs/20260214T111508Z-22016333611-1",
