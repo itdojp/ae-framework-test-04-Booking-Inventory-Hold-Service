@@ -1,0 +1,755 @@
+openapi: 3.1.0
+info:
+  title: Booking Inventory Hold Service API
+  version: 0.1.0-draft
+  description: >-
+    BI-SPEC-001 v0.9 に基づく REST API 契約。Hold -> Confirm を中心に
+    Resource Booking と Inventory Reservation を統一的に扱う。
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Resources
+  - name: Items
+  - name: Availability
+  - name: Holds
+  - name: Bookings
+  - name: Reservations
+  - name: Audit
+
+paths:
+  /resources:
+    get:
+      tags: [Resources]
+      summary: List resources
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/ActiveInactiveStatus'
+      responses:
+        '200':
+          description: Resource list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Resources]
+      summary: Create resource (ADMIN)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /resources/{resource_id}:
+    patch:
+      tags: [Resources]
+      summary: Update resource (ADMIN)
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourcePatchRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /items:
+    get:
+      tags: [Items]
+      summary: List inventory items
+      responses:
+        '200':
+          description: Item list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags: [Items]
+      summary: Create inventory item (ADMIN)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItemCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /items/{item_id}:
+    patch:
+      tags: [Items]
+      summary: Update inventory item (ADMIN)
+      parameters:
+        - $ref: '#/components/parameters/ItemId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItemPatchRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /resources/{resource_id}/availability:
+    get:
+      tags: [Availability]
+      summary: Check slot availability for a resource
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - in: query
+          name: start_at
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: end_at
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: granularity_minutes
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: exclude_hold_id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Availability slots
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceAvailabilityResponse'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /items/{item_id}/availability:
+    get:
+      tags: [Availability]
+      summary: Check quantity availability for an item
+      parameters:
+        - $ref: '#/components/parameters/ItemId'
+      responses:
+        '200':
+          description: Quantity availability
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemAvailabilityResponse'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /holds:
+    post:
+      tags: [Holds]
+      summary: Create hold
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HoldCreateRequest'
+      responses:
+        '201':
+          description: Hold created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hold'
+        '409':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /holds/{hold_id}:
+    get:
+      tags: [Holds]
+      summary: Get hold details
+      parameters:
+        - $ref: '#/components/parameters/HoldId'
+      responses:
+        '200':
+          description: Hold detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hold'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /holds/{hold_id}/confirm:
+    post:
+      tags: [Holds]
+      summary: Confirm hold
+      parameters:
+        - $ref: '#/components/parameters/HoldId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Hold confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HoldConfirmResponse'
+        '409':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /holds/{hold_id}/cancel:
+    post:
+      tags: [Holds]
+      summary: Cancel hold
+      parameters:
+        - $ref: '#/components/parameters/HoldId'
+      responses:
+        '200':
+          description: Hold cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hold'
+        '409':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /bookings:
+    get:
+      tags: [Bookings]
+      summary: List bookings
+      parameters:
+        - in: query
+          name: resource_id
+          schema:
+            type: string
+        - in: query
+          name: start_at
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: end_at
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/ConfirmedCancelledStatus'
+      responses:
+        '200':
+          description: Booking list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /bookings/{booking_id}/cancel:
+    post:
+      tags: [Bookings]
+      summary: Cancel booking
+      parameters:
+        - in: path
+          name: booking_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Booking cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /reservations:
+    get:
+      tags: [Reservations]
+      summary: List inventory reservations
+      parameters:
+        - in: query
+          name: item_id
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/ConfirmedCancelledStatus'
+      responses:
+        '200':
+          description: Reservation list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryReservation'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /reservations/{reservation_id}/cancel:
+    post:
+      tags: [Reservations]
+      summary: Cancel inventory reservation
+      parameters:
+        - in: path
+          name: reservation_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reservation cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryReservation'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /audit-logs:
+    get:
+      tags: [Audit]
+      summary: List audit logs
+      parameters:
+        - in: query
+          name: tenant_id
+          schema:
+            type: string
+        - in: query
+          name: actor_user_id
+          schema:
+            type: string
+        - in: query
+          name: action
+          schema:
+            type: string
+        - in: query
+          name: target_type
+          schema:
+            type: string
+        - in: query
+          name: target_id
+          schema:
+            type: string
+        - in: query
+          name: from_at
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: to_at
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+      responses:
+        '200':
+          description: Audit log list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLog'
+        default:
+          $ref: '#/components/responses/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ResourceId:
+      in: path
+      name: resource_id
+      required: true
+      schema:
+        type: string
+    ItemId:
+      in: path
+      name: item_id
+      required: true
+      schema:
+        type: string
+    HoldId:
+      in: path
+      name: hold_id
+      required: true
+      schema:
+        type: string
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: false
+      schema:
+        type: string
+    RequestId:
+      in: header
+      name: X-Request-Id
+      required: false
+      schema:
+        type: string
+
+  responses:
+    Error:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ActiveInactiveStatus:
+      type: string
+      enum: [ACTIVE, INACTIVE]
+
+    HoldStatus:
+      type: string
+      enum: [ACTIVE, CONFIRMED, CANCELLED, EXPIRED]
+
+    HoldLineStatus:
+      type: string
+      enum: [ACTIVE, RELEASED]
+
+    HoldLineKind:
+      type: string
+      enum: [RESOURCE_SLOT, INVENTORY_QTY]
+
+    ConfirmedCancelledStatus:
+      type: string
+      enum: [CONFIRMED, CANCELLED]
+
+    Resource:
+      type: object
+      required: [resource_id, tenant_id, name, timezone, slot_granularity_minutes, min_duration_minutes, max_duration_minutes, status]
+      properties:
+        resource_id: { type: string }
+        tenant_id: { type: string }
+        name: { type: string }
+        timezone: { type: string }
+        slot_granularity_minutes: { type: integer, minimum: 1 }
+        min_duration_minutes: { type: integer, minimum: 1 }
+        max_duration_minutes: { type: integer, minimum: 1 }
+        bookable_hours:
+          type: object
+          additionalProperties: true
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+
+    ResourceCreateRequest:
+      type: object
+      required: [name, timezone, slot_granularity_minutes, min_duration_minutes, max_duration_minutes]
+      properties:
+        name: { type: string }
+        timezone: { type: string }
+        slot_granularity_minutes: { type: integer, minimum: 1 }
+        min_duration_minutes: { type: integer, minimum: 1 }
+        max_duration_minutes: { type: integer, minimum: 1 }
+        bookable_hours:
+          type: object
+          additionalProperties: true
+
+    ResourcePatchRequest:
+      type: object
+      properties:
+        name: { type: string }
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+        slot_granularity_minutes: { type: integer, minimum: 1 }
+        min_duration_minutes: { type: integer, minimum: 1 }
+        max_duration_minutes: { type: integer, minimum: 1 }
+        bookable_hours:
+          type: object
+          additionalProperties: true
+
+    InventoryItem:
+      type: object
+      required: [item_id, tenant_id, name, total_quantity, status]
+      properties:
+        item_id: { type: string }
+        tenant_id: { type: string }
+        name: { type: string }
+        total_quantity: { type: integer, minimum: 0 }
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+
+    InventoryItemCreateRequest:
+      type: object
+      required: [name, total_quantity]
+      properties:
+        name: { type: string }
+        total_quantity: { type: integer, minimum: 0 }
+
+    InventoryItemPatchRequest:
+      type: object
+      required: [total_quantity]
+      properties:
+        total_quantity: { type: integer, minimum: 0 }
+        status:
+          $ref: '#/components/schemas/ActiveInactiveStatus'
+
+    HoldLine:
+      type: object
+      required: [hold_line_id, kind, status, conflict_key]
+      properties:
+        hold_line_id: { type: string }
+        hold_id: { type: string }
+        kind:
+          $ref: '#/components/schemas/HoldLineKind'
+        resource_id: { type: [string, 'null'] }
+        start_at: { type: [string, 'null'], format: date-time }
+        end_at: { type: [string, 'null'], format: date-time }
+        item_id: { type: [string, 'null'] }
+        quantity: { type: [integer, 'null'], minimum: 1 }
+        status:
+          $ref: '#/components/schemas/HoldLineStatus'
+        conflict_key: { type: string }
+
+    Hold:
+      type: object
+      required: [hold_id, tenant_id, created_by_user_id, status, expires_at, created_at, updated_at, lines]
+      properties:
+        hold_id: { type: string }
+        tenant_id: { type: string }
+        created_by_user_id: { type: string }
+        status:
+          $ref: '#/components/schemas/HoldStatus'
+        expires_at: { type: string, format: date-time }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        confirmed_at: { type: [string, 'null'], format: date-time }
+        cancelled_at: { type: [string, 'null'], format: date-time }
+        expired_at: { type: [string, 'null'], format: date-time }
+        idempotency_key: { type: [string, 'null'] }
+        note: { type: [string, 'null'] }
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/HoldLine'
+
+    HoldCreateRequest:
+      type: object
+      required: [expires_in_seconds, lines]
+      properties:
+        expires_in_seconds:
+          type: integer
+          minimum: 60
+          maximum: 3600
+        note:
+          type: string
+        lines:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/HoldCreateResourceLine'
+              - $ref: '#/components/schemas/HoldCreateInventoryLine'
+
+    HoldCreateResourceLine:
+      type: object
+      required: [kind, resource_id, start_at, end_at]
+      properties:
+        kind:
+          type: string
+          const: RESOURCE_SLOT
+        resource_id: { type: string }
+        start_at: { type: string, format: date-time }
+        end_at: { type: string, format: date-time }
+
+    HoldCreateInventoryLine:
+      type: object
+      required: [kind, item_id, quantity]
+      properties:
+        kind:
+          type: string
+          const: INVENTORY_QTY
+        item_id: { type: string }
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 100
+
+    Booking:
+      type: object
+      required: [booking_id, tenant_id, resource_id, start_at, end_at, created_by_user_id, status, created_at, updated_at]
+      properties:
+        booking_id: { type: string }
+        tenant_id: { type: string }
+        resource_id: { type: string }
+        start_at: { type: string, format: date-time }
+        end_at: { type: string, format: date-time }
+        created_by_user_id: { type: string }
+        status:
+          $ref: '#/components/schemas/ConfirmedCancelledStatus'
+        source_hold_id: { type: [string, 'null'] }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        cancelled_at: { type: [string, 'null'], format: date-time }
+
+    InventoryReservation:
+      type: object
+      required: [reservation_id, tenant_id, item_id, quantity, created_by_user_id, status, created_at, updated_at]
+      properties:
+        reservation_id: { type: string }
+        tenant_id: { type: string }
+        item_id: { type: string }
+        quantity: { type: integer, minimum: 1 }
+        created_by_user_id: { type: string }
+        status:
+          $ref: '#/components/schemas/ConfirmedCancelledStatus'
+        source_hold_id: { type: [string, 'null'] }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        cancelled_at: { type: [string, 'null'], format: date-time }
+
+    HoldConfirmResponse:
+      type: object
+      required: [hold_id, status, bookings, reservations]
+      properties:
+        hold_id: { type: string }
+        status:
+          type: string
+          const: CONFIRMED
+        bookings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Booking'
+        reservations:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryReservation'
+
+    ResourceAvailabilitySlot:
+      type: object
+      required: [start_at, end_at, available]
+      properties:
+        start_at: { type: string, format: date-time }
+        end_at: { type: string, format: date-time }
+        available: { type: boolean }
+        reason: { type: [string, 'null'] }
+
+    ResourceAvailabilityResponse:
+      type: object
+      required: [resource_id, range, slots]
+      properties:
+        resource_id: { type: string }
+        range:
+          type: object
+          required: [start_at, end_at]
+          properties:
+            start_at: { type: string, format: date-time }
+            end_at: { type: string, format: date-time }
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceAvailabilitySlot'
+
+    ItemAvailabilityResponse:
+      type: object
+      required: [item_id, total_quantity, reserved_confirmed, reserved_holds, available_quantity]
+      properties:
+        item_id: { type: string }
+        total_quantity: { type: integer, minimum: 0 }
+        reserved_confirmed: { type: integer, minimum: 0 }
+        reserved_holds: { type: integer, minimum: 0 }
+        available_quantity: { type: integer, minimum: 0 }
+
+    AuditLog:
+      type: object
+      required: [audit_id, tenant_id, action, target_type, target_id, created_at]
+      properties:
+        audit_id: { type: string }
+        tenant_id: { type: string }
+        actor_user_id: { type: [string, 'null'] }
+        action: { type: string }
+        target_type: { type: string }
+        target_id: { type: string }
+        payload:
+          type: object
+          additionalProperties: true
+        created_at: { type: string, format: date-time }
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details:
+              type: object
+              additionalProperties: true
