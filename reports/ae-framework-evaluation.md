@@ -1,18 +1,18 @@
 # ae-framework Evaluation Report
 
-- generatedAt: 2026-02-14T10:20:55.329Z
+- generatedAt: 2026-02-14T10:25:44.433Z
 - score: 50 / 100
 - rating: C
-- runCount: 25
-- totalArtifactSizeMB: 41.8
-- autopilotRuns: 25
+- runCount: 26
+- totalArtifactSizeMB: 44.3
+- autopilotRuns: 26
 
 ## Snapshot
 
-- latestRunId: 22015647906
-- latestRunGeneratedAt: 2026-02-14T10:19:32Z
-- latestSource: itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@c18860e3a7946110d11fbab26641d69e76cccdc2
-- latestArtifactPath: artifacts/runs/20260214T101932Z-22015647906-1
+- latestRunId: 22015732416
+- latestRunGeneratedAt: 2026-02-14T10:25:44Z
+- latestSource: itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@57a43f98b3bade8fe85d2b907d793cdfbbb17d8b
+- latestArtifactPath: artifacts/runs/20260214T102543Z-22015732416-1
 
 ## Formal Readiness
 
@@ -27,7 +27,7 @@
 
 - csp: tool_not_available -> tool_not_available (same)
 - tla: tool_not_available -> tool_not_available (same)
-- smt: file_not_found -> solver_not_available (changed)
+- smt: solver_not_available -> solver_not_available (same)
 - alloy: tool_not_available -> tool_not_available (same)
 
 ## Recommended Actions
