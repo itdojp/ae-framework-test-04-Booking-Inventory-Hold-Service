@@ -32,6 +32,13 @@ test('generate-evaluation-report script: run summary から評価レポートを
       smt: { status: 'file_not_found' },
       alloy: { status: 'tool_not_available' }
     },
+    projectFormalInputs: {
+      smt: {
+        inputDir: 'spec/formal/smt',
+        fileCount: 1,
+        files: ['spec/formal/smt/bi-hold-invariants.smt2']
+      }
+    },
     actionItems: ['CSP setup required']
   });
 
@@ -57,5 +64,6 @@ test('generate-evaluation-report script: run summary から評価レポートを
   assert.match(md, /score: 50 \/ 100/);
   assert.match(md, /rating: C/);
   assert.match(md, /latestRunId: 12345/);
+  assert.match(md, /projectSmtInputs: 1/);
   assert.match(md, /CSP setup required/);
 });

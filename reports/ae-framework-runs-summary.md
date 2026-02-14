@@ -1,9 +1,9 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-14T10:04:07.070Z
+- generatedAt: 2026-02-14T10:07:38.485Z
 - runCount: 23
-- totalSize: 39 MB (41133173 bytes)
-- totalFiles: 7422
+- totalSize: 38 MB (40339318 bytes)
+- totalFiles: 7416
 - latestRun: 20260214T100406Z-22015435943-1 (runId=22015435943, generatedAt=2026-02-14T10:04:06Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
@@ -22,19 +22,25 @@
 | smt | file_not_found | 23 |
 | tla | tool_not_available | 23 |
 
+## Project Formal Inputs
+
+- smtInputDir: spec/formal/smt
+- smt2Files: 1
+- spec/formal/smt/bi-hold-invariants.smt2
+
 ## Action Items
 
 - CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。
 - TLA+: `TLA_TOOLS_JAR` を設定し TLC 実行可能状態を作る。
 - Alloy: `ALLOY_JAR` または Alloy CLI を導入する。
-- SMT: 検証対象 `.smt2` ファイルを配置し `verify:smt` 入力を固定する。
+- SMT: `.smt2` は配置済み。`verify:smt` が参照する入力パスを CI で固定する。
 - run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。
 
 ## Recent Runs (latest 20)
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260214T100406Z-22015435943-1 | 22015435943 | 1 | 2026-02-14T10:04:06Z | 2.4 MB | 329 | 53d837b72e67 | csp:tool_not_available, tla:tool_not_available |
+| 20260214T100406Z-22015435943-1 | 22015435943 | 1 | 2026-02-14T10:04:06Z | 1.7 MB | 323 | 53d837b72e67 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T083717Z-22014307580-1 | 22014307580 | 1 | 2026-02-14T08:37:17Z | 1.7 MB | 323 | ba88da7cd4cd | csp:tool_not_available, tla:tool_not_available |
 | 20260214T083126Z-22014233651-1 | 22014233651 | 1 | 2026-02-14T08:31:26Z | 1.7 MB | 323 | b22bcfcbb351 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T082439Z-22014149956-1 | 22014149956 | 1 | 2026-02-14T08:24:39Z | 1.7 MB | 323 | 7faaa45ad09b | csp:tool_not_available, tla:tool_not_available |

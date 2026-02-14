@@ -95,6 +95,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
   - `spec/state-machines/booking-state-machine.json`
   - `spec/state-machines/reservation-state-machine.json`
 - Formal plan: `spec/formal/bi-hold.formal-plan.json`
+- SMT input seed: `spec/formal/smt/bi-hold-invariants.smt2`
 - Flow: `spec/flow/bi-hold.flow.json`
 - Conformance sample: `configs/conformance/bi-sample-*.json`
 
@@ -108,6 +109,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
   - `npm test`
   - `./scripts/validate-spec-assets.sh`
   - `npm run report:runs`
+  - `npm run report:evaluation`
 - CI:
   - `ae-framework-autopilot` で spec検証 + `npm test` + ae-framework playbook を実行
-  - runアーカイブ後に `reports/ae-framework-runs-summary.{json,md}` を再生成して保存
+  - runアーカイブ後に `reports/ae-framework-runs-summary.{json,md}` と `reports/ae-framework-evaluation.md` を再生成して保存

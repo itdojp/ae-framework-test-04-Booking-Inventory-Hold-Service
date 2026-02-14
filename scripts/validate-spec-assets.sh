@@ -11,6 +11,7 @@ HOLD_SM_FILE="spec/state-machines/hold-state-machine.json"
 BOOKING_SM_FILE="spec/state-machines/booking-state-machine.json"
 RESERVATION_SM_FILE="spec/state-machines/reservation-state-machine.json"
 FORMAL_PLAN_FILE="spec/formal/bi-hold.formal-plan.json"
+SMT_INPUT_DIR="spec/formal/smt"
 FLOW_FILE="spec/flow/bi-hold.flow.json"
 CONFORMANCE_RULES="configs/conformance/bi-sample-rules.json"
 CONFORMANCE_DATA="configs/conformance/bi-sample-data.json"
@@ -60,6 +61,18 @@ echo "[validate-spec-assets] state-machines: OK"
 
 jq -e '.schemaVersion and .metadata and (.variables|type=="array" and length>0) and (.actions|type=="array" and length>0) and (.invariants|type=="array" and length>0)' "$FORMAL_PLAN_FILE" >/dev/null
 echo "[validate-spec-assets] formal-plan: OK"
+
+if [[ ! -d "$SMT_INPUT_DIR" ]]; then
+  echo "[validate-spec-assets] missing directory: $SMT_INPUT_DIR" >&2
+  exit 1
+fi
+
+SMT_FILE_COUNT="$(find "$SMT_INPUT_DIR" -type f -name '*.smt2' | wc -l | tr -d ' ')"
+if [[ "$SMT_FILE_COUNT" -lt 1 ]]; then
+  echo "[validate-spec-assets] smt-inputs: no .smt2 file under $SMT_INPUT_DIR" >&2
+  exit 1
+fi
+echo "[validate-spec-assets] smt-inputs: OK ($SMT_FILE_COUNT files)"
 
 jq -e '.schemaVersion and (.nodes|type=="array" and length>0) and (.edges|type=="array" and length>0)' "$FLOW_FILE" >/dev/null
 echo "[validate-spec-assets] flow: OK"

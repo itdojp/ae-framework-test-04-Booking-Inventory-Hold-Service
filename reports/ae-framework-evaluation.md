@@ -1,10 +1,10 @@
 # ae-framework Evaluation Report
 
-- generatedAt: 2026-02-14T10:04:07.103Z
+- generatedAt: 2026-02-14T10:07:38.653Z
 - score: 50 / 100
 - rating: C
 - runCount: 23
-- totalArtifactSizeMB: 39.2
+- totalArtifactSizeMB: 38.5
 - autopilotRuns: 23
 
 ## Snapshot
@@ -17,6 +17,7 @@
 ## Formal Readiness
 
 - readyTools: 0 / 4
+- projectSmtInputs: 1
 - csp: tool_not_available
 - tla: tool_not_available
 - smt: file_not_found
@@ -27,5 +28,5 @@
 - CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。
 - TLA+: `TLA_TOOLS_JAR` を設定し TLC 実行可能状態を作る。
 - Alloy: `ALLOY_JAR` または Alloy CLI を導入する。
-- SMT: 検証対象 `.smt2` ファイルを配置し `verify:smt` 入力を固定する。
+- SMT: `.smt2` は配置済み。`verify:smt` が参照する入力パスを CI で固定する。
 - run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。

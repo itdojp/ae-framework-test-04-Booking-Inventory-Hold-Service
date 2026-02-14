@@ -16,6 +16,7 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
   const runsDir = path.join(tmp, 'artifacts', 'runs');
   const outJson = path.join(tmp, 'reports', 'summary.json');
   const outMd = path.join(tmp, 'reports', 'summary.md');
+  const smtInputDir = path.join(tmp, 'spec', 'formal', 'smt');
 
   const runA = path.join(runsDir, '20260214T060000Z-100-1');
   const runB = path.join(runsDir, '20260214T070000Z-101-1');
@@ -60,6 +61,13 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
     ran: false,
     timestamp: '2026-02-14T07:00:12Z'
   });
+  writeJson(path.join(runB, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'smt-summary.json'), {
+    status: 'file_not_found',
+    ran: false,
+    timestamp: '2026-02-14T07:00:13Z'
+  });
+  fs.mkdirSync(smtInputDir, { recursive: true });
+  fs.writeFileSync(path.join(smtInputDir, 'bi-hold-invariants.smt2'), '(set-logic QF_LIA)\n', 'utf8');
 
   const testFile = fileURLToPath(import.meta.url);
   const repoRoot = path.resolve(path.dirname(testFile), '..');
@@ -72,7 +80,8 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
       RUNS_DIR: runsDir,
       OUT_JSON: outJson,
       OUT_MD: outMd,
-      MAX_ROWS: '10'
+      MAX_ROWS: '10',
+      SMT_INPUT_DIR: smtInputDir
     },
     encoding: 'utf8'
   });
@@ -90,13 +99,17 @@ test('generate-run-summary script: run-manifest 群から summary を生成す�
   assert.equal(summary.formalStatusCounts.csp.tool_not_available, 1);
   assert.equal(summary.formalStatusCounts.csp.passed, 1);
   assert.equal(summary.formalStatusCounts.tla.tool_not_available, 2);
+  assert.equal(summary.formalStatusCounts.smt.file_not_found, 1);
+  assert.equal(summary.projectFormalInputs.smt.fileCount, 1);
   assert.ok(Array.isArray(summary.actionItems));
   assert.ok(summary.actionItems.length >= 1);
   assert.match(summary.actionItems.join('\n'), /TLA\+/);
+  assert.match(summary.actionItems.join('\n'), /参照する入力パスを CI で固定/);
 
   const md = fs.readFileSync(outMd, 'utf8');
   assert.match(md, /ae-framework Run Summary/);
   assert.match(md, /Formal Status Counts/);
+  assert.match(md, /Project Formal Inputs/);
   assert.match(md, /Action Items/);
   assert.match(md, /csp:passed/);
   assert.match(md, /20260214T070000Z-101-1/);

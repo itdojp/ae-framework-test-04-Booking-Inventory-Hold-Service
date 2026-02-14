@@ -6,6 +6,7 @@ const runsDir = path.resolve(cwd, process.env.RUNS_DIR ?? 'artifacts/runs');
 const outJsonPath = path.resolve(cwd, process.env.OUT_JSON ?? 'reports/ae-framework-runs-summary.json');
 const outMdPath = path.resolve(cwd, process.env.OUT_MD ?? 'reports/ae-framework-runs-summary.md');
 const maxRows = Number(process.env.MAX_ROWS ?? 20);
+const smtInputDir = path.resolve(cwd, process.env.SMT_INPUT_DIR ?? 'spec/formal/smt');
 const formalToolFiles = {
   csp: 'csp-summary.json',
   tla: 'tla-summary.json',
@@ -58,6 +59,26 @@ function walkDirSizeAndFiles(rootDir) {
   return { totalBytes, fileCount };
 }
 
+function listFilesByExtension(rootDir, extension) {
+  if (!fs.existsSync(rootDir)) return [];
+  const files = [];
+  const stack = [rootDir];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    const entries = fs.readdirSync(current, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(fullPath);
+      } else if (entry.isFile() && entry.name.endsWith(extension)) {
+        files.push(path.relative(cwd, fullPath));
+      }
+    }
+  }
+  files.sort();
+  return files;
+}
+
 function parseFormalSummaries(runPath) {
   const formalDir = path.join(runPath, 'ae-framework-artifacts', 'hermetic-reports', 'formal');
   if (!fs.existsSync(formalDir)) return {};
@@ -75,6 +96,17 @@ function parseFormalSummaries(runPath) {
     };
   }
   return summary;
+}
+
+function collectProjectFormalInputs() {
+  const smtFiles = listFilesByExtension(smtInputDir, '.smt2');
+  return {
+    smt: {
+      inputDir: path.relative(cwd, smtInputDir),
+      fileCount: smtFiles.length,
+      files: smtFiles.slice(0, 20)
+    }
+  };
 }
 
 function parseRunDirectories(dirPath) {
@@ -151,6 +183,7 @@ function formalStatusCounts(runs) {
 function buildActionItems(summary) {
   const items = [];
   const latestFormal = summary.latestFormal ?? {};
+  const smtFileCount = summary.projectFormalInputs?.smt?.fileCount ?? 0;
   if (latestFormal.csp?.status === 'tool_not_available') {
     items.push('CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。');
   }
@@ -161,7 +194,11 @@ function buildActionItems(summary) {
     items.push('Alloy: `ALLOY_JAR` または Alloy CLI を導入する。');
   }
   if (latestFormal.smt?.status === 'file_not_found') {
-    items.push('SMT: 検証対象 `.smt2` ファイルを配置し `verify:smt` 入力を固定する。');
+    if (smtFileCount > 0) {
+      items.push('SMT: `.smt2` は配置済み。`verify:smt` が参照する入力パスを CI で固定する。');
+    } else {
+      items.push('SMT: 検証対象 `.smt2` ファイルを配置し `verify:smt` 入力を固定する。');
+    }
   }
   if (summary.runCount >= 20) {
     items.push('run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。');
@@ -177,6 +214,7 @@ function buildSummary(runs) {
   const totalFiles = runs.reduce((acc, run) => acc + run.fileCount, 0);
   const latest = runs[0] ?? null;
   const oldest = runs.length > 0 ? runs[runs.length - 1] : null;
+  const projectFormalInputs = collectProjectFormalInputs();
 
   return {
     generatedAt: new Date().toISOString(),
@@ -208,6 +246,7 @@ function buildSummary(runs) {
     nodeVersionCounts: countBy(runs, (run) => run.node),
     formalStatusCounts: formalStatusCounts(runs),
     latestFormal: latest?.formal ?? {},
+    projectFormalInputs,
     actionItems: [],
     runs
   };
@@ -257,6 +296,15 @@ function buildMarkdown(summary, limit) {
   }
   if (formalRowCount === 0) {
     lines.push('| (none) | (none) | 0 |');
+  }
+
+  lines.push('');
+  lines.push('## Project Formal Inputs');
+  lines.push('');
+  lines.push(`- smtInputDir: ${summary.projectFormalInputs?.smt?.inputDir ?? '-'}`);
+  lines.push(`- smt2Files: ${summary.projectFormalInputs?.smt?.fileCount ?? 0}`);
+  for (const filePath of summary.projectFormalInputs?.smt?.files ?? []) {
+    lines.push(`- ${filePath}`);
   }
 
   lines.push('');

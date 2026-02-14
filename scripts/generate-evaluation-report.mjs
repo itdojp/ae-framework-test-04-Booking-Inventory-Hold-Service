@@ -55,6 +55,7 @@ function buildEvaluation(summary) {
     latestRun,
     workflowCount,
     formalReady: formal,
+    projectSmtInputCount: Number(summary.projectFormalInputs?.smt?.fileCount ?? 0),
     actionItems: Array.isArray(summary.actionItems) ? summary.actionItems : []
   };
 }
@@ -86,6 +87,7 @@ function renderMarkdown(evaluation, summary) {
   lines.push('## Formal Readiness');
   lines.push('');
   lines.push(`- readyTools: ${evaluation.formalReady.ready} / ${evaluation.formalReady.total}`);
+  lines.push(`- projectSmtInputs: ${evaluation.projectSmtInputCount}`);
   lines.push(`- csp: ${summary.latestFormal?.csp?.status ?? 'unknown'}`);
   lines.push(`- tla: ${summary.latestFormal?.tla?.status ?? 'unknown'}`);
   lines.push(`- smt: ${summary.latestFormal?.smt?.status ?? 'unknown'}`);
