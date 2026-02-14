@@ -70,9 +70,38 @@ jobs:
         run: pnpm run verify:csp -- --file spec/csp/cspx-smoke.cspm --mode typecheck
         continue-on-error: true
 
+      - name: Setup SMT solver (cvc5/z3)
+        run: |
+          set -euo pipefail
+          solver="none"
+          if command -v cvc5 >/dev/null 2>&1; then
+            solver="cvc5"
+          elif command -v z3 >/dev/null 2>&1; then
+            solver="z3"
+          else
+            sudo apt-get update
+            sudo apt-get install -y cvc5 || true
+            if command -v cvc5 >/dev/null 2>&1; then
+              solver="cvc5"
+            else
+              sudo apt-get install -y z3 || true
+              if command -v z3 >/dev/null 2>&1; then
+                solver="z3"
+              fi
+            fi
+          fi
+          echo "SMT_SOLVER=${solver}" >> "$GITHUB_ENV"
+          echo "SMT solver selected: ${solver}"
+
       - name: Run formal smoke (SMT input binding)
         working-directory: .tools/ae-framework
-        run: pnpm run verify:smt -- --solver=cvc5 --file "$GITHUB_WORKSPACE/spec/formal/smt/bi-hold-invariants.smt2"
+        run: |
+          solver="${SMT_SOLVER:-none}"
+          if [ "$solver" = "none" ]; then
+            echo "No SMT solver available; run verify:smt with cvc5 to keep status observable."
+            solver="cvc5"
+          fi
+          pnpm run verify:smt -- --solver="$solver" --file "$GITHUB_WORKSPACE/spec/formal/smt/bi-hold-invariants.smt2"
         continue-on-error: true
 
       - name: Collect run artifacts
