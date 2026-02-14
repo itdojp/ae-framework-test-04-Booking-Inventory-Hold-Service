@@ -205,4 +205,5 @@ export function validateAuditLogsQuery(query) {
   optionalString(query.action, 'action', 'INVALID_AUDIT_QUERY');
   optionalString(query.target_type, 'target_type', 'INVALID_AUDIT_QUERY');
   optionalString(query.target_id, 'target_id', 'INVALID_AUDIT_QUERY');
+  optionalString(query.request_id, 'request_id', 'INVALID_AUDIT_QUERY');
 }

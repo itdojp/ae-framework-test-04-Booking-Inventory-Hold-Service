@@ -394,6 +394,10 @@ paths:
           schema:
             type: string
         - in: query
+          name: request_id
+          schema:
+            type: string
+        - in: query
           name: from_at
           schema:
             type: string
@@ -738,6 +742,7 @@ components:
         payload:
           type: object
           additionalProperties: true
+        request_id: { type: [string, 'null'] }
         created_at: { type: string, format: date-time }
 
     ErrorResponse:

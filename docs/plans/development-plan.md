@@ -59,7 +59,9 @@
     - `PATCH /resources/{resource_id}` / `PATCH /items/{item_id}` を API 実装
     - hold 作成時 `Idempotency-Key` ヘッダを受理
     - `GET /api/v1/audit-logs` を追加（監査ログの検索・制限取得）
+    - `X-Tenant-Id` 指定時のテナント境界制御（クロステナントは 404）
+    - `X-Request-Id` を監査ログへ保存し `request_id` で検索可能化
 - テスト:
   - 受入基準 + 追加ケースを `tests/booking-inventory-engine.test.js` に実装
   - API スモーク/永続化/入力検証/patch/idempotency/audit を server テストに追加
-  - `npm test` 19/19 pass
+  - `npm test` 20/20 pass

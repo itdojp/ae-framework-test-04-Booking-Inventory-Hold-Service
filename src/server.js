@@ -111,9 +111,76 @@ function optionalStatus(status) {
   return status;
 }
 
+function headerValue(value) {
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value) && typeof value[0] === 'string') return value[0];
+  return undefined;
+}
+
+function getRequestContext(req) {
+  const role = headerValue(req.headers['x-user-role']);
+  return {
+    tenant_id: headerValue(req.headers['x-tenant-id']) ?? null,
+    user_id: headerValue(req.headers['x-user-id']) ?? null,
+    role: role ?? null,
+    is_admin: role === 'ADMIN',
+    request_id: headerValue(req.headers['x-request-id']) ?? null
+  };
+}
+
+function ensureAdminIfRoleProvided(context) {
+  if (context.role && !context.is_admin) {
+    throw new DomainError('FORBIDDEN', 'admin role required', 403);
+  }
+}
+
+function ensureTenantMatchForCreate(context, tenant_id) {
+  if (context.tenant_id && context.tenant_id !== tenant_id) {
+    throw new DomainError('FORBIDDEN', 'tenant mismatch', 403, {
+      tenant_id,
+      auth_tenant_id: context.tenant_id
+    });
+  }
+}
+
+function ensureActorMatch(context, actor_user_id) {
+  if (context.user_id && actor_user_id && context.user_id !== actor_user_id) {
+    throw new DomainError('FORBIDDEN', 'actor_user_id mismatch', 403, {
+      actor_user_id,
+      auth_user_id: context.user_id
+    });
+  }
+}
+
+function resolveActorUserId(context, actor_user_id) {
+  if (context.user_id) {
+    ensureActorMatch(context, actor_user_id);
+    return context.user_id;
+  }
+  return actor_user_id;
+}
+
+function resolveIsAdmin(context, is_admin) {
+  if (context.role) {
+    return context.is_admin;
+  }
+  return Boolean(is_admin);
+}
+
+function ensureEntityForTenant(entity, { code, message, idField, idValue, tenant_id }) {
+  if (!entity) {
+    throw new DomainError(code, message, 404, { [idField]: idValue });
+  }
+  if (tenant_id && entity.tenant_id !== tenant_id) {
+    throw new DomainError(code, message, 404, { [idField]: idValue });
+  }
+  return entity;
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? '/', 'http://localhost');
+    const context = getRequestContext(req);
     const matched = parsePath(url.pathname);
     if (!matched) {
       sendJson(res, 404, {
@@ -132,13 +199,23 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (matched.route === 'resources' && req.method === 'GET') {
-      sendJson(res, 200, engine.listResources({ status: optionalStatus(url.searchParams.get('status')) }));
+      const status = optionalStatus(url.searchParams.get('status'));
+      if (status && !['ACTIVE', 'INACTIVE'].includes(status)) {
+        throw new DomainError('INVALID_QUERY', 'status query is invalid for resources', 400, { status });
+      }
+      let resources = engine.listResources({ status });
+      if (context.tenant_id) {
+        resources = resources.filter((resource) => resource.tenant_id === context.tenant_id);
+      }
+      sendJson(res, 200, resources);
       return;
     }
 
     if (matched.route === 'resources' && req.method === 'POST') {
       const body = await readJson(req);
       validateCreateResourceBody(body);
+      ensureAdminIfRoleProvided(context);
+      ensureTenantMatchForCreate(context, body.tenant_id);
       const resource = await runMutation(() => engine.createResource(body));
       sendJson(res, 201, resource);
       return;
@@ -154,6 +231,13 @@ const server = http.createServer(async (req, res) => {
         exclude_hold_id: url.searchParams.get('exclude_hold_id') ?? undefined
       };
       validateResourceAvailabilityQuery(query);
+      ensureEntityForTenant(engine.resources.get(matched.params.resource_id), {
+        code: 'RESOURCE_NOT_FOUND',
+        message: 'resource not found',
+        idField: 'resource_id',
+        idValue: matched.params.resource_id,
+        tenant_id: context.tenant_id
+      });
       sendJson(res, 200, engine.getResourceAvailability(matched.params.resource_id, query));
       return;
     }
@@ -161,8 +245,19 @@ const server = http.createServer(async (req, res) => {
     if (matched.route === 'resourcePatch' && req.method === 'PATCH') {
       const body = await readJson(req);
       validatePatchResourceBody(body);
+      ensureAdminIfRoleProvided(context);
+      ensureEntityForTenant(engine.resources.get(matched.params.resource_id), {
+        code: 'RESOURCE_NOT_FOUND',
+        message: 'resource not found',
+        idField: 'resource_id',
+        idValue: matched.params.resource_id,
+        tenant_id: context.tenant_id
+      });
       const resource = await runMutation(() =>
-        engine.updateResource(matched.params.resource_id, body)
+        engine.updateResource(matched.params.resource_id, body, {
+          actor_user_id: context.user_id,
+          request_id: context.request_id
+        })
       );
       sendJson(res, 200, resource);
       return;
@@ -173,19 +268,32 @@ const server = http.createServer(async (req, res) => {
       if (status && !['ACTIVE', 'INACTIVE'].includes(status)) {
         throw new DomainError('INVALID_QUERY', 'status query is invalid for items', 400, { status });
       }
-      sendJson(res, 200, engine.listItems({ status }));
+      let items = engine.listItems({ status });
+      if (context.tenant_id) {
+        items = items.filter((item) => item.tenant_id === context.tenant_id);
+      }
+      sendJson(res, 200, items);
       return;
     }
 
     if (matched.route === 'items' && req.method === 'POST') {
       const body = await readJson(req);
       validateCreateItemBody(body);
+      ensureAdminIfRoleProvided(context);
+      ensureTenantMatchForCreate(context, body.tenant_id);
       const item = await runMutation(() => engine.createItem(body));
       sendJson(res, 201, item);
       return;
     }
 
     if (matched.route === 'itemAvailability' && req.method === 'GET') {
+      ensureEntityForTenant(engine.items.get(matched.params.item_id), {
+        code: 'ITEM_NOT_FOUND',
+        message: 'item not found',
+        idField: 'item_id',
+        idValue: matched.params.item_id,
+        tenant_id: context.tenant_id
+      });
       sendJson(res, 200, engine.getItemAvailability(matched.params.item_id));
       return;
     }
@@ -193,7 +301,20 @@ const server = http.createServer(async (req, res) => {
     if (matched.route === 'itemPatch' && req.method === 'PATCH') {
       const body = await readJson(req);
       validatePatchItemBody(body);
-      const item = await runMutation(() => engine.updateItem(matched.params.item_id, body));
+      ensureAdminIfRoleProvided(context);
+      ensureEntityForTenant(engine.items.get(matched.params.item_id), {
+        code: 'ITEM_NOT_FOUND',
+        message: 'item not found',
+        idField: 'item_id',
+        idValue: matched.params.item_id,
+        tenant_id: context.tenant_id
+      });
+      const item = await runMutation(() =>
+        engine.updateItem(matched.params.item_id, body, {
+          actor_user_id: context.user_id,
+          request_id: context.request_id
+        })
+      );
       sendJson(res, 200, item);
       return;
     }
@@ -201,12 +322,16 @@ const server = http.createServer(async (req, res) => {
     if (matched.route === 'holds' && req.method === 'POST') {
       const body = await readJson(req);
       validateCreateHoldBody(body);
+      ensureTenantMatchForCreate(context, body.tenant_id);
+      ensureActorMatch(context, body.created_by_user_id);
       const headerIdempotencyKey = req.headers['idempotency-key'];
       const holdInput = {
         ...body,
+        created_by_user_id: context.user_id ?? body.created_by_user_id,
         idempotency_key:
           body.idempotency_key ??
-          (typeof headerIdempotencyKey === 'string' ? headerIdempotencyKey : undefined)
+          (typeof headerIdempotencyKey === 'string' ? headerIdempotencyKey : undefined),
+        request_id: context.request_id ?? undefined
       };
       const hold = await runMutation(() => engine.createHold(holdInput));
       sendJson(res, 201, hold);
@@ -214,15 +339,29 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (matched.route === 'holdGet' && req.method === 'GET') {
-      sendJson(res, 200, engine.getHold(matched.params.hold_id));
+      const hold = ensureEntityForTenant(engine.holds.get(matched.params.hold_id), {
+        code: 'HOLD_NOT_FOUND',
+        message: 'hold not found',
+        idField: 'hold_id',
+        idValue: matched.params.hold_id,
+        tenant_id: context.tenant_id
+      });
+      sendJson(res, 200, structuredClone(hold));
       return;
     }
 
     if (matched.route === 'holdConfirm' && req.method === 'POST') {
       const body = await readJson(req);
       validateConfirmBody(body);
+      ensureEntityForTenant(engine.holds.get(matched.params.hold_id), {
+        code: 'HOLD_NOT_FOUND',
+        message: 'hold not found',
+        idField: 'hold_id',
+        idValue: matched.params.hold_id,
+        tenant_id: context.tenant_id
+      });
       const result = await runMutation(() =>
-        engine.confirmHold({ hold_id: matched.params.hold_id, ...body })
+        engine.confirmHold({ hold_id: matched.params.hold_id, ...body, request_id: context.request_id ?? undefined })
       );
       sendJson(res, 200, result);
       return;
@@ -231,8 +370,21 @@ const server = http.createServer(async (req, res) => {
     if (matched.route === 'holdCancel' && req.method === 'POST') {
       const body = await readJson(req);
       validateCancelBody(body, 'INVALID_HOLD_CANCEL_REQUEST');
+      ensureEntityForTenant(engine.holds.get(matched.params.hold_id), {
+        code: 'HOLD_NOT_FOUND',
+        message: 'hold not found',
+        idField: 'hold_id',
+        idValue: matched.params.hold_id,
+        tenant_id: context.tenant_id
+      });
       const result = await runMutation(() =>
-        engine.cancelHold({ hold_id: matched.params.hold_id, ...body })
+        engine.cancelHold({
+          hold_id: matched.params.hold_id,
+          ...body,
+          actor_user_id: resolveActorUserId(context, body.actor_user_id),
+          is_admin: resolveIsAdmin(context, body.is_admin),
+          request_id: context.request_id ?? undefined
+        })
       );
       sendJson(res, 200, result);
       return;
@@ -243,24 +395,37 @@ const server = http.createServer(async (req, res) => {
       if (status && !['CONFIRMED', 'CANCELLED'].includes(status)) {
         throw new DomainError('INVALID_QUERY', 'status query is invalid for bookings', 400, { status });
       }
-      sendJson(
-        res,
-        200,
-        engine.listBookings({
-          resource_id: url.searchParams.get('resource_id') ?? undefined,
-          start_at: url.searchParams.get('start_at') ?? undefined,
-          end_at: url.searchParams.get('end_at') ?? undefined,
-          status
-        })
-      );
+      let bookings = engine.listBookings({
+        resource_id: url.searchParams.get('resource_id') ?? undefined,
+        start_at: url.searchParams.get('start_at') ?? undefined,
+        end_at: url.searchParams.get('end_at') ?? undefined,
+        status
+      });
+      if (context.tenant_id) {
+        bookings = bookings.filter((booking) => booking.tenant_id === context.tenant_id);
+      }
+      sendJson(res, 200, bookings);
       return;
     }
 
     if (matched.route === 'bookingCancel' && req.method === 'POST') {
       const body = await readJson(req);
       validateCancelBody(body, 'INVALID_BOOKING_CANCEL_REQUEST');
+      ensureEntityForTenant(engine.bookings.get(matched.params.booking_id), {
+        code: 'BOOKING_NOT_FOUND',
+        message: 'booking not found',
+        idField: 'booking_id',
+        idValue: matched.params.booking_id,
+        tenant_id: context.tenant_id
+      });
       const result = await runMutation(() =>
-        engine.cancelBooking({ booking_id: matched.params.booking_id, ...body })
+        engine.cancelBooking({
+          booking_id: matched.params.booking_id,
+          ...body,
+          actor_user_id: resolveActorUserId(context, body.actor_user_id),
+          is_admin: resolveIsAdmin(context, body.is_admin),
+          request_id: context.request_id ?? undefined
+        })
       );
       sendJson(res, 200, result);
       return;
@@ -271,22 +436,35 @@ const server = http.createServer(async (req, res) => {
       if (status && !['CONFIRMED', 'CANCELLED'].includes(status)) {
         throw new DomainError('INVALID_QUERY', 'status query is invalid for reservations', 400, { status });
       }
-      sendJson(
-        res,
-        200,
-        engine.listReservations({
-          item_id: url.searchParams.get('item_id') ?? undefined,
-          status
-        })
-      );
+      let reservations = engine.listReservations({
+        item_id: url.searchParams.get('item_id') ?? undefined,
+        status
+      });
+      if (context.tenant_id) {
+        reservations = reservations.filter((reservation) => reservation.tenant_id === context.tenant_id);
+      }
+      sendJson(res, 200, reservations);
       return;
     }
 
     if (matched.route === 'reservationCancel' && req.method === 'POST') {
       const body = await readJson(req);
       validateCancelBody(body, 'INVALID_RESERVATION_CANCEL_REQUEST');
+      ensureEntityForTenant(engine.reservations.get(matched.params.reservation_id), {
+        code: 'RESERVATION_NOT_FOUND',
+        message: 'reservation not found',
+        idField: 'reservation_id',
+        idValue: matched.params.reservation_id,
+        tenant_id: context.tenant_id
+      });
       const result = await runMutation(() =>
-        engine.cancelReservation({ reservation_id: matched.params.reservation_id, ...body })
+        engine.cancelReservation({
+          reservation_id: matched.params.reservation_id,
+          ...body,
+          actor_user_id: resolveActorUserId(context, body.actor_user_id),
+          is_admin: resolveIsAdmin(context, body.is_admin),
+          request_id: context.request_id ?? undefined
+        })
       );
       sendJson(res, 200, result);
       return;
@@ -299,10 +477,17 @@ const server = http.createServer(async (req, res) => {
         action: url.searchParams.get('action') ?? undefined,
         target_type: url.searchParams.get('target_type') ?? undefined,
         target_id: url.searchParams.get('target_id') ?? undefined,
+        request_id: url.searchParams.get('request_id') ?? undefined,
         from_at: url.searchParams.get('from_at') ?? undefined,
         to_at: url.searchParams.get('to_at') ?? undefined,
         limit: url.searchParams.has('limit') ? Number(url.searchParams.get('limit')) : undefined
       };
+      if (context.tenant_id) {
+        if (query.tenant_id && query.tenant_id !== context.tenant_id) {
+          throw new DomainError('FORBIDDEN', 'tenant mismatch', 403);
+        }
+        query.tenant_id = context.tenant_id;
+      }
       validateAuditLogsQuery(query);
       sendJson(res, 200, engine.listAuditLogs(query));
       return;
@@ -310,6 +495,7 @@ const server = http.createServer(async (req, res) => {
 
     if (matched.route === 'systemExpire' && req.method === 'POST') {
       const body = await readJson(req);
+      ensureAdminIfRoleProvided(context);
       const expired = await runMutation(() =>
         engine.expireHolds({ now: body.now ? new Date(body.now) : undefined })
       );

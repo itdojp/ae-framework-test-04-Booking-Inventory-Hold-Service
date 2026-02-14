@@ -90,7 +90,16 @@ export class BookingInventoryEngine {
     return `${prefix}${this.sequence[key]}`;
   }
 
-  addAudit({ tenant_id, actor_user_id, action, target_type, target_id, payload = {}, now }) {
+  addAudit({
+    tenant_id,
+    actor_user_id,
+    action,
+    target_type,
+    target_id,
+    payload = {},
+    request_id = null,
+    now
+  }) {
     const audit = {
       audit_id: this.nextId('A', 'audit'),
       tenant_id,
@@ -99,6 +108,7 @@ export class BookingInventoryEngine {
       target_type,
       target_id,
       payload,
+      request_id,
       created_at: toIso(now)
     };
     this.auditLogs.push(audit);
@@ -177,7 +187,11 @@ export class BookingInventoryEngine {
     return clone(item);
   }
 
-  updateResource(resource_id, patch, { now = this.clock(), actor_user_id = null } = {}) {
+  updateResource(
+    resource_id,
+    patch,
+    { now = this.clock(), actor_user_id = null, request_id = null } = {}
+  ) {
     const resource = this.resources.get(resource_id);
     if (!resource) {
       throw new DomainError('RESOURCE_NOT_FOUND', 'resource not found', 404, { resource_id });
@@ -215,12 +229,13 @@ export class BookingInventoryEngine {
       target_type: 'RESOURCE',
       target_id: resource.resource_id,
       payload: clone(patch),
+      request_id,
       now
     });
     return clone(resource);
   }
 
-  updateItem(item_id, patch, { now = this.clock(), actor_user_id = null } = {}) {
+  updateItem(item_id, patch, { now = this.clock(), actor_user_id = null, request_id = null } = {}) {
     const item = this.items.get(item_id);
     if (!item) {
       throw new DomainError('ITEM_NOT_FOUND', 'item not found', 404, { item_id });
@@ -277,6 +292,7 @@ export class BookingInventoryEngine {
       target_type: 'ITEM',
       target_id: item.item_id,
       payload: clone(patch),
+      request_id,
       now
     });
     return clone(item);
@@ -411,6 +427,7 @@ export class BookingInventoryEngine {
     const expires_in_seconds = input.expires_in_seconds;
     const lines = Array.isArray(input.lines) ? input.lines : [];
     const idempotency_key = input.idempotency_key ?? null;
+    const request_id = input.request_id ?? null;
 
     if (!tenant_id || !created_by_user_id) {
       throw new DomainError('INVALID_HOLD_REQUEST', 'tenant_id and created_by_user_id are required', 400);
@@ -583,6 +600,7 @@ export class BookingInventoryEngine {
       target_type: 'HOLD',
       target_id: hold.hold_id,
       payload: { line_count: lines.length },
+      request_id,
       now
     });
     return clone(hold);
@@ -605,7 +623,7 @@ export class BookingInventoryEngine {
     };
   }
 
-  expireHoldInternal(hold, now) {
+  expireHoldInternal(hold, now, { request_id = null } = {}) {
     const nowIso = toIso(now);
     hold.status = 'EXPIRED';
     hold.expired_at = nowIso;
@@ -617,6 +635,7 @@ export class BookingInventoryEngine {
       action: 'HOLD_EXPIRE',
       target_type: 'HOLD',
       target_id: hold.hold_id,
+      request_id,
       now
     });
   }
@@ -638,7 +657,7 @@ export class BookingInventoryEngine {
       });
     }
     if (new Date(now).getTime() >= new Date(hold.expires_at).getTime()) {
-      this.expireHoldInternal(hold, now);
+      this.expireHoldInternal(hold, now, { request_id: input.request_id ?? null });
       throw new DomainError('HOLD_EXPIRED', 'hold is expired', 409, { hold_id });
     }
 
@@ -709,6 +728,7 @@ export class BookingInventoryEngine {
       action: 'HOLD_CONFIRM',
       target_type: 'HOLD',
       target_id: hold.hold_id,
+      request_id: input.request_id ?? null,
       now
     });
 
@@ -744,6 +764,7 @@ export class BookingInventoryEngine {
       action: 'HOLD_CANCEL',
       target_type: 'HOLD',
       target_id: hold.hold_id,
+      request_id: input.request_id ?? null,
       now
     });
     return clone(hold);
@@ -796,6 +817,7 @@ export class BookingInventoryEngine {
       if (filters.action && audit.action !== filters.action) continue;
       if (filters.target_type && audit.target_type !== filters.target_type) continue;
       if (filters.target_id && audit.target_id !== filters.target_id) continue;
+      if (filters.request_id && audit.request_id !== filters.request_id) continue;
       const createdAtMs = new Date(audit.created_at).getTime();
       if (fromAt !== null && createdAtMs < fromAt) continue;
       if (toAt !== null && createdAtMs > toAt) continue;
@@ -832,6 +854,7 @@ export class BookingInventoryEngine {
       action: 'BOOKING_CANCEL',
       target_type: 'BOOKING',
       target_id: booking.booking_id,
+      request_id: input.request_id ?? null,
       now: input.now ?? this.clock()
     });
     return clone(booking);
@@ -865,6 +888,7 @@ export class BookingInventoryEngine {
       action: 'RESERVATION_CANCEL',
       target_type: 'RESERVATION',
       target_id: reservation.reservation_id,
+      request_id: input.request_id ?? null,
       now: input.now ?? this.clock()
     });
     return clone(reservation);
