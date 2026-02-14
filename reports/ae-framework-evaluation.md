@@ -1,34 +1,34 @@
 # ae-framework Evaluation Report
 
-- generatedAt: 2026-02-14T10:59:37.673Z
+- generatedAt: 2026-02-14T11:07:46.159Z
 - score: 88 / 100
 - rating: A
-- runCount: 28
-- totalArtifactSizeMB: 47.6
-- autopilotRuns: 28
+- runCount: 29
+- totalArtifactSizeMB: 49.3
+- autopilotRuns: 29
 
 ## Snapshot
 
-- latestRunId: 22016137118
-- latestRunGeneratedAt: 2026-02-14T10:59:37Z
-- latestSource: itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@fe74b5e5cf551f700039812ab1beaf53d7fb9fbd
-- latestArtifactPath: artifacts/runs/20260214T105937Z-22016137118-1
+- latestRunId: 22016244105
+- latestRunGeneratedAt: 2026-02-14T11:07:45Z
+- latestSource: itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@6787ed20d80d491cc4ff835f6c06d988660bae3e
+- latestArtifactPath: artifacts/runs/20260214T110745Z-22016244105-1
 
 ## Formal Readiness
 
 - readyTools: 3 / 4
 - projectSmtInputs: 1
 - csp: tool_not_available
-- tla: failed
+- tla: ran
 - smt: ran
 - alloy: ran
 
 ## Formal Delta
 
 - csp: tool_not_available -> tool_not_available (same)
-- tla: tool_not_available -> failed (changed)
+- tla: failed -> ran (changed)
 - smt: ran -> ran (same)
-- alloy: tool_not_available -> ran (changed)
+- alloy: ran -> ran (same)
 
 ## Recommended Actions
 
