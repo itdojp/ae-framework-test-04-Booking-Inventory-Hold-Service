@@ -50,6 +50,12 @@ jobs:
         with:
           version: 10
 
+      - name: Setup Java (formal tools)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
       - name: Run local acceptance tests
         run: npm test
 
@@ -68,6 +74,42 @@ jobs:
       - name: Run formal smoke (CSP typecheck)
         working-directory: .tools/ae-framework
         run: pnpm run verify:csp -- --file spec/csp/cspx-smoke.cspm --mode typecheck
+        continue-on-error: true
+
+      - name: Setup TLA/Alloy assets
+        run: |
+          set -euo pipefail
+          mkdir -p .tools/formal-tools
+
+          curl -fsSL -o .tools/formal-tools/alloy.jar \
+            https://github.com/AlloyTools/org.alloytools.alloy/releases/download/v6.2.0/org.alloytools.alloy.dist.jar || true
+
+          TLA_URL="$(curl -fsSL https://api.github.com/repos/tlaplus/tlaplus/releases/latest \
+            | python3 -c 'import sys, json; d=json.load(sys.stdin); print(next((a.get("browser_download_url","") for a in d.get("assets",[]) if a.get("name")=="tla2tools.jar"), ""))')"
+          if [ -n "$TLA_URL" ]; then
+            curl -fsSL -o .tools/formal-tools/tla2tools.jar "$TLA_URL" || true
+          fi
+
+          if [ -f .tools/formal-tools/tla2tools.jar ]; then
+            echo "TLA_TOOLS_JAR=$GITHUB_WORKSPACE/.tools/formal-tools/tla2tools.jar" >> "$GITHUB_ENV"
+          fi
+          if [ -f .tools/formal-tools/alloy.jar ]; then
+            echo "ALLOY_JAR=$GITHUB_WORKSPACE/.tools/formal-tools/alloy.jar" >> "$GITHUB_ENV"
+            echo 'ALLOY_RUN_CMD=java -jar $ALLOY_JAR exec -q -o - -f {file}' >> "$GITHUB_ENV"
+          fi
+
+          java -version
+          [ -f .tools/formal-tools/tla2tools.jar ] && echo "tla2tools.jar: present" || echo "tla2tools.jar: missing"
+          [ -f .tools/formal-tools/alloy.jar ] && echo "alloy.jar: present" || echo "alloy.jar: missing"
+
+      - name: Run formal smoke (TLA TLC)
+        working-directory: .tools/ae-framework
+        run: pnpm run verify:tla -- --engine=tlc --file spec/formal/10_abstract/KvOnce.tla
+        continue-on-error: true
+
+      - name: Run formal smoke (Alloy)
+        working-directory: .tools/ae-framework
+        run: pnpm run verify:alloy -- --file spec/alloy/Domain.als
         continue-on-error: true
 
       - name: Setup SMT solver (cvc5/z3)

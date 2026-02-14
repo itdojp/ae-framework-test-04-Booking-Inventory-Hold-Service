@@ -46,6 +46,8 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
   - `pnpm install` + `pnpm run build`
   - `pnpm run codex:run` を実行（失敗時も証跡収集は継続）
   - 形式検証の軽量スモーク（CSP typecheck）
+  - TLA/Alloy 用アセット（`tla2tools.jar`, `alloy.jar`）を可能な範囲で自動取得
+  - TLA smoke（TLC）と Alloy smoke を実行
   - SMT solver（`cvc5`/`z3`）を可能な範囲で自動導入し、SMT smoke を実行
   - SMT smoke は入力ファイルを固定（`spec/formal/smt/bi-hold-invariants.smt2`）
 - 生成物を本リポジトリ `artifacts/runs/<run-id>/` へ集約
