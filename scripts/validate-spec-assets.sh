@@ -13,6 +13,7 @@ RESERVATION_SM_FILE="spec/state-machines/reservation-state-machine.json"
 FORMAL_PLAN_FILE="spec/formal/bi-hold.formal-plan.json"
 SMT_INPUT_DIR="spec/formal/smt"
 FLOW_FILE="spec/flow/bi-hold.flow.json"
+ARTIFACT_POLICY_FILE="configs/artifact-retention/policy.json"
 CONFORMANCE_RULES="configs/conformance/bi-sample-rules.json"
 CONFORMANCE_DATA="configs/conformance/bi-sample-data.json"
 CONFORMANCE_CTX="configs/conformance/bi-sample-context.json"
@@ -25,6 +26,7 @@ for f in \
   "$RESERVATION_SM_FILE" \
   "$FORMAL_PLAN_FILE" \
   "$FLOW_FILE" \
+  "$ARTIFACT_POLICY_FILE" \
   "$CONFORMANCE_RULES" \
   "$CONFORMANCE_DATA" \
   "$CONFORMANCE_CTX" \
@@ -76,6 +78,18 @@ echo "[validate-spec-assets] smt-inputs: OK ($SMT_FILE_COUNT files)"
 
 jq -e '.schemaVersion and (.nodes|type=="array" and length>0) and (.edges|type=="array" and length>0)' "$FLOW_FILE" >/dev/null
 echo "[validate-spec-assets] flow: OK"
+
+jq -e '
+  type=="object" and
+  .schemaVersion and
+  (.mode=="keep_all_on_github") and
+  (.preserveAllArtifacts==true) and
+  (.compression|type=="object") and
+  (.review|type=="object") and
+  (.review.lastReviewedAt|type=="string") and
+  (.review.maxAgeDays|type=="number" and .>=1)
+' "$ARTIFACT_POLICY_FILE" >/dev/null
+echo "[validate-spec-assets] artifact-retention-policy: OK"
 
 jq -e 'type=="array" and length>0' "$CONFORMANCE_RULES" >/dev/null
 jq -e 'type=="object"' "$CONFORMANCE_DATA" >/dev/null

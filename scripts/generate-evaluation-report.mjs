@@ -57,6 +57,7 @@ function buildEvaluation(summary) {
     workflowCount,
     formalReady: formal,
     formalDelta: summary.formalDelta ?? {},
+    artifactPolicy: summary.artifactPolicy ?? null,
     projectSmtInputCount: Number(summary.projectFormalInputs?.smt?.fileCount ?? 0),
     actionItems: Array.isArray(summary.actionItems) ? summary.actionItems : []
   };
@@ -94,6 +95,22 @@ function renderMarkdown(evaluation, summary) {
   lines.push(`- tla: ${summary.latestFormal?.tla?.status ?? 'unknown'}`);
   lines.push(`- smt: ${summary.latestFormal?.smt?.status ?? 'unknown'}`);
   lines.push(`- alloy: ${summary.latestFormal?.alloy?.status ?? 'unknown'}`);
+
+  lines.push('');
+  lines.push('## Artifact Retention Policy');
+  lines.push('');
+  if (evaluation.artifactPolicy) {
+    lines.push(`- policyPath: ${evaluation.artifactPolicy.path ?? '-'}`);
+    lines.push(`- configured: ${evaluation.artifactPolicy.configured === true ? 'yes' : 'no'}`);
+    lines.push(`- valid: ${evaluation.artifactPolicy.valid === true ? 'yes' : 'no'}`);
+    lines.push(`- mode: ${evaluation.artifactPolicy.mode ?? '-'}`);
+    lines.push(`- preserveAllArtifacts: ${evaluation.artifactPolicy.preserveAllArtifacts === true ? 'true' : 'false'}`);
+    lines.push(`- lastReviewedAt: ${evaluation.artifactPolicy.review?.lastReviewedAt ?? '-'}`);
+    lines.push(`- reviewMaxAgeDays: ${evaluation.artifactPolicy.review?.maxAgeDays ?? '-'}`);
+    lines.push(`- reviewOverdue: ${evaluation.artifactPolicy.review?.overdue === true ? 'yes' : 'no'}`);
+  } else {
+    lines.push('- policy: (none)');
+  }
 
   lines.push('');
   lines.push('## Formal Delta');

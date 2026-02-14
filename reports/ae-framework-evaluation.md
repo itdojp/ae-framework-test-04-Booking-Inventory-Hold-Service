@@ -1,10 +1,10 @@
 # ae-framework Evaluation Report
 
-- generatedAt: 2026-02-14T11:15:08.954Z
+- generatedAt: 2026-02-14T15:23:04.081Z
 - score: 100 / 100
 - rating: A
 - runCount: 30
-- totalArtifactSizeMB: 51
+- totalArtifactSizeMB: 50.2
 - autopilotRuns: 30
 
 ## Snapshot
@@ -23,6 +23,17 @@
 - smt: ran
 - alloy: ran
 
+## Artifact Retention Policy
+
+- policyPath: configs/artifact-retention/policy.json
+- configured: yes
+- valid: yes
+- mode: keep_all_on_github
+- preserveAllArtifacts: true
+- lastReviewedAt: 2026-02-14
+- reviewMaxAgeDays: 30
+- reviewOverdue: no
+
 ## Formal Delta
 
 - csp: tool_not_available -> ran (changed)
@@ -32,4 +43,4 @@
 
 ## Recommended Actions
 
-- run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。
+- 現時点で優先アクションはありません。

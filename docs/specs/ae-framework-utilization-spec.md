@@ -74,6 +74,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
 - 各 run に `run-manifest.json` を必須配置。
 - Workflow 実行後、`main` では run 生成物を自動コミットし GitHub に保存。
 - PR ではコミットせず、Actions Artifact として保存。
+- 保持/圧縮ポリシーは `configs/artifact-retention/policy.json` で機械可読管理し、`preserveAllArtifacts=true` を維持する。
 
 ### 5.3 run-manifest 最低項目
 
@@ -103,6 +104,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
 - SMT input seed: `spec/formal/smt/bi-hold-invariants.smt2`
 - Flow: `spec/flow/bi-hold.flow.json`
 - Conformance sample: `configs/conformance/bi-sample-*.json`
+- Artifact retention policy: `configs/artifact-retention/policy.json`
 
 ## 8. 実装・検証の現状（P2先行）
 

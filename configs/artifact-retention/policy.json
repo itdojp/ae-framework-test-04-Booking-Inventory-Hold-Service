@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "keep_all_on_github",
+  "preserveAllArtifacts": true,
+  "compression": {
+    "enabled": true,
+    "strategy": "git-pack",
+    "notes": "All intermediate artifacts are preserved in GitHub. Storage efficiency is handled with repository packing and periodic policy review."
+  },
+  "review": {
+    "lastReviewedAt": "2026-02-14",
+    "maxAgeDays": 30
+  }
+}

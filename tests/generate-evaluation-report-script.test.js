@@ -38,6 +38,18 @@ test('generate-evaluation-report script: run summary から評価レポートを
       smt: { previous: 'file_not_found', latest: 'solver_not_available', changed: true },
       alloy: { previous: 'tool_not_available', latest: 'tool_not_available', changed: false }
     },
+    artifactPolicy: {
+      path: 'configs/artifact-retention/policy.json',
+      configured: true,
+      valid: true,
+      mode: 'keep_all_on_github',
+      preserveAllArtifacts: true,
+      review: {
+        lastReviewedAt: '2026-02-14',
+        maxAgeDays: 30,
+        overdue: false
+      }
+    },
     projectFormalInputs: {
       smt: {
         inputDir: 'spec/formal/smt',
@@ -71,6 +83,9 @@ test('generate-evaluation-report script: run summary から評価レポートを
   assert.match(md, /rating: C/);
   assert.match(md, /latestRunId: 12345/);
   assert.match(md, /projectSmtInputs: 1/);
+  assert.match(md, /Artifact Retention Policy/);
+  assert.match(md, /configured: yes/);
+  assert.match(md, /reviewOverdue: no/);
   assert.match(md, /smt: file_not_found -> solver_not_available \(changed\)/);
   assert.match(md, /CSP setup required/);
 });

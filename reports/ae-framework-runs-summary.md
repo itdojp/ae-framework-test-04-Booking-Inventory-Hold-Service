@@ -1,9 +1,9 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-14T11:15:08.922Z
+- generatedAt: 2026-02-14T15:23:03.939Z
 - runCount: 30
-- totalSize: 51 MB (53459013 bytes)
-- totalFiles: 9700
+- totalSize: 50 MB (52666769 bytes)
+- totalFiles: 9694
 - latestRun: 20260214T111508Z-22016333611-1 (runId=22016333611, generatedAt=2026-02-14T11:15:08Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
@@ -43,15 +43,26 @@
 - smt2Files: 1
 - spec/formal/smt/bi-hold-invariants.smt2
 
+## Artifact Retention Policy
+
+- policyPath: configs/artifact-retention/policy.json
+- configured: yes
+- valid: yes
+- mode: keep_all_on_github
+- preserveAllArtifacts: true
+- lastReviewedAt: 2026-02-14
+- reviewMaxAgeDays: 30
+- reviewOverdue: no
+
 ## Action Items
 
-- run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。
+- 現時点で優先アクションはありません。
 
 ## Recent Runs (latest 20)
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260214T111508Z-22016333611-1 | 22016333611 | 1 | 2026-02-14T11:15:08Z | 2.4 MB | 333 | 92d9b29b47ab | csp:ran, tla:ran |
+| 20260214T111508Z-22016333611-1 | 22016333611 | 1 | 2026-02-14T11:15:08Z | 1.7 MB | 327 | 92d9b29b47ab | csp:ran, tla:ran |
 | 20260214T110745Z-22016244105-1 | 22016244105 | 1 | 2026-02-14T11:07:45Z | 1.7 MB | 326 | 6787ed20d80d | csp:tool_not_available, tla:ran |
 | 20260214T105937Z-22016137118-1 | 22016137118 | 1 | 2026-02-14T10:59:37Z | 1.7 MB | 326 | fe74b5e5cf55 | csp:tool_not_available, tla:failed |
 | 20260214T105224Z-22016056764-1 | 22016056764 | 1 | 2026-02-14T10:52:24Z | 1.7 MB | 325 | a5a9f62f87a9 | csp:tool_not_available, tla:tool_not_available |

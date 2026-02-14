@@ -7,6 +7,10 @@ const outJsonPath = path.resolve(cwd, process.env.OUT_JSON ?? 'reports/ae-framew
 const outMdPath = path.resolve(cwd, process.env.OUT_MD ?? 'reports/ae-framework-runs-summary.md');
 const maxRows = Number(process.env.MAX_ROWS ?? 20);
 const smtInputDir = path.resolve(cwd, process.env.SMT_INPUT_DIR ?? 'spec/formal/smt');
+const artifactPolicyPath = path.resolve(
+  cwd,
+  process.env.ARTIFACT_POLICY_FILE ?? 'configs/artifact-retention/policy.json'
+);
 const formalToolFiles = {
   csp: 'csp-summary.json',
   tla: 'tla-summary.json',
@@ -109,6 +113,77 @@ function collectProjectFormalInputs() {
   };
 }
 
+function parseArtifactPolicy() {
+  const relPath = path.relative(cwd, artifactPolicyPath);
+  if (!fs.existsSync(artifactPolicyPath)) {
+    return {
+      path: relPath,
+      configured: false,
+      valid: false,
+      mode: null,
+      preserveAllArtifacts: null,
+      review: {
+        lastReviewedAt: null,
+        maxAgeDays: null,
+        ageDays: null,
+        overdue: null
+      }
+    };
+  }
+
+  const payload = readJson(artifactPolicyPath);
+  if (!payload || typeof payload !== 'object') {
+    return {
+      path: relPath,
+      configured: true,
+      valid: false,
+      mode: null,
+      preserveAllArtifacts: null,
+      review: {
+        lastReviewedAt: null,
+        maxAgeDays: null,
+        ageDays: null,
+        overdue: null
+      }
+    };
+  }
+
+  const mode = typeof payload.mode === 'string' ? payload.mode : null;
+  const preserveAllArtifacts = payload.preserveAllArtifacts === true;
+  const lastReviewedAt = typeof payload.review?.lastReviewedAt === 'string' ? payload.review.lastReviewedAt : null;
+  const maxAgeDaysRaw = Number(payload.review?.maxAgeDays);
+  const maxAgeDays = Number.isFinite(maxAgeDaysRaw) && maxAgeDaysRaw >= 0 ? maxAgeDaysRaw : null;
+  const reviewedAtMs = lastReviewedAt ? Date.parse(lastReviewedAt) : Number.NaN;
+  const reviewAgeDays = Number.isFinite(reviewedAtMs)
+    ? Math.floor((Date.now() - reviewedAtMs) / (1000 * 60 * 60 * 24))
+    : null;
+  const reviewOverdue =
+    Number.isFinite(reviewAgeDays) && Number.isFinite(maxAgeDays)
+      ? reviewAgeDays > maxAgeDays
+      : null;
+
+  const valid =
+    typeof payload.schemaVersion === 'string' &&
+    !!mode &&
+    preserveAllArtifacts === true &&
+    Number.isFinite(maxAgeDays) &&
+    Number.isFinite(reviewAgeDays);
+
+  return {
+    path: relPath,
+    configured: true,
+    valid,
+    mode,
+    preserveAllArtifacts,
+    review: {
+      lastReviewedAt,
+      maxAgeDays,
+      ageDays: Number.isFinite(reviewAgeDays) ? reviewAgeDays : null,
+      overdue: reviewOverdue
+    }
+  };
+}
+
 function parseRunDirectories(dirPath) {
   if (!fs.existsSync(dirPath)) return [];
   const entries = fs.readdirSync(dirPath, { withFileTypes: true });
@@ -199,6 +274,7 @@ function buildActionItems(summary) {
   const items = [];
   const latestFormal = summary.latestFormal ?? {};
   const smtFileCount = summary.projectFormalInputs?.smt?.fileCount ?? 0;
+  const artifactPolicy = summary.artifactPolicy ?? {};
   if (latestFormal.csp?.status === 'tool_not_available') {
     items.push('CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。');
   }
@@ -218,7 +294,13 @@ function buildActionItems(summary) {
     items.push('SMT: z3 または cvc5 を実行環境へ導入する。');
   }
   if (summary.runCount >= 20) {
-    items.push('run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。');
+    if (!artifactPolicy.configured) {
+      items.push('run数が増加しているため、保持/圧縮方針ファイル（`configs/artifact-retention/policy.json`）を整備する。');
+    } else if (!artifactPolicy.valid) {
+      items.push('artifact retention policy が不完全です。`schemaVersion/mode/preserveAllArtifacts/review` を補完する。');
+    } else if (artifactPolicy.review?.overdue === true) {
+      items.push('artifact retention policy のレビュー期限を超過しています。`lastReviewedAt` を更新する。');
+    }
   }
   if (items.length === 0) {
     items.push('現時点で優先アクションはありません。');
@@ -233,6 +315,7 @@ function buildSummary(runs) {
   const previous = runs.length > 1 ? runs[1] : null;
   const oldest = runs.length > 0 ? runs[runs.length - 1] : null;
   const projectFormalInputs = collectProjectFormalInputs();
+  const artifactPolicy = parseArtifactPolicy();
 
   return {
     generatedAt: new Date().toISOString(),
@@ -266,6 +349,7 @@ function buildSummary(runs) {
     latestFormal: latest?.formal ?? {},
     formalDelta: buildFormalDelta(latest?.formal ?? {}, previous?.formal ?? null),
     projectFormalInputs,
+    artifactPolicy,
     actionItems: [],
     runs
   };
@@ -335,6 +419,18 @@ function buildMarkdown(summary, limit) {
   for (const filePath of summary.projectFormalInputs?.smt?.files ?? []) {
     lines.push(`- ${filePath}`);
   }
+
+  lines.push('');
+  lines.push('## Artifact Retention Policy');
+  lines.push('');
+  lines.push(`- policyPath: ${summary.artifactPolicy?.path ?? '-'}`);
+  lines.push(`- configured: ${summary.artifactPolicy?.configured === true ? 'yes' : 'no'}`);
+  lines.push(`- valid: ${summary.artifactPolicy?.valid === true ? 'yes' : 'no'}`);
+  lines.push(`- mode: ${summary.artifactPolicy?.mode ?? '-'}`);
+  lines.push(`- preserveAllArtifacts: ${summary.artifactPolicy?.preserveAllArtifacts === true ? 'true' : 'false'}`);
+  lines.push(`- lastReviewedAt: ${summary.artifactPolicy?.review?.lastReviewedAt ?? '-'}`);
+  lines.push(`- reviewMaxAgeDays: ${summary.artifactPolicy?.review?.maxAgeDays ?? '-'}`);
+  lines.push(`- reviewOverdue: ${summary.artifactPolicy?.review?.overdue === true ? 'yes' : 'no'}`);
 
   lines.push('');
   lines.push('## Action Items');

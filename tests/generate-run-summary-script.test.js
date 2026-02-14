@@ -167,3 +167,92 @@ test('generate-run-summary script: smt solver_not_available のとき導入ア�
   assert.equal(summary.latestFormal.smt.status, 'solver_not_available');
   assert.match(summary.actionItems.join('\n'), /z3 または cvc5/);
 });
+
+test('generate-run-summary script: runCount>=20 かつ保持方針が有効な場合は容量系アクションを抑止する', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'bi-run-summary-retention-'));
+  const runsDir = path.join(tmp, 'artifacts', 'runs');
+  const outJson = path.join(tmp, 'reports', 'summary.json');
+  const outMd = path.join(tmp, 'reports', 'summary.md');
+  const smtInputDir = path.join(tmp, 'spec', 'formal', 'smt');
+  const policyPath = path.join(tmp, 'configs', 'artifact-retention', 'policy.json');
+  const today = new Date().toISOString().slice(0, 10);
+
+  for (let i = 0; i < 20; i += 1) {
+    const runPath = path.join(runsDir, `20260214T${String(100000 + i).padStart(6, '0')}Z-${300 + i}-1`);
+    writeJson(path.join(runPath, 'run-manifest.json'), {
+      generatedAt: `2026-02-14T10:${String(i).padStart(2, '0')}:00Z`,
+      workflow: 'ae-framework-autopilot',
+      runId: String(300 + i),
+      runAttempt: '1',
+      source: `itdojp/example@${String(i).repeat(40).slice(0, 40)}`,
+      toolchain: { node: '22', pnpm: '10' }
+    });
+    writeJson(path.join(runPath, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'csp-summary.json'), {
+      status: 'ran',
+      ran: true,
+      ok: true,
+      timestamp: '2026-02-14T10:00:00Z'
+    });
+    writeJson(path.join(runPath, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'tla-summary.json'), {
+      status: 'ran',
+      ran: true,
+      ok: true,
+      timestamp: '2026-02-14T10:00:01Z'
+    });
+    writeJson(path.join(runPath, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'smt-summary.json'), {
+      status: 'ran',
+      ran: true,
+      ok: true,
+      timestamp: '2026-02-14T10:00:02Z'
+    });
+    writeJson(path.join(runPath, 'ae-framework-artifacts', 'hermetic-reports', 'formal', 'alloy-summary.json'), {
+      status: 'ran',
+      ran: true,
+      ok: true,
+      timestamp: '2026-02-14T10:00:03Z'
+    });
+  }
+
+  writeJson(policyPath, {
+    schemaVersion: '1.0',
+    mode: 'keep_all_on_github',
+    preserveAllArtifacts: true,
+    compression: {
+      enabled: true,
+      strategy: 'git-pack'
+    },
+    review: {
+      lastReviewedAt: today,
+      maxAgeDays: 30
+    }
+  });
+  fs.mkdirSync(smtInputDir, { recursive: true });
+  fs.writeFileSync(path.join(smtInputDir, 'bi-hold-invariants.smt2'), '(set-logic QF_LIA)\n', 'utf8');
+
+  const testFile = fileURLToPath(import.meta.url);
+  const repoRoot = path.resolve(path.dirname(testFile), '..');
+  const scriptPath = path.join(repoRoot, 'scripts', 'generate-run-summary.mjs');
+
+  const proc = spawnSync(process.execPath, [scriptPath], {
+    cwd: repoRoot,
+    env: {
+      ...process.env,
+      RUNS_DIR: runsDir,
+      OUT_JSON: outJson,
+      OUT_MD: outMd,
+      MAX_ROWS: '10',
+      SMT_INPUT_DIR: smtInputDir,
+      ARTIFACT_POLICY_FILE: policyPath
+    },
+    encoding: 'utf8'
+  });
+
+  assert.equal(proc.status, 0, proc.stderr || proc.stdout);
+  const summary = JSON.parse(fs.readFileSync(outJson, 'utf8'));
+  assert.equal(summary.runCount, 20);
+  assert.equal(summary.artifactPolicy.configured, true);
+  assert.equal(summary.artifactPolicy.valid, true);
+  assert.equal(summary.artifactPolicy.review.overdue, false);
+  assert.match(summary.actionItems.join('\n'), /現時点で優先アクションはありません/);
+  assert.doesNotMatch(summary.actionItems.join('\n'), /保持\/圧縮方針|review/);
+});

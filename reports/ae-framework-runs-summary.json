@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-02-14T11:15:08.922Z",
+  "generatedAt": "2026-02-14T15:23:03.939Z",
   "runCount": 30,
-  "totalBytes": 53459013,
-  "totalFiles": 9700,
-  "averageBytesPerRun": 1781967,
+  "totalBytes": 52666769,
+  "totalFiles": 9694,
+  "averageBytesPerRun": 1755559,
   "latestRun": {
     "runFolder": "20260214T111508Z-22016333611-1",
     "runId": "22016333611",
@@ -103,8 +103,21 @@
       ]
     }
   },
+  "artifactPolicy": {
+    "path": "configs/artifact-retention/policy.json",
+    "configured": true,
+    "valid": true,
+    "mode": "keep_all_on_github",
+    "preserveAllArtifacts": true,
+    "review": {
+      "lastReviewedAt": "2026-02-14",
+      "maxAgeDays": 30,
+      "ageDays": 0,
+      "overdue": false
+    }
+  },
   "actionItems": [
-    "run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。"
+    "現時点で優先アクションはありません。"
   ],
   "runs": [
     {
@@ -119,8 +132,8 @@
       "sourceSha": "92d9b29b47abdda4941331dc1f83594266e50cfb",
       "node": "22",
       "pnpm": "10",
-      "totalBytes": 2557476,
-      "fileCount": 333,
+      "totalBytes": 1765232,
+      "fileCount": 327,
       "formal": {
         "csp": {
           "status": "ran",
