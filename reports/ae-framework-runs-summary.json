@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-02-14T10:25:44.401Z",
-  "runCount": 26,
-  "totalBytes": 46409563,
-  "totalFiles": 8396,
-  "averageBytesPerRun": 1784983,
+  "generatedAt": "2026-02-14T10:52:24.858Z",
+  "runCount": 27,
+  "totalBytes": 48170222,
+  "totalFiles": 8721,
+  "averageBytesPerRun": 1784082,
   "latestRun": {
-    "runFolder": "20260214T102543Z-22015732416-1",
-    "runId": "22015732416",
+    "runFolder": "20260214T105224Z-22016056764-1",
+    "runId": "22016056764",
     "runAttempt": "1",
-    "generatedAt": "2026-02-14T10:25:44Z",
-    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@57a43f98b3bade8fe85d2b907d793cdfbbb17d8b",
-    "path": "artifacts/runs/20260214T102543Z-22015732416-1"
+    "generatedAt": "2026-02-14T10:52:24Z",
+    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@a5a9f62f87a9813e9b7fca504308b1d95a6eacd1",
+    "path": "artifacts/runs/20260214T105224Z-22016056764-1"
   },
   "oldestRun": {
     "runFolder": "20260214T002433Z-22007398683-1",
@@ -21,24 +21,25 @@
     "path": "artifacts/runs/20260214T002433Z-22007398683-1"
   },
   "workflowCounts": {
-    "ae-framework-autopilot": 26
+    "ae-framework-autopilot": 27
   },
   "nodeVersionCounts": {
-    "22": 26
+    "22": 27
   },
   "formalStatusCounts": {
     "csp": {
-      "tool_not_available": 26
+      "tool_not_available": 27
     },
     "tla": {
-      "tool_not_available": 26
+      "tool_not_available": 27
     },
     "smt": {
+      "ran": 1,
       "solver_not_available": 2,
       "file_not_found": 24
     },
     "alloy": {
-      "tool_not_available": 26
+      "tool_not_available": 27
     }
   },
   "latestFormal": {
@@ -46,19 +47,19 @@
       "status": "tool_not_available",
       "ran": false,
       "ok": null,
-      "timestamp": "2026-02-14T10:25:43.305Z"
+      "timestamp": "2026-02-14T10:52:13.796Z"
     },
     "tla": {
       "status": "tool_not_available",
       "ran": false,
       "ok": null,
-      "timestamp": "2026-02-14T10:25:00.847Z"
+      "timestamp": "2026-02-14T10:51:30.923Z"
     },
     "smt": {
-      "status": "solver_not_available",
-      "ran": false,
-      "ok": null,
-      "timestamp": "2026-02-14T10:25:43.945Z"
+      "status": "ran",
+      "ran": true,
+      "ok": true,
+      "timestamp": "2026-02-14T10:52:24.383Z"
     },
     "alloy": {
       "status": "tool_not_available",
@@ -80,8 +81,8 @@
     },
     "smt": {
       "previous": "solver_not_available",
-      "latest": "solver_not_available",
-      "changed": false
+      "latest": "ran",
+      "changed": true
     },
     "alloy": {
       "previous": "tool_not_available",
@@ -102,10 +103,50 @@
     "CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。",
     "TLA+: `TLA_TOOLS_JAR` を設定し TLC 実行可能状態を作る。",
     "Alloy: `ALLOY_JAR` または Alloy CLI を導入する。",
-    "SMT: z3 または cvc5 を実行環境へ導入する。",
     "run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。"
   ],
   "runs": [
+    {
+      "runFolder": "20260214T105224Z-22016056764-1",
+      "runPath": "artifacts/runs/20260214T105224Z-22016056764-1",
+      "runId": "22016056764",
+      "runAttempt": "1",
+      "generatedAt": "2026-02-14T10:52:24Z",
+      "generatedAtMs": 1771066344000,
+      "workflow": "ae-framework-autopilot",
+      "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@a5a9f62f87a9813e9b7fca504308b1d95a6eacd1",
+      "sourceSha": "a5a9f62f87a9813e9b7fca504308b1d95a6eacd1",
+      "node": "22",
+      "pnpm": "10",
+      "totalBytes": 2553968,
+      "fileCount": 331,
+      "formal": {
+        "csp": {
+          "status": "tool_not_available",
+          "ran": false,
+          "ok": null,
+          "timestamp": "2026-02-14T10:52:13.796Z"
+        },
+        "tla": {
+          "status": "tool_not_available",
+          "ran": false,
+          "ok": null,
+          "timestamp": "2026-02-14T10:51:30.923Z"
+        },
+        "smt": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-02-14T10:52:24.383Z"
+        },
+        "alloy": {
+          "status": "tool_not_available",
+          "ran": false,
+          "ok": null,
+          "timestamp": "2025-09-17T19:57:44.834Z"
+        }
+      }
+    },
     {
       "runFolder": "20260214T102543Z-22015732416-1",
       "runPath": "artifacts/runs/20260214T102543Z-22015732416-1",
@@ -118,8 +159,8 @@
       "sourceSha": "57a43f98b3bade8fe85d2b907d793cdfbbb17d8b",
       "node": "22",
       "pnpm": "10",
-      "totalBytes": 2552406,
-      "fileCount": 331,
+      "totalBytes": 1759097,
+      "fileCount": 325,
       "formal": {
         "csp": {
           "status": "tool_not_available",
