@@ -45,6 +45,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
   - `ae-framework` リポジトリを CI 内で取得
   - `pnpm install` + `pnpm run build`
   - `pnpm run codex:run` を実行（失敗時も証跡収集は継続）
+  - CSP smoke 前に Rust toolchain + `cspx`（pinned commit）を可能な範囲で自動導入
   - 形式検証の軽量スモーク（CSP typecheck）
   - TLA/Alloy 用アセット（`tla2tools.jar`, `alloy.jar`）を可能な範囲で自動取得
   - TLA smoke（TLC）は `.cfg` 同梱の `spec/tla/DomainSpec.tla` を対象に実行し、Alloy smoke と併せて結果を記録

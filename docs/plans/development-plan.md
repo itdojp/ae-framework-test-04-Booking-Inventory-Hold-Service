@@ -76,6 +76,7 @@
     - SMT入力シード `spec/formal/smt/bi-hold-invariants.smt2` を追加し、run集計で project formal input として可視化
     - CI workflow に SMT smoke（`verify:smt --file spec/formal/smt/bi-hold-invariants.smt2`）を追加
     - CI workflow で SMT solver（cvc5/z3）を自動導入するステップを追加
+    - CI workflow で CSP backend（`cspx`）を pinned commit で自動導入するステップを追加
     - CI workflow で TLA/Alloy アセット取得と smoke（`verify:tla` / `verify:alloy`）を追加
     - TLA smoke 対象を `spec/tla/DomainSpec.tla` に変更（`DomainSpec.cfg` 同梱で TLC 実行安定化）
     - run summary/evaluation に latest vs previous の formal status 差分を追加

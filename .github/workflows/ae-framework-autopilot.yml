@@ -71,6 +71,36 @@ jobs:
         run: pnpm run codex:run
         continue-on-error: true
 
+      - name: Setup Rust toolchain (for cspx)
+        uses: dtolnay/rust-toolchain@stable
+        continue-on-error: true
+
+      - name: Cache cargo (cspx)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin/cspx
+          key: ${{ runner.os }}-cspx-8a67639ea4d3f715e27feb8cd728f46866a905db
+        continue-on-error: true
+
+      - name: Install cspx (pinned)
+        run: |
+          set -euo pipefail
+          CSPX_REPO="https://github.com/itdojp/cspx"
+          CSPX_REF="8a67639ea4d3f715e27feb8cd728f46866a905db"
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          export PATH="$HOME/.cargo/bin:$PATH"
+          if ! command -v cspx >/dev/null 2>&1; then
+            cargo install --git "$CSPX_REPO" --rev "$CSPX_REF" --locked cspx
+          elif ! cspx typecheck --help | grep -q -- '--summary-json'; then
+            cargo install --git "$CSPX_REPO" --rev "$CSPX_REF" --locked --force cspx
+          fi
+          cspx --version || true
+          cspx typecheck --help | grep -q -- '--summary-json'
+        continue-on-error: true
+
       - name: Run formal smoke (CSP typecheck)
         working-directory: .tools/ae-framework
         run: pnpm run verify:csp -- --file spec/csp/cspx-smoke.cspm --mode typecheck
