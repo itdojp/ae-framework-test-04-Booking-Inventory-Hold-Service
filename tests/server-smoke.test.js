@@ -1,35 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
-
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function waitForHealth(baseUrl, retries = 20) {
-  for (let i = 0; i < retries; i += 1) {
-    try {
-      const res = await fetch(`${baseUrl}/healthz`);
-      if (res.ok) return;
-    } catch {
-      // ignore
-    }
-    await wait(100);
-  }
-  throw new Error('server did not become healthy');
-}
+import os from 'node:os';
+import path from 'node:path';
+import { startServer } from './helpers/server-harness.js';
 
 test('HTTP API smoke: create item -> hold -> confirm', async () => {
   const port = 3400 + Math.floor(Math.random() * 200);
-  const baseUrl = `http://127.0.0.1:${port}`;
-  const proc = spawn(process.execPath, ['src/server.js'], {
-    env: { ...process.env, PORT: String(port) },
-    stdio: ['ignore', 'pipe', 'pipe']
-  });
+  const stateFile = path.join(os.tmpdir(), `bi-smoke-${process.pid}-${Date.now()}.json`);
+  const server = await startServer({ port, stateFile });
+  const baseUrl = server.baseUrl;
 
   try {
-    await waitForHealth(baseUrl);
-
     const createItemRes = await fetch(`${baseUrl}/api/v1/items`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -137,6 +118,6 @@ test('HTTP API smoke: create item -> hold -> confirm', async () => {
     assert.equal(resourceAvail.slots.length, 1);
     assert.equal(resourceAvail.slots[0].available, true);
   } finally {
-    proc.kill('SIGTERM');
+    await server.stop();
   }
 });

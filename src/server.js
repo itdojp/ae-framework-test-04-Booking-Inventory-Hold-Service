@@ -1,8 +1,26 @@
 import http from 'node:http';
 import { BookingInventoryEngine } from './domain/booking-inventory-engine.js';
-import { isDomainError } from './domain/errors.js';
+import { DomainError, isDomainError } from './domain/errors.js';
+import { AsyncMutex } from './infra/async-mutex.js';
+import { JsonStateStore } from './infra/json-state-store.js';
+import {
+  validateCancelBody,
+  validateConfirmBody,
+  validateCreateHoldBody,
+  validateCreateItemBody,
+  validateCreateResourceBody,
+  validateResourceAvailabilityQuery
+} from './api/validators.js';
 
-const engine = new BookingInventoryEngine();
+const stateFile = process.env.STATE_FILE ?? 'data/runtime-state.json';
+const stateStore = new JsonStateStore(stateFile);
+const initialSnapshot = stateStore.load();
+const engine = new BookingInventoryEngine({ snapshot: initialSnapshot ?? undefined });
+const mutationMutex = new AsyncMutex();
+
+if (!initialSnapshot) {
+  stateStore.save(engine.toSnapshot());
+}
 
 function sendJson(res, status, body) {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8' });
@@ -13,7 +31,20 @@ async function readJson(req) {
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
   const raw = Buffer.concat(chunks).toString('utf8');
-  return raw ? JSON.parse(raw) : {};
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new DomainError('INVALID_JSON', 'request body must be valid JSON', 400);
+  }
+}
+
+async function runMutation(task) {
+  return mutationMutex.run(async () => {
+    const result = await task();
+    stateStore.save(engine.toSnapshot());
+    return result;
+  });
 }
 
 function parsePath(pathname) {
@@ -27,13 +58,17 @@ function parsePath(pathname) {
   if (holdGet) return { route: 'holdGet', params: { hold_id: holdGet[1] } };
 
   const resourceAvailability = pathname.match(/^\/api\/v1\/resources\/([^/]+)\/availability$/);
-  if (resourceAvailability) return { route: 'resourceAvailability', params: { resource_id: resourceAvailability[1] } };
+  if (resourceAvailability) {
+    return { route: 'resourceAvailability', params: { resource_id: resourceAvailability[1] } };
+  }
 
   const bookingCancel = pathname.match(/^\/api\/v1\/bookings\/([^/]+)\/cancel$/);
   if (bookingCancel) return { route: 'bookingCancel', params: { booking_id: bookingCancel[1] } };
 
   const reservationCancel = pathname.match(/^\/api\/v1\/reservations\/([^/]+)\/cancel$/);
-  if (reservationCancel) return { route: 'reservationCancel', params: { reservation_id: reservationCancel[1] } };
+  if (reservationCancel) {
+    return { route: 'reservationCancel', params: { reservation_id: reservationCancel[1] } };
+  }
 
   const itemAvailability = pathname.match(/^\/api\/v1\/items\/([^/]+)\/availability$/);
   if (itemAvailability) return { route: 'itemAvailability', params: { item_id: itemAvailability[1] } };
@@ -43,6 +78,7 @@ function parsePath(pathname) {
   if (pathname === '/api/v1/holds') return { route: 'holds' };
   if (pathname === '/api/v1/bookings') return { route: 'bookings' };
   if (pathname === '/api/v1/reservations') return { route: 'reservations' };
+  if (pathname === '/api/v1/system/expire') return { route: 'systemExpire' };
   if (pathname === '/healthz') return { route: 'healthz' };
   return null;
 }
@@ -55,6 +91,14 @@ function toErrorBody(error) {
       details: error.details ?? {}
     }
   };
+}
+
+function optionalStatus(status) {
+  if (!status) return undefined;
+  if (!['ACTIVE', 'INACTIVE', 'CONFIRMED', 'CANCELLED'].includes(status)) {
+    throw new DomainError('INVALID_QUERY', 'status query is invalid', 400, { status });
+  }
+  return status;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -73,47 +117,51 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (matched.route === 'healthz' && req.method === 'GET') {
-      sendJson(res, 200, { status: 'ok' });
+      sendJson(res, 200, { status: 'ok', state_file: stateFile });
       return;
     }
 
     if (matched.route === 'resources' && req.method === 'GET') {
-      const status = url.searchParams.get('status') ?? undefined;
-      sendJson(res, 200, engine.listResources({ status }));
+      sendJson(res, 200, engine.listResources({ status: optionalStatus(url.searchParams.get('status')) }));
       return;
     }
 
     if (matched.route === 'resources' && req.method === 'POST') {
       const body = await readJson(req);
-      sendJson(res, 201, engine.createResource(body));
+      validateCreateResourceBody(body);
+      const resource = await runMutation(() => engine.createResource(body));
+      sendJson(res, 201, resource);
       return;
     }
 
     if (matched.route === 'resourceAvailability' && req.method === 'GET') {
-      sendJson(
-        res,
-        200,
-        engine.getResourceAvailability(matched.params.resource_id, {
-          start_at: url.searchParams.get('start_at'),
-          end_at: url.searchParams.get('end_at'),
-          granularity_minutes: url.searchParams.get('granularity_minutes')
-            ? Number(url.searchParams.get('granularity_minutes'))
-            : undefined,
-          exclude_hold_id: url.searchParams.get('exclude_hold_id') ?? undefined
-        })
-      );
+      const query = {
+        start_at: url.searchParams.get('start_at'),
+        end_at: url.searchParams.get('end_at'),
+        granularity_minutes: url.searchParams.has('granularity_minutes')
+          ? Number(url.searchParams.get('granularity_minutes'))
+          : undefined,
+        exclude_hold_id: url.searchParams.get('exclude_hold_id') ?? undefined
+      };
+      validateResourceAvailabilityQuery(query);
+      sendJson(res, 200, engine.getResourceAvailability(matched.params.resource_id, query));
       return;
     }
 
     if (matched.route === 'items' && req.method === 'GET') {
-      const status = url.searchParams.get('status') ?? undefined;
+      const status = optionalStatus(url.searchParams.get('status'));
+      if (status && !['ACTIVE', 'INACTIVE'].includes(status)) {
+        throw new DomainError('INVALID_QUERY', 'status query is invalid for items', 400, { status });
+      }
       sendJson(res, 200, engine.listItems({ status }));
       return;
     }
 
     if (matched.route === 'items' && req.method === 'POST') {
       const body = await readJson(req);
-      sendJson(res, 201, engine.createItem(body));
+      validateCreateItemBody(body);
+      const item = await runMutation(() => engine.createItem(body));
+      sendJson(res, 201, item);
       return;
     }
 
@@ -124,31 +172,42 @@ const server = http.createServer(async (req, res) => {
 
     if (matched.route === 'holds' && req.method === 'POST') {
       const body = await readJson(req);
-      sendJson(res, 201, engine.createHold(body));
+      validateCreateHoldBody(body);
+      const hold = await runMutation(() => engine.createHold(body));
+      sendJson(res, 201, hold);
       return;
     }
 
     if (matched.route === 'holdGet' && req.method === 'GET') {
-      const hold = engine.getHold(matched.params.hold_id);
-      sendJson(res, 200, hold);
+      sendJson(res, 200, engine.getHold(matched.params.hold_id));
       return;
     }
 
     if (matched.route === 'holdConfirm' && req.method === 'POST') {
       const body = await readJson(req);
-      const result = engine.confirmHold({ hold_id: matched.params.hold_id, ...body });
+      validateConfirmBody(body);
+      const result = await runMutation(() =>
+        engine.confirmHold({ hold_id: matched.params.hold_id, ...body })
+      );
       sendJson(res, 200, result);
       return;
     }
 
     if (matched.route === 'holdCancel' && req.method === 'POST') {
       const body = await readJson(req);
-      const result = engine.cancelHold({ hold_id: matched.params.hold_id, ...body });
+      validateCancelBody(body, 'INVALID_HOLD_CANCEL_REQUEST');
+      const result = await runMutation(() =>
+        engine.cancelHold({ hold_id: matched.params.hold_id, ...body })
+      );
       sendJson(res, 200, result);
       return;
     }
 
     if (matched.route === 'bookings' && req.method === 'GET') {
+      const status = optionalStatus(url.searchParams.get('status'));
+      if (status && !['CONFIRMED', 'CANCELLED'].includes(status)) {
+        throw new DomainError('INVALID_QUERY', 'status query is invalid for bookings', 400, { status });
+      }
       sendJson(
         res,
         200,
@@ -156,7 +215,7 @@ const server = http.createServer(async (req, res) => {
           resource_id: url.searchParams.get('resource_id') ?? undefined,
           start_at: url.searchParams.get('start_at') ?? undefined,
           end_at: url.searchParams.get('end_at') ?? undefined,
-          status: url.searchParams.get('status') ?? undefined
+          status
         })
       );
       return;
@@ -164,17 +223,25 @@ const server = http.createServer(async (req, res) => {
 
     if (matched.route === 'bookingCancel' && req.method === 'POST') {
       const body = await readJson(req);
-      sendJson(res, 200, engine.cancelBooking({ booking_id: matched.params.booking_id, ...body }));
+      validateCancelBody(body, 'INVALID_BOOKING_CANCEL_REQUEST');
+      const result = await runMutation(() =>
+        engine.cancelBooking({ booking_id: matched.params.booking_id, ...body })
+      );
+      sendJson(res, 200, result);
       return;
     }
 
     if (matched.route === 'reservations' && req.method === 'GET') {
+      const status = optionalStatus(url.searchParams.get('status'));
+      if (status && !['CONFIRMED', 'CANCELLED'].includes(status)) {
+        throw new DomainError('INVALID_QUERY', 'status query is invalid for reservations', 400, { status });
+      }
       sendJson(
         res,
         200,
         engine.listReservations({
           item_id: url.searchParams.get('item_id') ?? undefined,
-          status: url.searchParams.get('status') ?? undefined
+          status
         })
       );
       return;
@@ -182,11 +249,20 @@ const server = http.createServer(async (req, res) => {
 
     if (matched.route === 'reservationCancel' && req.method === 'POST') {
       const body = await readJson(req);
-      sendJson(
-        res,
-        200,
+      validateCancelBody(body, 'INVALID_RESERVATION_CANCEL_REQUEST');
+      const result = await runMutation(() =>
         engine.cancelReservation({ reservation_id: matched.params.reservation_id, ...body })
       );
+      sendJson(res, 200, result);
+      return;
+    }
+
+    if (matched.route === 'systemExpire' && req.method === 'POST') {
+      const body = await readJson(req);
+      const expired = await runMutation(() =>
+        engine.expireHolds({ now: body.now ? new Date(body.now) : undefined })
+      );
+      sendJson(res, 200, { expired });
       return;
     }
 

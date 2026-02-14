@@ -27,7 +27,10 @@ ae-framework 評価のため、以下ディレクトリ配下の中間生成物�
 
 - ドメイン実装: `src/domain/booking-inventory-engine.js`
 - 受入基準テスト: `tests/booking-inventory-engine.test.js`
+- 永続化: `src/infra/json-state-store.js`（`STATE_FILE`）
+- API: `src/server.js`
 
 ```bash
-node --test
+npm test
+npm start
 ```

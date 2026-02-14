@@ -94,3 +94,15 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
 - Formal plan: `spec/formal/bi-hold.formal-plan.json`
 - Flow: `spec/flow/bi-hold.flow.json`
 - Conformance sample: `configs/conformance/bi-sample-*.json`
+
+## 8. 実装・検証の現状（P2先行）
+
+- 実装:
+  - ドメイン: `src/domain/booking-inventory-engine.js`
+  - API: `src/server.js`
+  - 永続化: `src/infra/json-state-store.js`（`STATE_FILE`）
+- ローカル検証:
+  - `npm test`
+  - `./scripts/validate-spec-assets.sh`
+- CI:
+  - `ae-framework-autopilot` で spec検証 + `npm test` + ae-framework playbook を実行

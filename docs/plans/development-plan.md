@@ -43,3 +43,17 @@
 | 形式検証ツール不足（TLA/CSP 実行環境） | P4 遅延 | `tools:formal:check` を先行実行し、不足時は CI を非ブロッキング運用 |
 | Mutation コスト増大 | CI 長時間化 | Quick モードを既定化し、Nightly に heavy を分離 |
 | 生成物肥大化 | リポジトリ肥大化 | run 単位ディレクトリ化、manifest 管理、必要時に圧縮 |
+
+## 7. 進捗記録（2026-02-14）
+
+- P1 初版完了:
+  - OpenAPI / state machine / formal plan / flow / conformance input を作成
+  - 仕様検証スクリプト `scripts/validate-spec-assets.sh` を追加
+- P2 先行実装:
+  - `src/domain/booking-inventory-engine.js` に hold lifecycle 実装
+  - `src/server.js` で最小 API を提供
+  - `src/infra/json-state-store.js` によるファイル永続化を追加
+- テスト:
+  - 受入基準 + 追加ケースを `tests/booking-inventory-engine.test.js` に実装
+  - API スモーク/永続化/入力検証を server テストに追加
+  - `npm test` 10/10 pass

@@ -5,6 +5,7 @@ dist/
 coverage/
 tmp/
 *.log
+data/runtime-state.json
 
 # Local-only tool checkout
 .tools/

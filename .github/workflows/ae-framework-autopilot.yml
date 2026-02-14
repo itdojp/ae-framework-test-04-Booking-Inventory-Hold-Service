@@ -49,6 +49,9 @@ jobs:
         with:
           version: 10
 
+      - name: Run local acceptance tests
+        run: npm test
+
       - name: Install and build ae-framework
         working-directory: .tools/ae-framework
         run: |

@@ -22,8 +22,21 @@ function requirePositiveInt(value, code, field) {
   }
 }
 
+function asMap(list, key) {
+  const map = new Map();
+  if (!Array.isArray(list)) return map;
+  for (const item of list) {
+    if (item && item[key]) map.set(item[key], item);
+  }
+  return map;
+}
+
+function mapValues(map) {
+  return Array.from(map.values());
+}
+
 export class BookingInventoryEngine {
-  constructor({ clock = () => new Date() } = {}) {
+  constructor({ clock = () => new Date(), snapshot = null } = {}) {
     this.clock = clock;
     this.resources = new Map();
     this.items = new Map();
@@ -41,6 +54,9 @@ export class BookingInventoryEngine {
       reservation: 0,
       audit: 0
     };
+    if (snapshot) {
+      this.hydrate(snapshot);
+    }
   }
 
   nextId(prefix, key) {
@@ -60,6 +76,40 @@ export class BookingInventoryEngine {
       created_at: toIso(now)
     };
     this.auditLogs.push(audit);
+  }
+
+  hydrate(snapshot) {
+    this.resources = asMap(snapshot.resources, 'resource_id');
+    this.items = asMap(snapshot.items, 'item_id');
+    this.holds = asMap(snapshot.holds, 'hold_id');
+    this.bookings = asMap(snapshot.bookings, 'booking_id');
+    this.reservations = asMap(snapshot.reservations, 'reservation_id');
+    this.auditLogs = Array.isArray(snapshot.auditLogs) ? [...snapshot.auditLogs] : [];
+    this.idempotency = new Map(Object.entries(snapshot.idempotency ?? {}));
+    this.sequence = {
+      resource: Number(snapshot.sequence?.resource ?? 0),
+      item: Number(snapshot.sequence?.item ?? 0),
+      hold: Number(snapshot.sequence?.hold ?? 0),
+      line: Number(snapshot.sequence?.line ?? 0),
+      booking: Number(snapshot.sequence?.booking ?? 0),
+      reservation: Number(snapshot.sequence?.reservation ?? 0),
+      audit: Number(snapshot.sequence?.audit ?? 0)
+    };
+  }
+
+  toSnapshot() {
+    return {
+      schemaVersion: '1.0.0',
+      generatedAt: new Date().toISOString(),
+      sequence: clone(this.sequence),
+      resources: mapValues(this.resources),
+      items: mapValues(this.items),
+      holds: mapValues(this.holds),
+      bookings: mapValues(this.bookings),
+      reservations: mapValues(this.reservations),
+      auditLogs: clone(this.auditLogs),
+      idempotency: Object.fromEntries(this.idempotency.entries())
+    };
   }
 
   createResource(input) {
