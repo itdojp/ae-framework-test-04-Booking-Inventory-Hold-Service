@@ -10,6 +10,7 @@ import {
   validateCreateHoldBody,
   validateCreateItemBody,
   validateCreateResourceBody,
+  validateHoldsQuery,
   validatePatchItemBody,
   validatePatchResourceBody,
   validateResourceAvailabilityQuery
@@ -369,6 +370,33 @@ const server = http.createServer(async (req, res) => {
       };
       const hold = await runMutation(() => engine.createHold(holdInput));
       sendJson(res, 201, hold);
+      return;
+    }
+
+    if (matched.route === 'holds' && req.method === 'GET') {
+      ensureRoleAllowed(context, ['ADMIN', 'MEMBER', 'VIEWER']);
+      const query = {
+        tenant_id: url.searchParams.get('tenant_id') ?? undefined,
+        created_by_user_id: url.searchParams.get('created_by_user_id') ?? undefined,
+        status: url.searchParams.get('status') ?? undefined,
+        from_at: url.searchParams.get('from_at') ?? undefined,
+        to_at: url.searchParams.get('to_at') ?? undefined,
+        limit: url.searchParams.has('limit') ? Number(url.searchParams.get('limit')) : undefined
+      };
+      if (context.tenant_id) {
+        if (query.tenant_id && query.tenant_id !== context.tenant_id) {
+          throw new DomainError('FORBIDDEN', 'tenant mismatch', 403);
+        }
+        query.tenant_id = context.tenant_id;
+      }
+      if (context.role && !context.is_admin) {
+        if (query.created_by_user_id && query.created_by_user_id !== context.user_id) {
+          throw new DomainError('FORBIDDEN', 'created_by_user_id mismatch', 403);
+        }
+        query.created_by_user_id = context.user_id ?? undefined;
+      }
+      validateHoldsQuery(query);
+      sendJson(res, 200, engine.listHolds(query));
       return;
     }
 

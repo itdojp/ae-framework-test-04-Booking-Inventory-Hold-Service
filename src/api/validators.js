@@ -211,3 +211,25 @@ export function validateAuditLogsQuery(query) {
   optionalString(query.target_id, 'target_id', 'INVALID_AUDIT_QUERY');
   optionalString(query.request_id, 'request_id', 'INVALID_AUDIT_QUERY');
 }
+
+export function validateHoldsQuery(query) {
+  if (query.status !== undefined) {
+    optionalEnum(query.status, 'status', ['ACTIVE', 'CONFIRMED', 'CANCELLED', 'EXPIRED'], 'INVALID_HOLDS_QUERY');
+  }
+  optionalString(query.tenant_id, 'tenant_id', 'INVALID_HOLDS_QUERY');
+  optionalString(query.created_by_user_id, 'created_by_user_id', 'INVALID_HOLDS_QUERY');
+  if (query.from_at !== undefined) {
+    requireDateTime(query.from_at, 'from_at', 'INVALID_HOLDS_QUERY');
+  }
+  if (query.to_at !== undefined) {
+    requireDateTime(query.to_at, 'to_at', 'INVALID_HOLDS_QUERY');
+  }
+  if (query.from_at !== undefined && query.to_at !== undefined) {
+    if (new Date(query.from_at).getTime() > new Date(query.to_at).getTime()) {
+      throw new DomainError('INVALID_HOLDS_QUERY', 'from_at must be <= to_at', 400);
+    }
+  }
+  if (query.limit !== undefined) {
+    requireInteger(query.limit, 'limit', { min: 1, max: 1000, code: 'INVALID_HOLDS_QUERY' });
+  }
+}

@@ -324,6 +324,25 @@ export class BookingInventoryEngine {
     return clone(hold);
   }
 
+  listHolds(filters = {}) {
+    const fromAt = filters.from_at ? new Date(filters.from_at).getTime() : null;
+    const toAt = filters.to_at ? new Date(filters.to_at).getTime() : null;
+    const limit = filters.limit ?? null;
+    const list = [];
+    for (const hold of this.holds.values()) {
+      if (filters.tenant_id && hold.tenant_id !== filters.tenant_id) continue;
+      if (filters.created_by_user_id && hold.created_by_user_id !== filters.created_by_user_id) continue;
+      if (filters.status && hold.status !== filters.status) continue;
+      const createdAtMs = new Date(hold.created_at).getTime();
+      if (fromAt !== null && createdAtMs < fromAt) continue;
+      if (toAt !== null && createdAtMs > toAt) continue;
+      list.push(clone(hold));
+    }
+    list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    if (limit === null || limit === undefined) return list;
+    return list.slice(0, limit);
+  }
+
   getItemAvailability(item_id, { exclude_hold_id = null } = {}) {
     const item = this.items.get(item_id);
     if (!item || item.status !== 'ACTIVE') {
