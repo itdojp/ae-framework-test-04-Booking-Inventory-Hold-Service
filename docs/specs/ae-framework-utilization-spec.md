@@ -26,6 +26,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
 | 形式検証（並行性） | `pnpm run verify:csp`, `pnpm run verify:tla` | 二重確保防止など安全性検証 | `artifacts/hermetic-reports/formal/**` |
 | 総合実行（軽量） | `pnpm run codex:run` | setup→qa→spec をプレイブック化 | `artifacts/ae/**`, `artifacts/ae/context.json` |
 | トレンド分析 | `node scripts/pipelines/compare-test-trends.mjs --json-output reports/heavy-test-trends.json` | 継続的な品質劣化の検知 | `reports/heavy-test-trends.json` |
+| run集計サマリ | `node scripts/generate-run-summary.mjs` | run蓄積状況と証跡量の継続監視 | `reports/ae-framework-runs-summary.{json,md}` |
 
 ## 4. 自動化運用方針
 
@@ -44,7 +45,8 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
   - `pnpm install` + `pnpm run build`
   - `pnpm run codex:run` を実行（失敗時も証跡収集は継続）
   - 形式検証の軽量スモーク（CSP typecheck）
-  - 生成物を本リポジトリ `artifacts/runs/<run-id>/` へ集約
+- 生成物を本リポジトリ `artifacts/runs/<run-id>/` へ集約
+  - 集約後に `reports/ae-framework-runs-summary.{json,md}` を自動更新
 
 ### 4.3 非ブロッキング方針
 
@@ -104,5 +106,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
 - ローカル検証:
   - `npm test`
   - `./scripts/validate-spec-assets.sh`
+  - `npm run report:runs`
 - CI:
   - `ae-framework-autopilot` で spec検証 + `npm test` + ae-framework playbook を実行
+  - runアーカイブ後に `reports/ae-framework-runs-summary.{json,md}` を再生成して保存

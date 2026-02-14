@@ -34,6 +34,7 @@ ae-framework 評価のため、以下ディレクトリ配下の中間生成物�
 npm test
 npm start
 npm run expire:holds -- --now 2026-02-14T10:00:00Z
+npm run report:runs
 ```
 
 UI:
@@ -43,4 +44,9 @@ UI:
   - Resource / Item 一覧
   - Hold 作成 / 一覧 / 詳細 / confirm / cancel
   - Resource / Item 可用性照会
-  - Booking / Reservation 一覧 / cancel
+- Booking / Reservation 一覧 / cancel
+
+評価サマリ:
+
+- `reports/ae-framework-runs-summary.json`
+- `reports/ae-framework-runs-summary.md`
