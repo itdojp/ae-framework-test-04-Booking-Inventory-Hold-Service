@@ -65,7 +65,9 @@
     - `X-User-Id` から hold/booking/reservation 操作 actor を補完
     - Hold 詳細/confirm を owner または ADMIN に制限（role context 時）
     - confirm 監査ログの actor を実行ユーザーで記録
+    - 期限切れバッチ CLI `scripts/expire-holds.mjs` を追加（`STATE_FILE` を直接更新）
 - テスト:
   - 受入基準 + 追加ケースを `tests/booking-inventory-engine.test.js` に実装
   - API スモーク/永続化/入力検証/patch/idempotency/audit/role-guard を server テストに追加
-  - `npm test` 26/26 pass
+  - バッチCLIテスト `tests/expire-holds-script.test.js` を追加
+  - `npm test` 27/27 pass

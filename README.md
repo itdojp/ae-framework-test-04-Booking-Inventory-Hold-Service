@@ -33,4 +33,5 @@ ae-framework 評価のため、以下ディレクトリ配下の中間生成物�
 ```bash
 npm test
 npm start
+npm run expire:holds -- --now 2026-02-14T10:00:00Z
 ```

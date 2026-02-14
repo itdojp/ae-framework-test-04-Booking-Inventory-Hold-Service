@@ -6,6 +6,7 @@
   "description": "Booking / Inventory Hold Service prototype",
   "scripts": {
     "start": "node src/server.js",
+    "expire:holds": "node scripts/expire-holds.mjs",
     "test": "node --test tests/*.test.js",
     "test:acceptance": "node --test tests/booking-inventory-engine.test.js"
   },
