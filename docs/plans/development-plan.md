@@ -76,4 +76,5 @@
   - バッチCLIテスト `tests/expire-holds-script.test.js` を追加
   - hold 一覧APIテスト `tests/server-holds-list.test.js` を追加
   - UI配信テスト `tests/server-ui.test.js` を追加
-  - `npm test` 30/30 pass
+  - booking/reservation 取消の owner/admin ガードテストを追加
+  - `npm test` 31/31 pass
