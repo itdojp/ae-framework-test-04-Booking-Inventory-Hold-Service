@@ -100,6 +100,77 @@
           </div>
           <ul id="holds-list" class="list"></ul>
         </article>
+
+        <article class="card wide">
+          <h2>Availability</h2>
+          <div class="subgrid">
+            <section class="subcard">
+              <h3>Resource Slots</h3>
+              <div class="grid grid-4">
+                <label>resource_id
+                  <input id="av-resource-id" placeholder="R1" />
+                </label>
+                <label>start_at
+                  <input id="av-start-at" placeholder="2026-02-14T10:00:00Z" />
+                </label>
+                <label>end_at
+                  <input id="av-end-at" placeholder="2026-02-14T11:00:00Z" />
+                </label>
+                <label>granularity_minutes
+                  <input id="av-granularity" type="number" min="1" placeholder="15" />
+                </label>
+              </div>
+              <button id="check-resource-availability" class="ghost">Check Resource</button>
+              <ul id="resource-availability-list" class="list compact"></ul>
+            </section>
+
+            <section class="subcard">
+              <h3>Inventory Quantity</h3>
+              <div class="grid grid-4">
+                <label>item_id
+                  <input id="av-item-id" placeholder="I1" />
+                </label>
+              </div>
+              <button id="check-item-availability" class="ghost">Check Item</button>
+              <pre id="item-availability-view">(no availability)</pre>
+            </section>
+          </div>
+        </article>
+
+        <article class="card wide">
+          <h2>Bookings / Reservations</h2>
+          <div class="subgrid">
+            <section class="subcard">
+              <div class="row">
+                <h3>Bookings</h3>
+                <div class="inline-controls">
+                  <select id="bookings-status">
+                    <option value="">all status</option>
+                    <option value="CONFIRMED">CONFIRMED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                  </select>
+                  <button id="refresh-bookings" class="ghost">Refresh</button>
+                </div>
+              </div>
+              <ul id="bookings-list" class="list"></ul>
+            </section>
+
+            <section class="subcard">
+              <div class="row">
+                <h3>Reservations</h3>
+                <div class="inline-controls">
+                  <select id="reservations-status">
+                    <option value="">all status</option>
+                    <option value="CONFIRMED">CONFIRMED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                  </select>
+                  <button id="refresh-reservations" class="ghost">Refresh</button>
+                </div>
+              </div>
+              <ul id="reservations-list" class="list"></ul>
+            </section>
+          </div>
+        </article>
       </section>
 
       <section class="card">

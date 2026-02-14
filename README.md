@@ -39,3 +39,8 @@ npm run expire:holds -- --now 2026-02-14T10:00:00Z
 UI:
 
 - `http://localhost:3000/ui`
+- 主な機能:
+  - Resource / Item 一覧
+  - Hold 作成 / 一覧 / 詳細 / confirm / cancel
+  - Resource / Item 可用性照会
+  - Booking / Reservation 一覧 / cancel

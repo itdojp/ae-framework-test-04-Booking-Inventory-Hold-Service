@@ -139,6 +139,11 @@ button {
   color: var(--ink);
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .grid {
   display: grid;
   gap: 10px;
@@ -168,6 +173,19 @@ button {
   margin-bottom: 10px;
 }
 
+.subgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.subcard {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px;
+}
+
 .list {
   margin: 8px 0 0;
   padding-left: 0;
@@ -179,6 +197,18 @@ button {
   border-radius: 10px;
   padding: 8px 10px;
   margin-bottom: 8px;
+}
+
+.list.compact li {
+  padding: 6px 8px;
+}
+
+.list li.available {
+  border-left: 4px solid var(--primary);
+}
+
+.list li.unavailable {
+  border-left: 4px solid var(--accent);
 }
 
 .list .meta {
@@ -202,6 +232,14 @@ pre {
   min-height: 72px;
 }
 
+#item-availability-view {
+  margin-top: 8px;
+  background: #f3fbfa;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  min-height: 48px;
+}
+
 @media (max-width: 900px) {
   .card:nth-child(1),
   .card:nth-child(2),
@@ -210,6 +248,9 @@ pre {
   }
   .grid-4 {
     grid-template-columns: 1fr 1fr;
+  }
+  .subgrid {
+    grid-template-columns: 1fr;
   }
 }
 

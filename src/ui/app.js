@@ -1,5 +1,7 @@
 const state = {
-  lines: []
+  lines: [],
+  resources: [],
+  items: []
 };
 
 function byId(id) {
@@ -21,6 +23,20 @@ function requestContextHeaders() {
   if (role) headers['x-user-role'] = role;
   if (requestId) headers['x-request-id'] = requestId;
   return headers;
+}
+
+function actorBody() {
+  const actor = byId('ctx-user').value.trim();
+  return actor ? { actor_user_id: actor } : {};
+}
+
+function toQueryString(params) {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === '') continue;
+    query.set(key, String(value));
+  }
+  return query.toString();
 }
 
 async function api(path, { method = 'GET', body } = {}) {
@@ -122,6 +138,15 @@ function toApiLine(line) {
   };
 }
 
+function applyDefaultTargets() {
+  if (!byId('av-resource-id').value && state.resources[0]) {
+    byId('av-resource-id').value = state.resources[0].resource_id;
+  }
+  if (!byId('av-item-id').value && state.items[0]) {
+    byId('av-item-id').value = state.items[0].item_id;
+  }
+}
+
 function createHoldEntry(hold) {
   const li = document.createElement('li');
   li.innerHTML = `
@@ -133,6 +158,7 @@ function createHoldEntry(hold) {
       <button class="ghost cancel-hold">Cancel</button>
     </div>
   `;
+
   li.querySelector('.show-hold').addEventListener('click', async () => {
     try {
       const detail = await api(`/holds/${hold.hold_id}`);
@@ -141,22 +167,72 @@ function createHoldEntry(hold) {
       jsonView({ error: { message: error.message } });
     }
   });
+
   li.querySelector('.confirm-hold').addEventListener('click', async () => {
     try {
       await api(`/holds/${hold.hold_id}/confirm`, { method: 'POST', body: {} });
-      await loadHolds();
+      await Promise.all([loadHolds(), loadBookings(), loadReservations()]);
     } catch (error) {
       jsonView({ error: { message: error.message } });
     }
   });
+
   li.querySelector('.cancel-hold').addEventListener('click', async () => {
     try {
-      const actor = byId('ctx-user').value.trim();
       await api(`/holds/${hold.hold_id}/cancel`, {
         method: 'POST',
-        body: actor ? { actor_user_id: actor } : {}
+        body: actorBody()
       });
-      await loadHolds();
+      await Promise.all([loadHolds(), loadBookings(), loadReservations()]);
+    } catch (error) {
+      jsonView({ error: { message: error.message } });
+    }
+  });
+
+  return li;
+}
+
+function createBookingEntry(booking) {
+  const li = document.createElement('li');
+  li.innerHTML = `
+    <div><strong>${booking.booking_id}</strong> <span>${booking.status}</span></div>
+    <div class="meta">resource=${booking.resource_id} ${booking.start_at} - ${booking.end_at}</div>
+    <div class="actions">
+      <button class="ghost cancel-booking" ${booking.status === 'CANCELLED' ? 'disabled' : ''}>Cancel</button>
+    </div>
+  `;
+  const cancelButton = li.querySelector('.cancel-booking');
+  cancelButton.addEventListener('click', async () => {
+    try {
+      await api(`/bookings/${booking.booking_id}/cancel`, {
+        method: 'POST',
+        body: actorBody()
+      });
+      await loadBookings();
+    } catch (error) {
+      jsonView({ error: { message: error.message } });
+    }
+  });
+  return li;
+}
+
+function createReservationEntry(reservation) {
+  const li = document.createElement('li');
+  li.innerHTML = `
+    <div><strong>${reservation.reservation_id}</strong> <span>${reservation.status}</span></div>
+    <div class="meta">item=${reservation.item_id} qty=${reservation.quantity}</div>
+    <div class="actions">
+      <button class="ghost cancel-reservation" ${reservation.status === 'CANCELLED' ? 'disabled' : ''}>Cancel</button>
+    </div>
+  `;
+  const cancelButton = li.querySelector('.cancel-reservation');
+  cancelButton.addEventListener('click', async () => {
+    try {
+      await api(`/reservations/${reservation.reservation_id}/cancel`, {
+        method: 'POST',
+        body: actorBody()
+      });
+      await loadReservations();
     } catch (error) {
       jsonView({ error: { message: error.message } });
     }
@@ -169,12 +245,14 @@ async function loadResources() {
   list.textContent = 'loading...';
   try {
     const rows = await api('/resources');
+    state.resources = rows;
     list.innerHTML = '';
     for (const row of rows) {
       const li = document.createElement('li');
       li.innerHTML = `<strong>${row.name}</strong><div class="meta">${row.resource_id} / ${row.status}</div>`;
       list.appendChild(li);
     }
+    applyDefaultTargets();
   } catch {
     list.textContent = 'failed';
   }
@@ -185,12 +263,14 @@ async function loadItems() {
   list.textContent = 'loading...';
   try {
     const rows = await api('/items');
+    state.items = rows;
     list.innerHTML = '';
     for (const row of rows) {
       const li = document.createElement('li');
       li.innerHTML = `<strong>${row.name}</strong><div class="meta">${row.item_id} / qty=${row.total_quantity}</div>`;
       list.appendChild(li);
     }
+    applyDefaultTargets();
   } catch {
     list.textContent = 'failed';
   }
@@ -199,17 +279,106 @@ async function loadItems() {
 async function loadHolds() {
   const list = byId('holds-list');
   list.textContent = 'loading...';
-  const params = new URLSearchParams();
-  const status = byId('holds-status').value;
-  if (status) params.set('status', status);
+  const query = toQueryString({ status: byId('holds-status').value });
   try {
-    const rows = await api(`/holds${params.size ? `?${params}` : ''}`);
+    const rows = await api(`/holds${query ? `?${query}` : ''}`);
     list.innerHTML = '';
     for (const row of rows) {
       list.appendChild(createHoldEntry(row));
     }
   } catch {
     list.textContent = 'failed';
+  }
+}
+
+async function loadBookings() {
+  const list = byId('bookings-list');
+  list.textContent = 'loading...';
+  const query = toQueryString({ status: byId('bookings-status').value });
+  try {
+    const rows = await api(`/bookings${query ? `?${query}` : ''}`);
+    list.innerHTML = '';
+    for (const row of rows) {
+      list.appendChild(createBookingEntry(row));
+    }
+  } catch {
+    list.textContent = 'failed';
+  }
+}
+
+async function loadReservations() {
+  const list = byId('reservations-list');
+  list.textContent = 'loading...';
+  const query = toQueryString({ status: byId('reservations-status').value });
+  try {
+    const rows = await api(`/reservations${query ? `?${query}` : ''}`);
+    list.innerHTML = '';
+    for (const row of rows) {
+      list.appendChild(createReservationEntry(row));
+    }
+  } catch {
+    list.textContent = 'failed';
+  }
+}
+
+async function checkResourceAvailability() {
+  const resourceId = byId('av-resource-id').value.trim();
+  const startAt = byId('av-start-at').value.trim();
+  const endAt = byId('av-end-at').value.trim();
+  const granularity = byId('av-granularity').value.trim();
+  const list = byId('resource-availability-list');
+
+  if (!resourceId || !startAt || !endAt) {
+    jsonView({
+      error: {
+        code: 'INVALID_INPUT',
+        message: 'resource_id, start_at, end_at are required'
+      }
+    });
+    return;
+  }
+
+  list.textContent = 'loading...';
+  const query = toQueryString({
+    start_at: startAt,
+    end_at: endAt,
+    granularity_minutes: granularity ? Number(granularity) : undefined
+  });
+
+  try {
+    const result = await api(`/resources/${encodeURIComponent(resourceId)}/availability?${query}`);
+    list.innerHTML = '';
+    for (const slot of result.slots ?? []) {
+      const li = document.createElement('li');
+      li.className = slot.available ? 'available' : 'unavailable';
+      li.innerHTML = `
+        <div><strong>${slot.start_at}</strong> - ${slot.end_at}</div>
+        <div class="meta">available=${slot.available}${slot.reason ? ` reason=${slot.reason}` : ''}</div>
+      `;
+      list.appendChild(li);
+    }
+  } catch {
+    list.textContent = 'failed';
+  }
+}
+
+async function checkItemAvailability() {
+  const itemId = byId('av-item-id').value.trim();
+  if (!itemId) {
+    jsonView({
+      error: {
+        code: 'INVALID_INPUT',
+        message: 'item_id is required'
+      }
+    });
+    return;
+  }
+
+  try {
+    const result = await api(`/items/${encodeURIComponent(itemId)}/availability`);
+    byId('item-availability-view').textContent = JSON.stringify(result, null, 2);
+  } catch {
+    byId('item-availability-view').textContent = 'failed';
   }
 }
 
@@ -235,7 +404,7 @@ function setup() {
     };
     try {
       await api('/holds', { method: 'POST', body: payload });
-      await loadHolds();
+      await Promise.all([loadHolds(), loadBookings(), loadReservations()]);
     } catch (error) {
       jsonView({ error: { message: error.message } });
     }
@@ -244,10 +413,12 @@ function setup() {
   byId('refresh-resources').addEventListener('click', loadResources);
   byId('refresh-items').addEventListener('click', loadItems);
   byId('refresh-holds').addEventListener('click', loadHolds);
+  byId('refresh-bookings').addEventListener('click', loadBookings);
+  byId('refresh-reservations').addEventListener('click', loadReservations);
+  byId('check-resource-availability').addEventListener('click', checkResourceAvailability);
+  byId('check-item-availability').addEventListener('click', checkItemAvailability);
 
-  loadResources();
-  loadItems();
-  loadHolds();
+  Promise.all([loadResources(), loadItems(), loadHolds(), loadBookings(), loadReservations()]);
 }
 
 setup();
