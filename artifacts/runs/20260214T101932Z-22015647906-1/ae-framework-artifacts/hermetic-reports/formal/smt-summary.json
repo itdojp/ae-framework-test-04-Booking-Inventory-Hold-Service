@@ -1,0 +1,12 @@
+{
+  "solver": "cvc5",
+  "file": "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/spec/formal/smt/bi-hold-invariants.smt2",
+  "ran": false,
+  "status": "solver_not_available",
+  "ok": null,
+  "exitCode": null,
+  "timeMs": null,
+  "timestamp": "2026-02-14T10:19:32.218Z",
+  "output": "Solver 'cvc5' not found. See docs/quality/formal-tools-setup.md",
+  "outputFile": "artifacts/hermetic-reports/formal/smt-output.txt"
+}

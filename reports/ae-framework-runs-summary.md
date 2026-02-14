@@ -1,26 +1,27 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-14T10:14:39.106Z
-- runCount: 24
-- totalSize: 40 MB (42098060 bytes)
-- totalFiles: 7740
-- latestRun: 20260214T101232Z-22015548894-1 (runId=22015548894, generatedAt=2026-02-14T10:12:32Z)
+- generatedAt: 2026-02-14T10:19:32.675Z
+- runCount: 25
+- totalSize: 43 MB (44651685 bytes)
+- totalFiles: 8071
+- latestRun: 20260214T101932Z-22015647906-1 (runId=22015647906, generatedAt=2026-02-14T10:19:32Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 24 |
+| ae-framework-autopilot | 25 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
-| alloy | tool_not_available | 24 |
-| csp | tool_not_available | 24 |
+| alloy | tool_not_available | 25 |
+| csp | tool_not_available | 25 |
 | smt | file_not_found | 24 |
-| tla | tool_not_available | 24 |
+| smt | solver_not_available | 1 |
+| tla | tool_not_available | 25 |
 
 ## Project Formal Inputs
 
@@ -33,13 +34,14 @@
 - CSP: `CSP_RUN_CMD` または FDR/cspx/cspmchecker の実行環境を設定する。
 - TLA+: `TLA_TOOLS_JAR` を設定し TLC 実行可能状態を作る。
 - Alloy: `ALLOY_JAR` または Alloy CLI を導入する。
-- SMT: `.smt2` は配置済み。`verify:smt` が参照する入力パスを CI で固定する。
+- SMT: z3 または cvc5 を実行環境へ導入する。
 - run数が増加しているため、必要に応じて保持期間と圧縮方針を見直す。
 
 ## Recent Runs (latest 20)
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
+| 20260214T101932Z-22015647906-1 | 22015647906 | 1 | 2026-02-14T10:19:32Z | 2.4 MB | 331 | c18860e3a794 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T101232Z-22015548894-1 | 22015548894 | 1 | 2026-02-14T10:12:32Z | 1.7 MB | 324 | 666c62f716df | csp:tool_not_available, tla:tool_not_available |
 | 20260214T100406Z-22015435943-1 | 22015435943 | 1 | 2026-02-14T10:04:06Z | 1.7 MB | 323 | 53d837b72e67 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T083717Z-22014307580-1 | 22014307580 | 1 | 2026-02-14T08:37:17Z | 1.7 MB | 323 | ba88da7cd4cd | csp:tool_not_available, tla:tool_not_available |
@@ -59,4 +61,3 @@
 | 20260214T042542Z-22011062750-1 | 22011062750 | 1 | 2026-02-14T04:25:42Z | 1.7 MB | 323 | 2b1139445666 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T041556Z-22010926475-1 | 22010926475 | 1 | 2026-02-14T04:15:57Z | 1.7 MB | 323 | eff3e451996b | csp:tool_not_available, tla:tool_not_available |
 | 20260214T040705Z-22010802515-1 | 22010802515 | 1 | 2026-02-14T04:07:06Z | 1.7 MB | 323 | 055b27a40ea2 | csp:tool_not_available, tla:tool_not_available |
-| 20260214T005712Z-22008008403-1 | 22008008403 | 1 | 2026-02-14T00:57:12Z | 1.7 MB | 323 | 8e35bdab9b67 | csp:tool_not_available, tla:tool_not_available |
