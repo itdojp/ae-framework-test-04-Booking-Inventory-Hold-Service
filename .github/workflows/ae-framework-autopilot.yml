@@ -1,0 +1,113 @@
+name: ae-framework-autopilot
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'artifacts/runs/**'
+  pull_request:
+  schedule:
+    - cron: '0 18 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  evaluate-with-ae-framework:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout ae-framework
+        uses: actions/checkout@v4
+        with:
+          repository: itdojp/ae-framework
+          path: .tools/ae-framework
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: .tools/ae-framework/pnpm-lock.yaml
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install and build ae-framework
+        working-directory: .tools/ae-framework
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile --prefer-offline
+          pnpm run build
+
+      - name: Run ae playbook (light)
+        working-directory: .tools/ae-framework
+        run: pnpm run codex:run
+        continue-on-error: true
+
+      - name: Run formal smoke (CSP typecheck)
+        working-directory: .tools/ae-framework
+        run: pnpm run verify:csp -- --file spec/csp/cspx-smoke.cspm --mode typecheck
+        continue-on-error: true
+
+      - name: Collect run artifacts
+        id: collect
+        run: |
+          RUN_STAMP="$(date -u +%Y%m%dT%H%M%SZ)-${{ github.run_id }}-${{ github.run_attempt }}"
+          RUN_DIR="artifacts/runs/${RUN_STAMP}"
+          mkdir -p "${RUN_DIR}"
+          rsync -a .tools/ae-framework/artifacts/ "${RUN_DIR}/ae-framework-artifacts/" || true
+          rsync -a .tools/ae-framework/reports/ "${RUN_DIR}/ae-framework-reports/" || true
+          cat > "${RUN_DIR}/run-manifest.json" <<EOF
+          {
+            "generatedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "workflow": "${{ github.workflow }}",
+            "runId": "${{ github.run_id }}",
+            "runAttempt": "${{ github.run_attempt }}",
+            "source": "${{ github.repository }}@${{ github.sha }}",
+            "toolchain": {
+              "node": "22",
+              "pnpm": "10",
+              "aeFrameworkRepo": "itdojp/ae-framework"
+            },
+            "paths": {
+              "artifactRoot": "${RUN_DIR}",
+              "collectedFrom": ".tools/ae-framework/artifacts"
+            }
+          }
+          EOF
+          echo "run_dir=${RUN_DIR}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload run artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ae-framework-run-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.collect.outputs.run_dir }}
+          if-no-files-found: warn
+
+      - name: Commit artifact snapshot to main
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add artifacts/runs
+          if git diff --cached --quiet; then
+            echo "No artifact changes to commit."
+            exit 0
+          fi
+          git commit -m "chore: archive ae-framework run ${{ github.run_id }}-${{ github.run_attempt }} [skip ci]"
+          git push

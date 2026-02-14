@@ -1,0 +1,17 @@
+# Dependencies / build cache
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+tmp/
+*.log
+
+# Local-only tool checkout
+.tools/
+
+# OS/editor
+.DS_Store
+.vscode/
+
+# NOTE:
+# ae-framework 評価のため `.ae/`, `artifacts/`, `reports/` は追跡対象にする。
