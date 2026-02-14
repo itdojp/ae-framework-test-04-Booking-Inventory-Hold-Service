@@ -1,4 +1,7 @@
 import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { BookingInventoryEngine } from './domain/booking-inventory-engine.js';
 import { DomainError, isDomainError } from './domain/errors.js';
 import { AsyncMutex } from './infra/async-mutex.js';
@@ -23,6 +26,9 @@ const stateStore = new JsonStateStore(stateFile);
 const initialSnapshot = stateStore.load();
 const engine = new BookingInventoryEngine({ snapshot: initialSnapshot ?? undefined });
 const mutationMutex = new AsyncMutex();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uiDir = path.join(__dirname, 'ui');
 
 if (!initialSnapshot) {
   stateStore.save(engine.toSnapshot());
@@ -31,6 +37,17 @@ if (!initialSnapshot) {
 function sendJson(res, status, body) {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(body));
+}
+
+function sendText(res, status, contentType, body) {
+  res.writeHead(status, { 'content-type': `${contentType}; charset=utf-8` });
+  res.end(body);
+}
+
+function sendUiAsset(res, fileName, contentType) {
+  const filePath = path.join(uiDir, fileName);
+  const content = fs.readFileSync(filePath, 'utf8');
+  sendText(res, 200, contentType, content);
 }
 
 async function readJson(req) {
@@ -92,6 +109,9 @@ function parsePath(pathname) {
   if (pathname === '/api/v1/reservations') return { route: 'reservations' };
   if (pathname === '/api/v1/audit-logs') return { route: 'auditLogs' };
   if (pathname === '/api/v1/system/expire') return { route: 'systemExpire' };
+  if (pathname === '/ui' || pathname === '/ui/') return { route: 'uiIndex' };
+  if (pathname === '/ui/app.js') return { route: 'uiApp' };
+  if (pathname === '/ui/styles.css') return { route: 'uiStyles' };
   if (pathname === '/healthz') return { route: 'healthz' };
   return null;
 }
@@ -231,6 +251,21 @@ const server = http.createServer(async (req, res) => {
 
     if (matched.route === 'healthz' && req.method === 'GET') {
       sendJson(res, 200, { status: 'ok', state_file: stateFile });
+      return;
+    }
+
+    if (matched.route === 'uiIndex' && req.method === 'GET') {
+      sendUiAsset(res, 'index.html', 'text/html');
+      return;
+    }
+
+    if (matched.route === 'uiApp' && req.method === 'GET') {
+      sendUiAsset(res, 'app.js', 'application/javascript');
+      return;
+    }
+
+    if (matched.route === 'uiStyles' && req.method === 'GET') {
+      sendUiAsset(res, 'styles.css', 'text/css');
       return;
     }
 

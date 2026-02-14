@@ -68,9 +68,11 @@
     - 期限切れバッチ CLI `scripts/expire-holds.mjs` を追加（`STATE_FILE` を直接更新）
     - `GET /api/v1/holds` を追加（tenant/owner/status/time-range/limit フィルタ）
     - `/bookings` `/reservations` 一覧クエリの入力検証を追加（日時範囲/enum）
+    - 最小UIを追加（`/ui`, `/ui/app.js`, `/ui/styles.css`）
 - テスト:
   - 受入基準 + 追加ケースを `tests/booking-inventory-engine.test.js` に実装
   - API スモーク/永続化/入力検証/patch/idempotency/audit/role-guard を server テストに追加
   - バッチCLIテスト `tests/expire-holds-script.test.js` を追加
   - hold 一覧APIテスト `tests/server-holds-list.test.js` を追加
-  - `npm test` 29/29 pass
+  - UI配信テスト `tests/server-ui.test.js` を追加
+  - `npm test` 30/30 pass

@@ -35,3 +35,7 @@ npm test
 npm start
 npm run expire:holds -- --now 2026-02-14T10:00:00Z
 ```
+
+UI:
+
+- `http://localhost:3000/ui`
