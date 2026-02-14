@@ -77,6 +77,7 @@
     - CI workflow に SMT smoke（`verify:smt --file spec/formal/smt/bi-hold-invariants.smt2`）を追加
     - CI workflow で SMT solver（cvc5/z3）を自動導入するステップを追加
     - CI workflow で TLA/Alloy アセット取得と smoke（`verify:tla` / `verify:alloy`）を追加
+    - TLA smoke 対象を `spec/tla/DomainSpec.tla` に変更（`DomainSpec.cfg` 同梱で TLC 実行安定化）
     - run summary/evaluation に latest vs previous の formal status 差分を追加
     - CI で run アーカイブ後に評価サマリを自動更新
 - テスト:
@@ -89,4 +90,4 @@
   - booking/reservation 一覧の owner スコープ制御テストを追加
   - run集計スクリプトテスト `tests/generate-run-summary-script.test.js` を追加
   - 評価レポートスクリプトテスト `tests/generate-evaluation-report-script.test.js` を追加
-  - `npm test` 34/34 pass
+  - `npm test` 35/35 pass

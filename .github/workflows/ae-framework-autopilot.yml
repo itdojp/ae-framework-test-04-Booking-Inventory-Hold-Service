@@ -104,7 +104,7 @@ jobs:
 
       - name: Run formal smoke (TLA TLC)
         working-directory: .tools/ae-framework
-        run: pnpm run verify:tla -- --engine=tlc --file spec/formal/10_abstract/KvOnce.tla
+        run: pnpm run verify:tla -- --engine=tlc --file spec/tla/DomainSpec.tla --timeout 60000
         continue-on-error: true
 
       - name: Run formal smoke (Alloy)
