@@ -1,0 +1,75 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForHealth(baseUrl, retries = 20) {
+  for (let i = 0; i < retries; i += 1) {
+    try {
+      const res = await fetch(`${baseUrl}/healthz`);
+      if (res.ok) return;
+    } catch {
+      // ignore
+    }
+    await wait(100);
+  }
+  throw new Error('server did not become healthy');
+}
+
+test('HTTP API smoke: create item -> hold -> confirm', async () => {
+  const port = 3400 + Math.floor(Math.random() * 200);
+  const baseUrl = `http://127.0.0.1:${port}`;
+  const proc = spawn(process.execPath, ['src/server.js'], {
+    env: { ...process.env, PORT: String(port) },
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+
+  try {
+    await waitForHealth(baseUrl);
+
+    const createItemRes = await fetch(`${baseUrl}/api/v1/items`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        name: 'Tablet',
+        total_quantity: 5
+      })
+    });
+    assert.equal(createItemRes.status, 201);
+    const item = await createItemRes.json();
+
+    const createHoldRes = await fetch(`${baseUrl}/api/v1/holds`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: 'T1',
+        created_by_user_id: 'U1',
+        expires_in_seconds: 600,
+        lines: [{ kind: 'INVENTORY_QTY', item_id: item.item_id, quantity: 2 }]
+      })
+    });
+    assert.equal(createHoldRes.status, 201);
+    const hold = await createHoldRes.json();
+
+    const confirmRes = await fetch(`${baseUrl}/api/v1/holds/${hold.hold_id}/confirm`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    assert.equal(confirmRes.status, 200);
+    const confirmed = await confirmRes.json();
+    assert.equal(confirmed.status, 'CONFIRMED');
+    assert.equal(confirmed.reservations.length, 1);
+
+    const availRes = await fetch(`${baseUrl}/api/v1/items/${item.item_id}/availability`);
+    assert.equal(availRes.status, 200);
+    const availability = await availRes.json();
+    assert.equal(availability.available_quantity, 3);
+  } finally {
+    proc.kill('SIGTERM');
+  }
+});

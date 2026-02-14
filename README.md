@@ -13,6 +13,7 @@
 
 - 開発計画: `docs/plans/development-plan.md`
 - ae-framework 利用仕様: `docs/specs/ae-framework-utilization-spec.md`
+- 仕様資産一覧: `spec/README.md`
 
 ## 成果物保存方針
 
@@ -21,3 +22,12 @@ ae-framework 評価のため、以下ディレクトリ配下の中間生成物�
 - `.ae/`
 - `artifacts/`
 - `reports/`
+
+## プロトタイプ実装（P2先行）
+
+- ドメイン実装: `src/domain/booking-inventory-engine.js`
+- 受入基準テスト: `tests/booking-inventory-engine.test.js`
+
+```bash
+node --test
+```
