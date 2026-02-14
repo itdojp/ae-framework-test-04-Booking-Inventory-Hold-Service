@@ -98,6 +98,24 @@ export class BookingInventoryEngine {
     return clone(item);
   }
 
+  listResources({ status } = {}) {
+    const result = [];
+    for (const resource of this.resources.values()) {
+      if (status && resource.status !== status) continue;
+      result.push(clone(resource));
+    }
+    return result;
+  }
+
+  listItems({ status } = {}) {
+    const result = [];
+    for (const item of this.items.values()) {
+      if (status && item.status !== status) continue;
+      result.push(clone(item));
+    }
+    return result;
+  }
+
   getHold(hold_id) {
     const hold = this.holds.get(hold_id);
     if (!hold) {
@@ -163,6 +181,42 @@ export class BookingInventoryEngine {
       }
     }
     return { available: true, reason: null };
+  }
+
+  getResourceAvailability(resource_id, input) {
+    const startMs = new Date(input.start_at).getTime();
+    const endMs = new Date(input.end_at).getTime();
+    const granularity = Number(input.granularity_minutes ?? 15);
+    const exclude_hold_id = input.exclude_hold_id ?? null;
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || startMs >= endMs) {
+      throw new DomainError('INVALID_RANGE', 'start_at and end_at range is invalid', 400);
+    }
+    if (!Number.isInteger(granularity) || granularity <= 0) {
+      throw new DomainError('INVALID_GRANULARITY', 'granularity_minutes must be > 0', 400);
+    }
+    const resource = this.resources.get(resource_id);
+    if (!resource) {
+      throw new DomainError('RESOURCE_NOT_FOUND', 'resource not found', 404, { resource_id });
+    }
+
+    const slots = [];
+    for (let cursor = startMs; cursor < endMs; cursor += granularity * 60_000) {
+      const next = Math.min(cursor + granularity * 60_000, endMs);
+      const slotStart = new Date(cursor).toISOString();
+      const slotEnd = new Date(next).toISOString();
+      const availability = this.checkResourceAvailability(resource_id, slotStart, slotEnd, { exclude_hold_id });
+      slots.push({
+        start_at: slotStart,
+        end_at: slotEnd,
+        available: availability.available,
+        reason: availability.reason
+      });
+    }
+    return {
+      resource_id,
+      range: { start_at: new Date(startMs).toISOString(), end_at: new Date(endMs).toISOString() },
+      slots
+    };
   }
 
   createHold(input) {
@@ -476,5 +530,93 @@ export class BookingInventoryEngine {
       }
     }
     return expired;
+  }
+
+  listBookings(filters = {}) {
+    const list = [];
+    const start = filters.start_at ? new Date(filters.start_at).getTime() : null;
+    const end = filters.end_at ? new Date(filters.end_at).getTime() : null;
+    for (const booking of this.bookings.values()) {
+      if (filters.resource_id && booking.resource_id !== filters.resource_id) continue;
+      if (filters.status && booking.status !== filters.status) continue;
+      if (start !== null && new Date(booking.end_at).getTime() <= start) continue;
+      if (end !== null && new Date(booking.start_at).getTime() >= end) continue;
+      list.push(clone(booking));
+    }
+    return list;
+  }
+
+  listReservations(filters = {}) {
+    const list = [];
+    for (const reservation of this.reservations.values()) {
+      if (filters.item_id && reservation.item_id !== filters.item_id) continue;
+      if (filters.status && reservation.status !== filters.status) continue;
+      list.push(clone(reservation));
+    }
+    return list;
+  }
+
+  cancelBooking(input) {
+    const booking = this.bookings.get(input.booking_id);
+    if (!booking) {
+      throw new DomainError('BOOKING_NOT_FOUND', 'booking not found', 404, { booking_id: input.booking_id });
+    }
+    if (booking.status !== 'CONFIRMED') {
+      throw new DomainError('INVALID_BOOKING_STATUS', 'booking is already cancelled', 409, {
+        booking_id: input.booking_id,
+        status: booking.status
+      });
+    }
+    if (!input.is_admin && booking.created_by_user_id !== input.actor_user_id) {
+      throw new DomainError('FORBIDDEN', 'cancel is allowed only for owner or admin', 403, {
+        booking_id: input.booking_id
+      });
+    }
+    const nowIso = toIso(input.now ?? this.clock());
+    booking.status = 'CANCELLED';
+    booking.cancelled_at = nowIso;
+    booking.updated_at = nowIso;
+    this.addAudit({
+      tenant_id: booking.tenant_id,
+      actor_user_id: input.actor_user_id,
+      action: 'BOOKING_CANCEL',
+      target_type: 'BOOKING',
+      target_id: booking.booking_id,
+      now: input.now ?? this.clock()
+    });
+    return clone(booking);
+  }
+
+  cancelReservation(input) {
+    const reservation = this.reservations.get(input.reservation_id);
+    if (!reservation) {
+      throw new DomainError('RESERVATION_NOT_FOUND', 'reservation not found', 404, {
+        reservation_id: input.reservation_id
+      });
+    }
+    if (reservation.status !== 'CONFIRMED') {
+      throw new DomainError('INVALID_RESERVATION_STATUS', 'reservation is already cancelled', 409, {
+        reservation_id: input.reservation_id,
+        status: reservation.status
+      });
+    }
+    if (!input.is_admin && reservation.created_by_user_id !== input.actor_user_id) {
+      throw new DomainError('FORBIDDEN', 'cancel is allowed only for owner or admin', 403, {
+        reservation_id: input.reservation_id
+      });
+    }
+    const nowIso = toIso(input.now ?? this.clock());
+    reservation.status = 'CANCELLED';
+    reservation.cancelled_at = nowIso;
+    reservation.updated_at = nowIso;
+    this.addAudit({
+      tenant_id: reservation.tenant_id,
+      actor_user_id: input.actor_user_id,
+      action: 'RESERVATION_CANCEL',
+      target_type: 'RESERVATION',
+      target_id: reservation.reservation_id,
+      now: input.now ?? this.clock()
+    });
+    return clone(reservation);
   }
 }
