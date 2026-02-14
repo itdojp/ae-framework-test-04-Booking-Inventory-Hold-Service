@@ -28,6 +28,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate machine-readable specs
+        run: |
+          mkdir -p artifacts/spec-validation
+          ./scripts/validate-spec-assets.sh | tee artifacts/spec-validation/latest.log
+
       - name: Checkout ae-framework
         uses: actions/checkout@v4
         with:
@@ -69,6 +74,9 @@ jobs:
           mkdir -p "${RUN_DIR}"
           rsync -a .tools/ae-framework/artifacts/ "${RUN_DIR}/ae-framework-artifacts/" || true
           rsync -a .tools/ae-framework/reports/ "${RUN_DIR}/ae-framework-reports/" || true
+          rsync -a spec/ "${RUN_DIR}/spec-snapshot/" || true
+          rsync -a configs/conformance/ "${RUN_DIR}/conformance-snapshot/" || true
+          rsync -a artifacts/spec-validation/ "${RUN_DIR}/spec-validation/" || true
           cat > "${RUN_DIR}/run-manifest.json" <<EOF
           {
             "generatedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",

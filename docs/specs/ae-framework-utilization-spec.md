@@ -83,3 +83,14 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
 - 利用ツールの追加/廃止
 - 生成物保存先や保持方針の変更
 - CI 実行モード（blocking/non-blocking）の変更
+
+## 7. 機械可読仕様（P1初版）
+
+- OpenAPI: `spec/openapi/booking-inventory-hold.openapi.yaml`
+- State Machine:
+  - `spec/state-machines/hold-state-machine.json`
+  - `spec/state-machines/booking-state-machine.json`
+  - `spec/state-machines/reservation-state-machine.json`
+- Formal plan: `spec/formal/bi-hold.formal-plan.json`
+- Flow: `spec/flow/bi-hold.flow.json`
+- Conformance sample: `configs/conformance/bi-sample-*.json`
