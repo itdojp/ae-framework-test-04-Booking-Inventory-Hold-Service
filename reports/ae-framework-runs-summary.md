@@ -1,31 +1,31 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-15T23:37:40.946Z
-- runCount: 35
-- totalSize: 59 MB (61492917 bytes)
-- totalFiles: 11329
-- latestRun: 20260215T181042Z-22040509428-1 (runId=22040509428, generatedAt=2026-02-15T18:10:42Z)
+- generatedAt: 2026-02-15T23:42:36.303Z
+- runCount: 36
+- totalSize: 61 MB (64051443 bytes)
+- totalFiles: 11662
+- latestRun: 20260215T234235Z-22045249968-1 (runId=22045249968, generatedAt=2026-02-15T23:42:36Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 35 |
+| ae-framework-autopilot | 36 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
 | alloy | tool_not_available | 27 |
-| alloy | ran | 8 |
+| alloy | ran | 9 |
 | csp | tool_not_available | 29 |
-| csp | ran | 6 |
+| csp | ran | 7 |
 | smt | file_not_found | 24 |
-| smt | ran | 9 |
+| smt | ran | 10 |
 | smt | solver_not_available | 2 |
 | tla | tool_not_available | 27 |
-| tla | ran | 7 |
+| tla | ran | 8 |
 | tla | failed | 1 |
 
 ## Formal Status Delta (latest vs previous)
@@ -62,6 +62,7 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
+| 20260215T234235Z-22045249968-1 | 22045249968 | 1 | 2026-02-15T23:42:36Z | 2.4 MB | 333 | b65de181ace9 | csp:ran, tla:ran |
 | 20260215T181042Z-22040509428-1 | 22040509428 | 1 | 2026-02-15T18:10:42Z | 1.7 MB | 327 | 7be998ee4ea2 | csp:ran, tla:ran |
 | 20260215T130146Z-22036057419-1 | 22036057419 | 1 | 2026-02-15T13:01:46Z | 1.7 MB | 327 | f52f5f94766c | csp:ran, tla:ran |
 | 20260215T084006Z-22032606462-1 | 22032606462 | 1 | 2026-02-15T08:40:06Z | 1.7 MB | 327 | 3ac9d72ffe08 | csp:ran, tla:ran |
@@ -81,4 +82,3 @@
 | 20260214T064030Z-22012828220-1 | 22012828220 | 1 | 2026-02-14T06:40:30Z | 1.7 MB | 323 | f9c7e4e36b5d | csp:tool_not_available, tla:tool_not_available |
 | 20260214T063312Z-22012728540-1 | 22012728540 | 1 | 2026-02-14T06:33:12Z | 1.7 MB | 323 | 4d832f13ca29 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T062701Z-22012651158-1 | 22012651158 | 1 | 2026-02-14T06:27:01Z | 1.7 MB | 323 | aa480ebcbac8 | csp:tool_not_available, tla:tool_not_available |
-| 20260214T061904Z-22012541560-1 | 22012541560 | 1 | 2026-02-14T06:19:05Z | 1.7 MB | 323 | ebc399c66784 | csp:tool_not_available, tla:tool_not_available |
