@@ -36,6 +36,7 @@ npm start
 npm run expire:holds -- --now 2026-02-14T10:00:00Z
 npm run report:runs
 npm run report:evaluation
+npm run report:retention-alert
 ```
 
 UI:
@@ -52,3 +53,4 @@ UI:
 - `reports/ae-framework-runs-summary.json`
 - `reports/ae-framework-runs-summary.md`
 - `reports/ae-framework-evaluation.md`
+- `reports/artifact-retention-review-alert.json`

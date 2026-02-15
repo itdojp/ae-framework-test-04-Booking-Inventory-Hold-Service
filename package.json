@@ -9,6 +9,7 @@
     "expire:holds": "node scripts/expire-holds.mjs",
     "report:runs": "node scripts/generate-run-summary.mjs",
     "report:evaluation": "node scripts/generate-evaluation-report.mjs",
+    "report:retention-alert": "node scripts/generate-retention-review-alert.mjs",
     "test": "node --test tests/*.test.js",
     "test:acceptance": "node --test tests/booking-inventory-engine.test.js"
   },
