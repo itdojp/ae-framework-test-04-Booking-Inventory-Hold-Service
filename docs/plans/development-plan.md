@@ -82,6 +82,8 @@
     - run集計/評価レポートに artifact retention policy の状態（configured/valid/reviewOverdue）を追加
     - retention review alert 生成スクリプト `scripts/generate-retention-review-alert.mjs` を追加
     - CI で retention review overdue を tracking Issue へ自動同期（起票/クローズ）するステップを追加
+    - formal regression alert 生成スクリプト `scripts/generate-formal-regression-alert.mjs` を追加
+    - CI で formalDelta 劣化を tracking Issue へ自動同期（起票/クローズ）するステップを追加
     - TLA smoke 対象を `spec/tla/DomainSpec.tla` に変更（`DomainSpec.cfg` 同梱で TLC 実行安定化）
     - run summary/evaluation に latest vs previous の formal status 差分を追加
     - CI で run アーカイブ後に評価サマリを自動更新
@@ -96,4 +98,5 @@
   - run集計スクリプトテスト `tests/generate-run-summary-script.test.js` を追加
   - 評価レポートスクリプトテスト `tests/generate-evaluation-report-script.test.js` を追加
   - retention review alert スクリプトテスト `tests/generate-retention-review-alert-script.test.js` を追加
-  - `npm test` 38/38 pass
+  - formal regression alert スクリプトテスト `tests/generate-formal-regression-alert-script.test.js` を追加
+  - `npm test` 40/40 pass

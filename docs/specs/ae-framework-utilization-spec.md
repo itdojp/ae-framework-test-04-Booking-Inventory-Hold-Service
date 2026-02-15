@@ -29,6 +29,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
 | run集計サマリ | `node scripts/generate-run-summary.mjs` | run蓄積状況・formal status差分の継続監視 | `reports/ae-framework-runs-summary.{json,md}` |
 | 評価レポート | `node scripts/generate-evaluation-report.mjs` | run集計から評価指標と推奨アクションを生成 | `reports/ae-framework-evaluation.md` |
 | retention review alert | `node scripts/generate-retention-review-alert.mjs` | 保持方針レビュー期限超過の Issue 自動化入力生成 | `reports/artifact-retention-review-alert.json` |
+| formal regression alert | `node scripts/generate-formal-regression-alert.mjs` | 形式検証ステータス劣化の Issue 自動化入力生成 | `reports/formal-regression-alert.json` |
 
 ## 4. 自動化運用方針
 
@@ -55,6 +56,7 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
 - 生成物を本リポジトリ `artifacts/runs/<run-id>/` へ集約
   - 集約後に `reports/ae-framework-runs-summary.{json,md}` と `reports/ae-framework-evaluation.md` を自動更新
   - `reports/artifact-retention-review-alert.json` を生成し、`reviewOverdue=true` のときは tracking Issue を自動起票（解消時は自動クローズ）
+  - `reports/formal-regression-alert.json` を生成し、`formalDelta` 劣化時は tracking Issue を自動起票（非劣化時は自動クローズ）
 
 ### 4.3 非ブロッキング方針
 
@@ -120,7 +122,9 @@ Booking / Inventory Hold Service 開発で利用する `ae-framework` ツール�
   - `npm run report:runs`
   - `npm run report:evaluation`
   - `npm run report:retention-alert`
+  - `npm run report:formal-alert`
 - CI:
   - `ae-framework-autopilot` で spec検証 + `npm test` + ae-framework playbook を実行
-  - runアーカイブ後に `reports/ae-framework-runs-summary.{json,md}` / `reports/ae-framework-evaluation.md` / `reports/artifact-retention-review-alert.json` を再生成して保存
+  - runアーカイブ後に `reports/ae-framework-runs-summary.{json,md}` / `reports/ae-framework-evaluation.md` / `reports/artifact-retention-review-alert.json` / `reports/formal-regression-alert.json` を再生成して保存
   - `pull_request` 以外では retention review tracking Issue を自動同期（期限超過時に起票、解消時にクローズ）
+  - `pull_request` 以外では formal regression tracking Issue を自動同期（劣化時に起票、非劣化時にクローズ）
