@@ -38,6 +38,7 @@ npm run report:runs
 npm run report:evaluation
 npm run report:retention-alert
 npm run report:formal-alert
+CURRENT_RUN_ID=123 CURRENT_RUN_ATTEMPT=1 npm run report:validate-freshness
 ```
 
 UI:
