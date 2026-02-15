@@ -1,0 +1,16 @@
+{
+  "file": "spec/alloy/Domain.als",
+  "ran": true,
+  "status": "ran",
+  "ok": true,
+  "exitCode": 0,
+  "timeMs": 833,
+  "timestamp": "2026-02-15T18:10:31.570Z",
+  "output": "Command                                  Safety\nSolution index                           0\nTrace length                             1\nLoop state                               0\n\nState index                              0\nLoop back                                true\n┌─────────┬─────────┬──┐\n│sig      │fields   │<-│\n├─────────┼─────────┤  │\n│$Safety_s│$Safety_s│  │\n│         ├─────────┤  │\n│         │State²   │  │\n├─────────┼─────────┤  │\n│         │         │  │\n└─────────┴─────────┴──┘\n\n┌─────────┬─────────┐\n│skolem   │value    │\n├─────────┼─────────┤\n│$Safety_s│{State$0}│\n└─────────┴─────────┘\n\n",
+  "outputFile": "artifacts/hermetic-reports/formal/alloy-output.txt",
+  "temporal": {
+    "present": false,
+    "operators": [],
+    "pastOperators": []
+  }
+}

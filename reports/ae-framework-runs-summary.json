@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-02-15T13:02:21.179Z",
-  "runCount": 34,
-  "totalBytes": 59727690,
-  "totalFiles": 11002,
-  "averageBytesPerRun": 1756697,
+  "generatedAt": "2026-02-15T18:10:42.457Z",
+  "runCount": 35,
+  "totalBytes": 62287412,
+  "totalFiles": 11335,
+  "averageBytesPerRun": 1779640,
   "latestRun": {
-    "runFolder": "20260215T130146Z-22036057419-1",
-    "runId": "22036057419",
+    "runFolder": "20260215T181042Z-22040509428-1",
+    "runId": "22040509428",
     "runAttempt": "1",
-    "generatedAt": "2026-02-15T13:01:46Z",
-    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@f52f5f94766ccc76e5a03a81374a0a01a29a2ce0",
-    "path": "artifacts/runs/20260215T130146Z-22036057419-1"
+    "generatedAt": "2026-02-15T18:10:42Z",
+    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@7be998ee4ea22dafe68897cb2df9c97533d933e8",
+    "path": "artifacts/runs/20260215T181042Z-22040509428-1"
   },
   "oldestRun": {
     "runFolder": "20260214T002433Z-22007398683-1",
@@ -21,28 +21,28 @@
     "path": "artifacts/runs/20260214T002433Z-22007398683-1"
   },
   "workflowCounts": {
-    "ae-framework-autopilot": 34
+    "ae-framework-autopilot": 35
   },
   "nodeVersionCounts": {
-    "22": 34
+    "22": 35
   },
   "formalStatusCounts": {
     "csp": {
-      "ran": 5,
+      "ran": 6,
       "tool_not_available": 29
     },
     "tla": {
-      "ran": 6,
+      "ran": 7,
       "failed": 1,
       "tool_not_available": 27
     },
     "smt": {
-      "ran": 8,
+      "ran": 9,
       "solver_not_available": 2,
       "file_not_found": 24
     },
     "alloy": {
-      "ran": 7,
+      "ran": 8,
       "tool_not_available": 27
     }
   },
@@ -51,25 +51,25 @@
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-02-15T13:01:30Z"
+      "timestamp": "2026-02-15T18:10:26Z"
     },
     "tla": {
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-02-15T13:01:33.805Z"
+      "timestamp": "2026-02-15T18:10:30.178Z"
     },
     "smt": {
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-02-15T13:01:46.675Z"
+      "timestamp": "2026-02-15T18:10:42.056Z"
     },
     "alloy": {
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-02-15T13:01:35.275Z"
+      "timestamp": "2026-02-15T18:10:31.570Z"
     }
   },
   "formalDelta": {
@@ -120,6 +120,47 @@
     "現時点で優先アクションはありません。"
   ],
   "runs": [
+    {
+      "runFolder": "20260215T181042Z-22040509428-1",
+      "runPath": "artifacts/runs/20260215T181042Z-22040509428-1",
+      "runId": "22040509428",
+      "runAttempt": "1",
+      "generatedAt": "2026-02-15T18:10:42Z",
+      "generatedAtMs": 1771179042000,
+      "workflow": "ae-framework-autopilot",
+      "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@7be998ee4ea22dafe68897cb2df9c97533d933e8",
+      "sourceSha": "7be998ee4ea22dafe68897cb2df9c97533d933e8",
+      "node": "22",
+      "pnpm": "10",
+      "totalBytes": 2559722,
+      "fileCount": 333,
+      "formal": {
+        "csp": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-02-15T18:10:26Z"
+        },
+        "tla": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-02-15T18:10:30.178Z"
+        },
+        "smt": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-02-15T18:10:42.056Z"
+        },
+        "alloy": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-02-15T18:10:31.570Z"
+        }
+      }
+    },
     {
       "runFolder": "20260215T130146Z-22036057419-1",
       "runPath": "artifacts/runs/20260215T130146Z-22036057419-1",
