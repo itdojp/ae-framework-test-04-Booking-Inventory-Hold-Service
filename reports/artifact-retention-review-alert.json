@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-15T12:56:19.617Z",
+  "generatedAt": "2026-02-15T13:01:47.257Z",
   "summaryPath": "reports/ae-framework-runs-summary.json",
   "issue": {
     "uniqueKey": "[artifact-retention-review]",
@@ -7,7 +7,7 @@
     "shouldOpen": false,
     "reason": "review_ok",
     "body": null,
-    "closeComment": "Artifact retention policy review is no longer overdue.\n\n- resolvedAt: 2026-02-15T12:56:19.617Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
+    "closeComment": "Artifact retention policy review is no longer overdue.\n\n- resolvedAt: 2026-02-15T13:01:47.257Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
   },
   "policy": {
     "path": "configs/artifact-retention/policy.json",
