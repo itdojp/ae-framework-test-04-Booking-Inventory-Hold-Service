@@ -216,6 +216,7 @@ jobs:
           node scripts/generate-retention-review-alert.mjs
           node scripts/generate-formal-regression-alert.mjs
           node scripts/generate-evaluation-threshold-alert.mjs
+          node scripts/generate-artifact-footprint-regression-alert.mjs
 
       - name: Validate report freshness
         if: always()
@@ -405,6 +406,69 @@ jobs:
               repo,
               issue_number: openIssue.number,
               body: issue.closeComment || 'Evaluation threshold breach is resolved. Closing this issue automatically.'
+            });
+            await github.rest.issues.update({
+              owner,
+              repo,
+              issue_number: openIssue.number,
+              state: 'closed'
+            });
+            core.notice(`Closed issue #${openIssue.number}`);
+
+      - name: Sync artifact footprint regression issue
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('node:fs');
+            const path = require('node:path');
+
+            const alertPath = path.join(process.env.GITHUB_WORKSPACE, 'reports', 'artifact-footprint-regression-alert.json');
+            if (!fs.existsSync(alertPath)) {
+              core.info(`alert file not found: ${alertPath}`);
+              return;
+            }
+
+            const payload = JSON.parse(fs.readFileSync(alertPath, 'utf8'));
+            const issue = payload?.issue;
+            if (!issue || typeof issue.title !== 'string' || issue.title.length === 0) {
+              core.info('Issue payload is missing. Skip sync.');
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const uniqueKey = issue.uniqueKey || '[artifact-footprint-regression-alert]';
+            const query = `repo:${owner}/${repo} is:issue is:open in:title "${uniqueKey}"`;
+            const search = await github.rest.search.issuesAndPullRequests({ q: query, per_page: 10 });
+            const openIssue = search.data.items.find((item) => !item.pull_request);
+
+            if (issue.shouldOpen === true) {
+              if (openIssue) {
+                core.info(`Open issue already exists: #${openIssue.number}`);
+                return;
+              }
+
+              const created = await github.rest.issues.create({
+                owner,
+                repo,
+                title: issue.title,
+                body: issue.body || 'Artifact footprint regression detected.'
+              });
+              core.notice(`Created issue #${created.data.number}`);
+              return;
+            }
+
+            if (!openIssue) {
+              core.info('No open artifact-footprint regression issue. Nothing to close.');
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: openIssue.number,
+              body: issue.closeComment || 'Artifact footprint regression is resolved. Closing this issue automatically.'
             });
             await github.rest.issues.update({
               owner,

@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-02-16T03:06:56.563Z",
+  "generatedAt": "2026-02-16T06:33:36.598Z",
   "runCount": 37,
-  "totalBytes": 65820637,
-  "totalFiles": 11989,
-  "averageBytesPerRun": 1778936,
+  "totalBytes": 65023383,
+  "totalFiles": 11983,
+  "averageBytesPerRun": 1757389,
   "latestRun": {
     "runFolder": "20260216T030656Z-22048655727-1",
     "runId": "22048655727",
@@ -132,8 +132,8 @@
       "sourceSha": "79ff1e10543aa482e5608cab1af29cd90773976d",
       "node": "22",
       "pnpm": "10",
-      "totalBytes": 2562486,
-      "fileCount": 333,
+      "totalBytes": 1765232,
+      "fileCount": 327,
       "formal": {
         "csp": {
           "status": "ran",

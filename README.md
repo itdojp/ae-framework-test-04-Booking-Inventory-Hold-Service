@@ -39,6 +39,7 @@ npm run report:evaluation
 npm run report:retention-alert
 npm run report:formal-alert
 npm run report:evaluation-alert
+npm run report:footprint-alert
 CURRENT_RUN_ID=123 CURRENT_RUN_ATTEMPT=1 npm run report:validate-freshness
 ```
 
@@ -59,3 +60,4 @@ UI:
 - `reports/artifact-retention-review-alert.json`
 - `reports/formal-regression-alert.json`
 - `reports/evaluation-threshold-alert.json`
+- `reports/artifact-footprint-regression-alert.json`

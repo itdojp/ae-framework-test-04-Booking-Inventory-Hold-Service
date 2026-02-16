@@ -1,10 +1,10 @@
 # ae-framework Evaluation Report
 
-- generatedAt: 2026-02-16T03:06:56.597Z
+- generatedAt: 2026-02-16T06:33:36.772Z
 - score: 100 / 100
 - rating: A
 - runCount: 37
-- totalArtifactSizeMB: 62.8
+- totalArtifactSizeMB: 62
 - autopilotRuns: 37
 
 ## Snapshot

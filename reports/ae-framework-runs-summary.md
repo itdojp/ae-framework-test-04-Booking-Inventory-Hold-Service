@@ -1,9 +1,9 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-16T03:06:56.563Z
+- generatedAt: 2026-02-16T06:33:36.598Z
 - runCount: 37
-- totalSize: 63 MB (65820637 bytes)
-- totalFiles: 11989
+- totalSize: 62 MB (65023383 bytes)
+- totalFiles: 11983
 - latestRun: 20260216T030656Z-22048655727-1 (runId=22048655727, generatedAt=2026-02-16T03:06:56Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
@@ -62,7 +62,7 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260216T030656Z-22048655727-1 | 22048655727 | 1 | 2026-02-16T03:06:56Z | 2.4 MB | 333 | 79ff1e10543a | csp:ran, tla:ran |
+| 20260216T030656Z-22048655727-1 | 22048655727 | 1 | 2026-02-16T03:06:56Z | 1.7 MB | 327 | 79ff1e10543a | csp:ran, tla:ran |
 | 20260215T234235Z-22045249968-1 | 22045249968 | 1 | 2026-02-15T23:42:36Z | 1.7 MB | 327 | b65de181ace9 | csp:ran, tla:ran |
 | 20260215T181042Z-22040509428-1 | 22040509428 | 1 | 2026-02-15T18:10:42Z | 1.7 MB | 327 | 7be998ee4ea2 | csp:ran, tla:ran |
 | 20260215T130146Z-22036057419-1 | 22036057419 | 1 | 2026-02-15T13:01:46Z | 1.7 MB | 327 | f52f5f94766c | csp:ran, tla:ran |
