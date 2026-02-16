@@ -38,6 +38,7 @@ npm run report:runs
 npm run report:evaluation
 npm run report:retention-alert
 npm run report:formal-alert
+npm run report:evaluation-alert
 CURRENT_RUN_ID=123 CURRENT_RUN_ATTEMPT=1 npm run report:validate-freshness
 ```
 
@@ -57,3 +58,4 @@ UI:
 - `reports/ae-framework-evaluation.md`
 - `reports/artifact-retention-review-alert.json`
 - `reports/formal-regression-alert.json`
+- `reports/evaluation-threshold-alert.json`

@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-02-16T03:01:11.175Z",
+  "summaryPath": "reports/ae-framework-runs-summary.json",
+  "thresholds": {
+    "minRunCount": 1,
+    "minScore": 90,
+    "minRating": "A",
+    "minFormalReady": 4,
+    "minFormalHealthy": 4,
+    "requirePolicyValid": true,
+    "requirePreserveAllArtifacts": true,
+    "requireReviewNotOverdue": true
+  },
+  "evaluation": {
+    "score": 100,
+    "rating": "A",
+    "runCount": 36,
+    "workflowCount": 36,
+    "formal": {
+      "ready": 4,
+      "healthy": 4,
+      "total": 4
+    },
+    "latestRun": {
+      "runId": "22045249968",
+      "runAttempt": "1",
+      "generatedAt": "2026-02-15T23:42:36Z"
+    },
+    "artifactPolicy": {
+      "configured": true,
+      "valid": true,
+      "preserveAllArtifacts": true,
+      "reviewOverdue": false
+    }
+  },
+  "breaches": [],
+  "issue": {
+    "uniqueKey": "[evaluation-threshold-alert]",
+    "title": "[evaluation-threshold-alert] ae-framework evaluation threshold breached",
+    "shouldOpen": false,
+    "reason": "within_threshold",
+    "body": null,
+    "closeComment": "ae-framework evaluation is back within configured thresholds.\n\n- resolvedAt: 2026-02-16T03:01:11.175Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
+  }
+}

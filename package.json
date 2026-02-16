@@ -11,6 +11,7 @@
     "report:evaluation": "node scripts/generate-evaluation-report.mjs",
     "report:retention-alert": "node scripts/generate-retention-review-alert.mjs",
     "report:formal-alert": "node scripts/generate-formal-regression-alert.mjs",
+    "report:evaluation-alert": "node scripts/generate-evaluation-threshold-alert.mjs",
     "report:validate-freshness": "node scripts/validate-report-freshness.mjs",
     "test": "node --test tests/*.test.js",
     "test:acceptance": "node --test tests/booking-inventory-engine.test.js"

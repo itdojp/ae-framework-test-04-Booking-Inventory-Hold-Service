@@ -84,6 +84,8 @@
     - CI で retention review overdue を tracking Issue へ自動同期（起票/クローズ）するステップを追加
     - formal regression alert 生成スクリプト `scripts/generate-formal-regression-alert.mjs` を追加
     - CI で formalDelta 劣化を tracking Issue へ自動同期（起票/クローズ）するステップを追加
+    - evaluation threshold alert 生成スクリプト `scripts/generate-evaluation-threshold-alert.mjs` を追加
+    - CI で evaluation score / formal health 閾値逸脱を tracking Issue へ自動同期（起票/クローズ）するステップを追加
     - report freshness 検証スクリプト `scripts/validate-report-freshness.mjs` を追加
     - CI で当該run反映漏れを検出する `Validate report freshness` ステップを追加
     - TLA smoke 対象を `spec/tla/DomainSpec.tla` に変更（`DomainSpec.cfg` 同梱で TLC 実行安定化）
@@ -101,5 +103,6 @@
   - 評価レポートスクリプトテスト `tests/generate-evaluation-report-script.test.js` を追加
   - retention review alert スクリプトテスト `tests/generate-retention-review-alert-script.test.js` を追加
   - formal regression alert スクリプトテスト `tests/generate-formal-regression-alert-script.test.js` を追加
+  - evaluation threshold alert スクリプトテスト `tests/generate-evaluation-threshold-alert-script.test.js` を追加
   - report freshness 検証スクリプトテスト `tests/validate-report-freshness-script.test.js` を追加
-  - `npm test` 42/42 pass
+  - `npm test` 44/44 pass
