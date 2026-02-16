@@ -1,31 +1,31 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-02-16T06:33:36.598Z
-- runCount: 37
-- totalSize: 62 MB (65023383 bytes)
-- totalFiles: 11983
-- latestRun: 20260216T030656Z-22048655727-1 (runId=22048655727, generatedAt=2026-02-16T03:06:56Z)
+- generatedAt: 2026-02-16T06:38:57.389Z
+- runCount: 38
+- totalSize: 64 MB (67583069 bytes)
+- totalFiles: 12316
+- latestRun: 20260216T063856Z-22052617410-1 (runId=22052617410, generatedAt=2026-02-16T06:38:57Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 37 |
+| ae-framework-autopilot | 38 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
 | alloy | tool_not_available | 27 |
-| alloy | ran | 10 |
+| alloy | ran | 11 |
 | csp | tool_not_available | 29 |
-| csp | ran | 8 |
+| csp | ran | 9 |
 | smt | file_not_found | 24 |
-| smt | ran | 11 |
+| smt | ran | 12 |
 | smt | solver_not_available | 2 |
 | tla | tool_not_available | 27 |
-| tla | ran | 9 |
+| tla | ran | 10 |
 | tla | failed | 1 |
 
 ## Formal Status Delta (latest vs previous)
@@ -62,6 +62,7 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
+| 20260216T063856Z-22052617410-1 | 22052617410 | 1 | 2026-02-16T06:38:57Z | 2.4 MB | 333 | 0780d22075a4 | csp:ran, tla:ran |
 | 20260216T030656Z-22048655727-1 | 22048655727 | 1 | 2026-02-16T03:06:56Z | 1.7 MB | 327 | 79ff1e10543a | csp:ran, tla:ran |
 | 20260215T234235Z-22045249968-1 | 22045249968 | 1 | 2026-02-15T23:42:36Z | 1.7 MB | 327 | b65de181ace9 | csp:ran, tla:ran |
 | 20260215T181042Z-22040509428-1 | 22040509428 | 1 | 2026-02-15T18:10:42Z | 1.7 MB | 327 | 7be998ee4ea2 | csp:ran, tla:ran |
@@ -81,4 +82,3 @@
 | 20260214T083126Z-22014233651-1 | 22014233651 | 1 | 2026-02-14T08:31:26Z | 1.7 MB | 323 | b22bcfcbb351 | csp:tool_not_available, tla:tool_not_available |
 | 20260214T082439Z-22014149956-1 | 22014149956 | 1 | 2026-02-14T08:24:39Z | 1.7 MB | 323 | 7faaa45ad09b | csp:tool_not_available, tla:tool_not_available |
 | 20260214T064030Z-22012828220-1 | 22012828220 | 1 | 2026-02-14T06:40:30Z | 1.7 MB | 323 | f9c7e4e36b5d | csp:tool_not_available, tla:tool_not_available |
-| 20260214T063312Z-22012728540-1 | 22012728540 | 1 | 2026-02-14T06:33:12Z | 1.7 MB | 323 | 4d832f13ca29 | csp:tool_not_available, tla:tool_not_available |
