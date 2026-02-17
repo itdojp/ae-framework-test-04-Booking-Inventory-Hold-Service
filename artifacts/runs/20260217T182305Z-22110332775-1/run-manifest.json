@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-02-17T18:23:05Z",
+  "workflow": "ae-framework-autopilot",
+  "runId": "22110332775",
+  "runAttempt": "1",
+  "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@c448b8149e7c70834cc527fc38f90455e1b47b28",
+  "toolchain": {
+    "node": "22",
+    "pnpm": "10",
+    "aeFrameworkRepo": "itdojp/ae-framework"
+  },
+  "paths": {
+    "artifactRoot": "artifacts/runs/20260217T182305Z-22110332775-1",
+    "collectedFrom": ".tools/ae-framework/artifacts"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "input": "samples/conformance/sample-traces.json",
+  "events": 2,
+  "schemaErrors": 0,
+  "invariantViolations": 0,
+  "violationRate": 0,
+  "timestamp": "2026-02-17T18:21:45.042Z",
+  "firstInvariantViolation": null,
+  "firstSchemaError": null,
+  "byType": {
+    "onhand_min": 0,
+    "allocated_le_onhand": 0
+  },
+  "details": {
+    "schemaErrors": [],
+    "invariantViolations": [],
+    "options": {
+      "disable": [],
+      "onhandMin": 0
+    }
+  },
+  "trace": {
+    "input": "samples/trace/kvonce-sample.ndjson",
+    "outputDir": "../../../../../../../tmp/pipelines-trace-8eJq7z/trace-output",
+    "format": "ndjson",
+    "status": "valid",
+    "ndjson": "../../../../../../../tmp/pipelines-trace-8eJq7z/trace-output/kvonce-events.ndjson",
+    "projection": {
+      "path": "../../../../../../../tmp/pipelines-trace-8eJq7z/trace-output/kvonce-projection.json",
+      "events": 4,
+      "keys": 2,
+      "stats": {
+        "totalEvents": 4,
+        "uniqueKeys": 2,
+        "byType": {
+          "success": 2,
+          "retry": 1,
+          "failure": 1,
+          "unknown": 0
+        },
+        "keysWithSuccess": 2,
+        "keysWithRetries": 1,
+        "keysWithFailures": 1,
+        "duplicateFailureKeys": 1,
+        "successRate": 0.5,
+        "stateSequenceLength": 4
+      },
+      "stateSequenceLength": 4,
+      "stateSequence": "../../../../../../../tmp/pipelines-trace-8eJq7z/trace-output/projected/kvonce-state-sequence.json"
+    },
+    "validation": {
+      "path": "../../../../../../../tmp/pipelines-trace-8eJq7z/trace-output/kvonce-validation.json",
+      "exitCode": 0,
+      "valid": true,
+      "issues": 0
+    },
+    "replay": {
+      "status": "skipped"
+    },
+    "domains": [
+      {
+        "key": "kvonce",
+        "label": "KvOnce",
+        "status": "valid",
+        "issues": 0,
+        "traceIds": [],
+        "tempoLinks": [],
+        "artifacts": {
+          "validationPath": "../../../../../../../tmp/pipelines-trace-8eJq7z/trace-output/kvonce-validation.json",
+          "projectionPath": "../../../../../../../tmp/pipelines-trace-8eJq7z/trace-output/kvonce-projection.json",
+          "stateSequencePath": "../../../../../../../tmp/pipelines-trace-8eJq7z/trace-output/projected/kvonce-state-sequence.json",
+          "ndjsonPath": "../../../../../../../tmp/pipelines-trace-8eJq7z/trace-output/kvonce-events.ndjson"
+        },
+        "metrics": {
+          "eventCount": 4,
+          "stateSequenceLength": 4
+        }
+      }
+    ],
+    "aggregate": {
+      "traceIds": [],
+      "tempoLinks": [],
+      "issues": 0
+    }
+  }
+}
