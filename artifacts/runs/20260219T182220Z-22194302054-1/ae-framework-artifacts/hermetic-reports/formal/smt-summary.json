@@ -1,0 +1,12 @@
+{
+  "solver": "cvc5",
+  "file": "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/spec/formal/smt/bi-hold-invariants.smt2",
+  "ran": true,
+  "status": "ran",
+  "ok": true,
+  "exitCode": 0,
+  "timeMs": 6,
+  "timestamp": "2026-02-19T18:22:20.782Z",
+  "output": "unsat\n",
+  "outputFile": "artifacts/hermetic-reports/formal/smt-output.txt"
+}
