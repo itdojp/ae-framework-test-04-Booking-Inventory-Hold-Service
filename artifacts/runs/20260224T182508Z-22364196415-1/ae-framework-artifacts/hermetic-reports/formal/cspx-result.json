@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1",
+  "tool": {
+    "name": "cspx",
+    "version": "0.1.0",
+    "git_sha": "UNKNOWN"
+  },
+  "invocation": {
+    "command": "typecheck",
+    "args": [
+      "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/.tools/ae-framework/spec/csp/cspx-smoke.cspm"
+    ],
+    "format": "json",
+    "timeout_ms": null,
+    "memory_mb": null,
+    "parallel": 1,
+    "deterministic": false,
+    "seed": 0
+  },
+  "inputs": [
+    {
+      "path": "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/.tools/ae-framework/spec/csp/cspx-smoke.cspm",
+      "sha256": "ae8f849506833b505099a09e6ddd817818b7ce0b96a97f3a0b42c09f8ac76bc0"
+    }
+  ],
+  "status": "pass",
+  "exit_code": 0,
+  "started_at": "2026-02-24T18:24:45Z",
+  "finished_at": "2026-02-24T18:24:45Z",
+  "duration_ms": 0,
+  "checks": [
+    {
+      "name": "typecheck",
+      "model": null,
+      "target": null,
+      "status": "pass",
+      "counterexample": null,
+      "stats": {
+        "states": 1,
+        "transitions": 0
+      }
+    }
+  ],
+  "metrics": {
+    "states": 1,
+    "transitions": 0,
+    "wall_time_ms": 0,
+    "cpu_time_ms": null,
+    "peak_rss_bytes": null,
+    "disk_bytes": null,
+    "states_per_sec": null,
+    "transitions_per_sec": null,
+    "parallelism": {
+      "threads": 1,
+      "deterministic": false,
+      "seed": 0
+    }
+  }
+}
