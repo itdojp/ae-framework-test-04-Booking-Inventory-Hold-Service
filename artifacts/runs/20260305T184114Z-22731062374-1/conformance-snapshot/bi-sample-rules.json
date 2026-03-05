@@ -1,0 +1,70 @@
+[
+  {
+    "id": "bi-rule-001",
+    "name": "Available Quantity Non Negative",
+    "description": "available_quantity は常に 0 以上",
+    "category": "domain_invariant",
+    "severity": "critical",
+    "enabled": true,
+    "condition": {
+      "expression": "inventory_non_negative",
+      "variables": [
+        "data.inventory.available_quantity"
+      ],
+      "constraints": {
+        "min": 0
+      }
+    },
+    "actions": ["log_violation"],
+    "metadata": {
+      "version": "1.0.0",
+      "tags": ["BI-INV-010", "inventory"]
+    }
+  },
+  {
+    "id": "bi-rule-002",
+    "name": "No Overlap On Confirmed Booking",
+    "description": "同一時間帯の重複予約は禁止",
+    "category": "domain_invariant",
+    "severity": "critical",
+    "enabled": true,
+    "condition": {
+      "expression": "no_overlap_booking",
+      "variables": [
+        "data.resource.bookings_confirmed",
+        "data.resource.holds_active"
+      ],
+      "constraints": {
+        "maxConfirmedOnSameSlot": 1
+      }
+    },
+    "actions": ["log_violation", "metric_increment"],
+    "metadata": {
+      "version": "1.0.0",
+      "tags": ["BI-ACC-01", "booking"]
+    }
+  },
+  {
+    "id": "bi-rule-003",
+    "name": "Hold Line Size Range",
+    "description": "Hold lines は 1..10",
+    "category": "data_validation",
+    "severity": "major",
+    "enabled": true,
+    "condition": {
+      "expression": "hold_line_count_range",
+      "variables": [
+        "data.hold.line_count"
+      ],
+      "constraints": {
+        "min": 1,
+        "max": 10
+      }
+    },
+    "actions": ["log_violation"],
+    "metadata": {
+      "version": "1.0.0",
+      "tags": ["BI-HOLD-002", "hold"]
+    }
+  }
+]
