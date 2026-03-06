@@ -1,31 +1,31 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-03-05T18:41:15.230Z
-- runCount: 54
-- totalSize: 92 MB (95954713 bytes)
-- totalFiles: 17579
-- latestRun: 20260305T184114Z-22731062374-1 (runId=22731062374, generatedAt=2026-03-05T18:41:14Z)
+- generatedAt: 2026-03-06T18:16:57.588Z
+- runCount: 55
+- totalSize: 93 MB (97726402 bytes)
+- totalFiles: 17908
+- latestRun: 20260306T181657Z-22775960105-1 (runId=22775960105, generatedAt=2026-03-06T18:16:57Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 54 |
+| ae-framework-autopilot | 55 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
-| alloy | ran | 27 |
+| alloy | ran | 28 |
 | alloy | tool_not_available | 27 |
 | csp | tool_not_available | 29 |
-| csp | ran | 25 |
-| smt | ran | 28 |
+| csp | ran | 26 |
+| smt | ran | 29 |
 | smt | file_not_found | 24 |
 | smt | solver_not_available | 2 |
+| tla | ran | 27 |
 | tla | tool_not_available | 27 |
-| tla | ran | 26 |
 | tla | failed | 1 |
 
 ## Formal Status Delta (latest vs previous)
@@ -62,7 +62,8 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260305T184114Z-22731062374-1 | 22731062374 | 1 | 2026-03-05T18:41:14Z | 2.5 MB | 335 | 629be7df927c | csp:ran, tla:ran |
+| 20260306T181657Z-22775960105-1 | 22775960105 | 1 | 2026-03-06T18:16:57Z | 2.5 MB | 335 | e0700c94bb18 | csp:ran, tla:ran |
+| 20260305T184114Z-22731062374-1 | 22731062374 | 1 | 2026-03-05T18:41:14Z | 1.7 MB | 329 | 629be7df927c | csp:ran, tla:ran |
 | 20260304T181803Z-22682790133-1 | 22682790133 | 1 | 2026-03-04T18:18:03Z | 1.7 MB | 329 | 0a125ae6b2b8 | csp:ran, tla:ran |
 | 20260303T181949Z-22636711272-1 | 22636711272 | 1 | 2026-03-03T18:19:49Z | 1.7 MB | 329 | bd18bb1ae08e | csp:ran, tla:ran |
 | 20260302T181901Z-22589381937-1 | 22589381937 | 1 | 2026-03-02T18:19:01Z | 1.7 MB | 329 | 0081c4ab0c54 | csp:ran, tla:ran |
@@ -81,4 +82,3 @@
 | 20260216T063856Z-22052617410-1 | 22052617410 | 1 | 2026-02-16T06:38:57Z | 1.7 MB | 327 | 0780d22075a4 | csp:ran, tla:ran |
 | 20260216T030656Z-22048655727-1 | 22048655727 | 1 | 2026-02-16T03:06:56Z | 1.7 MB | 327 | 79ff1e10543a | csp:ran, tla:ran |
 | 20260215T234235Z-22045249968-1 | 22045249968 | 1 | 2026-02-15T23:42:36Z | 1.7 MB | 327 | b65de181ace9 | csp:ran, tla:ran |
-| 20260215T181042Z-22040509428-1 | 22040509428 | 1 | 2026-02-15T18:10:42Z | 1.7 MB | 327 | 7be998ee4ea2 | csp:ran, tla:ran |

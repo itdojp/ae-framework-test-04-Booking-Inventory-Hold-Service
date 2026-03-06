@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "bi_hold_lifecycle",
+  "name": "BookingInventoryHoldLifecycle",
+  "description": "Hold の状態遷移（ACTIVE/CONFIRMED/CANCELLED/EXPIRED）",
+  "initial": "ACTIVE",
+  "states": [
+    {
+      "name": "ACTIVE",
+      "description": "有効な仮押さえ",
+      "entry": ["lock_hold_lines"],
+      "exit": ["mark_transition_time"]
+    },
+    {
+      "name": "CONFIRMED",
+      "description": "確定済み",
+      "entry": ["create_booking_or_reservation", "release_hold_lines"]
+    },
+    {
+      "name": "CANCELLED",
+      "description": "取消済み",
+      "entry": ["release_hold_lines", "write_audit_log"]
+    },
+    {
+      "name": "EXPIRED",
+      "description": "期限切れ",
+      "entry": ["release_hold_lines", "write_audit_log"]
+    }
+  ],
+  "events": [
+    "confirm",
+    "cancel",
+    "expire"
+  ],
+  "transitions": [
+    {
+      "from": "ACTIVE",
+      "to": "CONFIRMED",
+      "event": "confirm",
+      "guard": "not_expired && all_lines_lockable",
+      "actions": ["upsert_confirm_result", "emit_HOLD_CONFIRM"]
+    },
+    {
+      "from": "ACTIVE",
+      "to": "CANCELLED",
+      "event": "cancel",
+      "guard": "is_owner_or_admin",
+      "actions": ["emit_HOLD_CANCEL"]
+    },
+    {
+      "from": "ACTIVE",
+      "to": "EXPIRED",
+      "event": "expire",
+      "guard": "now_gte_expires_at",
+      "actions": ["emit_HOLD_EXPIRE"]
+    }
+  ],
+  "metadata": {
+    "sourceSpec": "spec/BI-SPEC-001.md",
+    "invariants": [
+      "BI-INV-001",
+      "BI-INV-002",
+      "BI-CONFIRM-003"
+    ]
+  },
+  "correlation": {
+    "runId": "spec-bootstrap-20260214",
+    "workflow": "manual"
+  }
+}
