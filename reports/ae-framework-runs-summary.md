@@ -1,30 +1,30 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-03-08T18:11:41.736Z
-- runCount: 57
-- totalSize: 97 MB (101275945 bytes)
-- totalFiles: 18567
-- latestRun: 20260308T181141Z-22826746137-1 (runId=22826746137, generatedAt=2026-03-08T18:11:41Z)
+- generatedAt: 2026-03-09T18:21:48.929Z
+- runCount: 58
+- totalSize: 98 MB (103061911 bytes)
+- totalFiles: 18899
+- latestRun: 20260309T182148Z-22868079596-1 (runId=22868079596, generatedAt=2026-03-09T18:21:48Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 57 |
+| ae-framework-autopilot | 58 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
-| alloy | ran | 30 |
+| alloy | ran | 31 |
 | alloy | tool_not_available | 27 |
+| csp | ran | 29 |
 | csp | tool_not_available | 29 |
-| csp | ran | 28 |
-| smt | ran | 31 |
+| smt | ran | 32 |
 | smt | file_not_found | 24 |
 | smt | solver_not_available | 2 |
-| tla | ran | 29 |
+| tla | ran | 30 |
 | tla | tool_not_available | 27 |
 | tla | failed | 1 |
 
@@ -62,7 +62,8 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260308T181141Z-22826746137-1 | 22826746137 | 1 | 2026-03-08T18:11:41Z | 2.5 MB | 336 | 4977e29a3f65 | csp:ran, tla:ran |
+| 20260309T182148Z-22868079596-1 | 22868079596 | 1 | 2026-03-09T18:21:48Z | 2.5 MB | 338 | d1ece16ea007 | csp:ran, tla:ran |
+| 20260308T181141Z-22826746137-1 | 22826746137 | 1 | 2026-03-08T18:11:41Z | 1.7 MB | 330 | 4977e29a3f65 | csp:ran, tla:ran |
 | 20260307T181349Z-22804309986-1 | 22804309986 | 1 | 2026-03-07T18:13:49Z | 1.7 MB | 329 | fbb5794d03f6 | csp:ran, tla:ran |
 | 20260306T181657Z-22775960105-1 | 22775960105 | 1 | 2026-03-06T18:16:57Z | 1.7 MB | 329 | e0700c94bb18 | csp:ran, tla:ran |
 | 20260305T184114Z-22731062374-1 | 22731062374 | 1 | 2026-03-05T18:41:14Z | 1.7 MB | 329 | 629be7df927c | csp:ran, tla:ran |
@@ -81,4 +82,3 @@
 | 20260218T181932Z-22151961868-1 | 22151961868 | 1 | 2026-02-18T18:19:33Z | 1.7 MB | 329 | 09b5480679d0 | csp:ran, tla:ran |
 | 20260217T182305Z-22110332775-1 | 22110332775 | 1 | 2026-02-17T18:23:05Z | 1.7 MB | 329 | c448b8149e7c | csp:ran, tla:ran |
 | 20260216T181550Z-22073334349-1 | 22073334349 | 1 | 2026-02-16T18:15:50Z | 1.7 MB | 328 | e26f20bf151e | csp:ran, tla:ran |
-| 20260216T063856Z-22052617410-1 | 22052617410 | 1 | 2026-02-16T06:38:57Z | 1.7 MB | 327 | 0780d22075a4 | csp:ran, tla:ran |
