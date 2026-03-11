@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0.0",
+  "nodes": [
+    {
+      "id": "intent-spec",
+      "kind": "intent2formal",
+      "input": ["spec/BI-SPEC-001.md"],
+      "output": [
+        "spec/openapi/booking-inventory-hold.openapi.yaml",
+        "spec/state-machines/hold-state-machine.json",
+        "spec/formal/bi-hold.formal-plan.json"
+      ],
+      "params": {
+        "objective": "Issue #1 を機械可読化"
+      }
+    },
+    {
+      "id": "formal-tests",
+      "kind": "formal2tests",
+      "input": [
+        "spec/state-machines/hold-state-machine.json",
+        "spec/formal/bi-hold.formal-plan.json"
+      ],
+      "output": [
+        "tests/property/",
+        "tests/mbt/",
+        "artifacts/hermetic-reports/formal/"
+      ]
+    },
+    {
+      "id": "tests-code",
+      "kind": "tests2code",
+      "input": ["tests/property/", "tests/mbt/"],
+      "output": ["src/"]
+    },
+    {
+      "id": "code-verify",
+      "kind": "code2verify",
+      "input": ["src/", "spec/openapi/booking-inventory-hold.openapi.yaml"],
+      "output": ["artifacts/verify-lite/", "artifacts/mutation/"]
+    },
+    {
+      "id": "verify-operate",
+      "kind": "verify2operate",
+      "input": ["artifacts/verify-lite/", "artifacts/mutation/"],
+      "output": ["reports/heavy-test-trends.json", "artifacts/runs/"]
+    }
+  ],
+  "edges": [
+    { "from": "intent-spec", "to": "formal-tests" },
+    { "from": "formal-tests", "to": "tests-code" },
+    { "from": "tests-code", "to": "code-verify" },
+    { "from": "code-verify", "to": "verify-operate" }
+  ],
+  "metadata": {
+    "project": "ae-framework-test-04-Booking-Inventory-Hold-Service",
+    "sourceIssue": 1
+  },
+  "correlation": {
+    "runId": "spec-bootstrap-20260214",
+    "workflow": "manual"
+  }
+}
