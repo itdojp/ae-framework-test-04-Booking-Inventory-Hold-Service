@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-12T18:22:26.849Z",
+  "generatedAt": "2026-03-13T18:17:05.767Z",
   "summaryPath": "reports/ae-framework-runs-summary.json",
   "thresholds": {
     "minRunCount": 1,
@@ -14,17 +14,17 @@
   "evaluation": {
     "score": 100,
     "rating": "A",
-    "runCount": 61,
-    "workflowCount": 61,
+    "runCount": 62,
+    "workflowCount": 62,
     "formal": {
       "ready": 4,
       "healthy": 4,
       "total": 4
     },
     "latestRun": {
-      "runId": "23017155776",
+      "runId": "23064324038",
       "runAttempt": "1",
-      "generatedAt": "2026-03-12T18:22:26Z"
+      "generatedAt": "2026-03-13T18:17:05Z"
     },
     "artifactPolicy": {
       "configured": true,
@@ -40,6 +40,6 @@
     "shouldOpen": false,
     "reason": "within_threshold",
     "body": null,
-    "closeComment": "ae-framework evaluation is back within configured thresholds.\n\n- resolvedAt: 2026-03-12T18:22:26.849Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
+    "closeComment": "ae-framework evaluation is back within configured thresholds.\n\n- resolvedAt: 2026-03-13T18:17:05.767Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
   }
 }
