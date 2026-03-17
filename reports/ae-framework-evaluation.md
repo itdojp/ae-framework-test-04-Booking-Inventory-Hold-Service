@@ -1,18 +1,18 @@
 # ae-framework Evaluation Report
 
-- generatedAt: 2026-03-16T18:25:50.466Z
+- generatedAt: 2026-03-17T18:25:00.087Z
 - score: 100 / 100
 - rating: A
-- runCount: 65
-- totalArtifactSizeMB: 110.2
-- autopilotRuns: 65
+- runCount: 66
+- totalArtifactSizeMB: 111.9
+- autopilotRuns: 66
 
 ## Snapshot
 
-- latestRunId: 23159245656
-- latestRunGeneratedAt: 2026-03-16T18:25:50Z
-- latestSource: itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@90c099a61fbf7507725475176ba57bf678ab9d31
-- latestArtifactPath: artifacts/runs/20260316T182549Z-23159245656-1
+- latestRunId: 23209716278
+- latestRunGeneratedAt: 2026-03-17T18:24:59Z
+- latestSource: itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@e205fb9c14b689a1439c0c13953664fb81600f42
+- latestArtifactPath: artifacts/runs/20260317T182459Z-23209716278-1
 
 ## Formal Readiness
 
@@ -32,7 +32,7 @@
 - preserveAllArtifacts: true
 - lastReviewedAt: 2026-02-14
 - reviewMaxAgeDays: 30
-- reviewOverdue: no
+- reviewOverdue: yes
 
 ## Formal Delta
 
@@ -43,4 +43,4 @@
 
 ## Recommended Actions
 
-- 現時点で優先アクションはありません。
+- artifact retention policy のレビュー期限を超過しています。`lastReviewedAt` を更新する。

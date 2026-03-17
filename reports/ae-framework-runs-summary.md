@@ -1,30 +1,30 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-03-16T18:25:50.432Z
-- runCount: 65
-- totalSize: 110 MB (115522871 bytes)
-- totalFiles: 21228
-- latestRun: 20260316T182549Z-23159245656-1 (runId=23159245656, generatedAt=2026-03-16T18:25:50Z)
+- generatedAt: 2026-03-17T18:25:00.054Z
+- runCount: 66
+- totalSize: 112 MB (117303704 bytes)
+- totalFiles: 21561
+- latestRun: 20260317T182459Z-23209716278-1 (runId=23209716278, generatedAt=2026-03-17T18:24:59Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 65 |
+| ae-framework-autopilot | 66 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
-| alloy | ran | 38 |
+| alloy | ran | 39 |
 | alloy | tool_not_available | 27 |
-| csp | ran | 36 |
+| csp | ran | 37 |
 | csp | tool_not_available | 29 |
-| smt | ran | 39 |
+| smt | ran | 40 |
 | smt | file_not_found | 24 |
 | smt | solver_not_available | 2 |
-| tla | ran | 37 |
+| tla | ran | 38 |
 | tla | tool_not_available | 27 |
 | tla | failed | 1 |
 
@@ -52,17 +52,18 @@
 - preserveAllArtifacts: true
 - lastReviewedAt: 2026-02-14
 - reviewMaxAgeDays: 30
-- reviewOverdue: no
+- reviewOverdue: yes
 
 ## Action Items
 
-- 現時点で優先アクションはありません。
+- artifact retention policy のレビュー期限を超過しています。`lastReviewedAt` を更新する。
 
 ## Recent Runs (latest 20)
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260316T182549Z-23159245656-1 | 23159245656 | 1 | 2026-03-16T18:25:50Z | 2.6 MB | 339 | 90c099a61fbf | csp:ran, tla:ran |
+| 20260317T182459Z-23209716278-1 | 23209716278 | 1 | 2026-03-17T18:24:59Z | 2.6 MB | 339 | e205fb9c14b6 | csp:ran, tla:ran |
+| 20260316T182549Z-23159245656-1 | 23159245656 | 1 | 2026-03-16T18:25:50Z | 1.7 MB | 333 | 90c099a61fbf | csp:ran, tla:ran |
 | 20260315T181344Z-23116183598-1 | 23116183598 | 1 | 2026-03-15T18:13:44Z | 1.7 MB | 333 | 13d6568327b3 | csp:ran, tla:ran |
 | 20260314T181320Z-23093414114-1 | 23093414114 | 1 | 2026-03-14T18:13:21Z | 1.7 MB | 333 | 4dcf97542b58 | csp:ran, tla:ran |
 | 20260313T181705Z-23064324038-1 | 23064324038 | 1 | 2026-03-13T18:17:05Z | 1.7 MB | 333 | 101c1aa8a1ef | csp:ran, tla:ran |
@@ -81,4 +82,3 @@
 | 20260228T181042Z-22526065206-1 | 22526065206 | 1 | 2026-02-28T18:10:42Z | 1.7 MB | 329 | e598e67acea5 | csp:ran, tla:ran |
 | 20260227T181603Z-22498100097-1 | 22498100097 | 1 | 2026-02-27T18:16:03Z | 1.7 MB | 329 | bb7e06134d55 | csp:ran, tla:ran |
 | 20260226T182029Z-22455156048-1 | 22455156048 | 1 | 2026-02-26T18:20:29Z | 1.7 MB | 329 | cd0efece96c9 | csp:ran, tla:ran |
-| 20260224T182508Z-22364196415-1 | 22364196415 | 1 | 2026-02-24T18:25:08Z | 1.7 MB | 329 | 101fc31453ca | csp:ran, tla:ran |
