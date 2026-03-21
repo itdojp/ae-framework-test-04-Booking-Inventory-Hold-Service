@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-03-20T18:18:02.185Z",
-  "runCount": 69,
-  "totalBytes": 122636637,
-  "totalFiles": 22560,
-  "averageBytesPerRun": 1777343,
+  "generatedAt": "2026-03-21T18:13:02.347Z",
+  "runCount": 70,
+  "totalBytes": 124414339,
+  "totalFiles": 22893,
+  "averageBytesPerRun": 1777348,
   "latestRun": {
-    "runFolder": "20260320T181801Z-23356417851-1",
-    "runId": "23356417851",
+    "runFolder": "20260321T181301Z-23385537711-1",
+    "runId": "23385537711",
     "runAttempt": "1",
-    "generatedAt": "2026-03-20T18:18:01Z",
-    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@d7db4ce093cf5fc478de850258cdc6cb5c98429f",
-    "path": "artifacts/runs/20260320T181801Z-23356417851-1"
+    "generatedAt": "2026-03-21T18:13:02Z",
+    "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@92497e6f34f99a628922213d29080a49ac2b25cf",
+    "path": "artifacts/runs/20260321T181301Z-23385537711-1"
   },
   "oldestRun": {
     "runFolder": "20260214T002433Z-22007398683-1",
@@ -21,28 +21,28 @@
     "path": "artifacts/runs/20260214T002433Z-22007398683-1"
   },
   "workflowCounts": {
-    "ae-framework-autopilot": 69
+    "ae-framework-autopilot": 70
   },
   "nodeVersionCounts": {
-    "22": 69
+    "22": 70
   },
   "formalStatusCounts": {
     "csp": {
-      "ran": 40,
+      "ran": 41,
       "tool_not_available": 29
     },
     "tla": {
-      "ran": 41,
+      "ran": 42,
       "failed": 1,
       "tool_not_available": 27
     },
     "smt": {
-      "ran": 43,
+      "ran": 44,
       "solver_not_available": 2,
       "file_not_found": 24
     },
     "alloy": {
-      "ran": 42,
+      "ran": 43,
       "tool_not_available": 27
     }
   },
@@ -51,25 +51,25 @@
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-03-20T18:17:43Z"
+      "timestamp": "2026-03-21T18:12:46Z"
     },
     "tla": {
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-03-20T18:17:48.291Z"
+      "timestamp": "2026-03-21T18:12:49.169Z"
     },
     "smt": {
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-03-20T18:18:01.517Z"
+      "timestamp": "2026-03-21T18:13:01.709Z"
     },
     "alloy": {
       "status": "ran",
       "ran": true,
       "ok": true,
-      "timestamp": "2026-03-20T18:17:49.826Z"
+      "timestamp": "2026-03-21T18:12:50.657Z"
     }
   },
   "formalDelta": {
@@ -112,7 +112,7 @@
     "review": {
       "lastReviewedAt": "2026-02-14",
       "maxAgeDays": 30,
-      "ageDays": 34,
+      "ageDays": 35,
       "overdue": true
     }
   },
@@ -120,6 +120,47 @@
     "artifact retention policy のレビュー期限を超過しています。`lastReviewedAt` を更新する。"
   ],
   "runs": [
+    {
+      "runFolder": "20260321T181301Z-23385537711-1",
+      "runPath": "artifacts/runs/20260321T181301Z-23385537711-1",
+      "runId": "23385537711",
+      "runAttempt": "1",
+      "generatedAt": "2026-03-21T18:13:02Z",
+      "generatedAtMs": 1774116782000,
+      "workflow": "ae-framework-autopilot",
+      "source": "itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@92497e6f34f99a628922213d29080a49ac2b25cf",
+      "sourceSha": "92497e6f34f99a628922213d29080a49ac2b25cf",
+      "node": "22",
+      "pnpm": "10",
+      "totalBytes": 2709669,
+      "fileCount": 339,
+      "formal": {
+        "csp": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-03-21T18:12:46Z"
+        },
+        "tla": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-03-21T18:12:49.169Z"
+        },
+        "smt": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-03-21T18:13:01.709Z"
+        },
+        "alloy": {
+          "status": "ran",
+          "ran": true,
+          "ok": true,
+          "timestamp": "2026-03-21T18:12:50.657Z"
+        }
+      }
+    },
     {
       "runFolder": "20260320T181801Z-23356417851-1",
       "runPath": "artifacts/runs/20260320T181801Z-23356417851-1",
@@ -132,8 +173,8 @@
       "sourceSha": "d7db4ce093cf5fc478de850258cdc6cb5c98429f",
       "node": "22",
       "pnpm": "10",
-      "totalBytes": 2707738,
-      "fileCount": 339,
+      "totalBytes": 1775771,
+      "fileCount": 333,
       "formal": {
         "csp": {
           "status": "ran",
