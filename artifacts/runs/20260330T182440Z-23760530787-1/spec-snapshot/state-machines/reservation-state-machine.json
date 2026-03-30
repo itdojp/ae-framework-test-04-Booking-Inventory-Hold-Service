@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "bi_inventory_reservation_lifecycle",
+  "name": "InventoryReservationLifecycle",
+  "description": "InventoryReservation の状態遷移（CONFIRMED/CANCELLED）",
+  "initial": "CONFIRMED",
+  "states": [
+    {
+      "name": "CONFIRMED",
+      "description": "確定済み引当"
+    },
+    {
+      "name": "CANCELLED",
+      "description": "取消済み引当"
+    }
+  ],
+  "events": [
+    "cancel"
+  ],
+  "transitions": [
+    {
+      "from": "CONFIRMED",
+      "to": "CANCELLED",
+      "event": "cancel",
+      "guard": "is_owner_or_admin",
+      "actions": ["release_quantity", "emit_RESERVATION_CANCEL"]
+    }
+  ],
+  "metadata": {
+    "sourceSpec": "spec/BI-SPEC-001.md"
+  },
+  "correlation": {
+    "runId": "spec-bootstrap-20260214",
+    "workflow": "manual"
+  }
+}

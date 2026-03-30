@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-03-28T18:13:36.862Z",
+  "generatedAt": "2026-03-30T18:24:41.129Z",
   "summaryPath": "reports/ae-framework-runs-summary.json",
   "issue": {
     "uniqueKey": "[artifact-retention-review]",
     "title": "[artifact-retention-review] Artifact retention policy review overdue",
     "shouldOpen": true,
     "reason": "review_overdue",
-    "body": "## Artifact Retention Review Overdue\n\nArtifact retention policy review has exceeded the configured max age.\n\n- detectedAt: 2026-03-28T18:13:36.862Z\n- summaryPath: reports/ae-framework-runs-summary.json\n- policyPath: configs/artifact-retention/policy.json\n- mode: keep_all_on_github\n- preserveAllArtifacts: true\n- lastReviewedAt: 2026-02-14\n- reviewAgeDays: 42\n- reviewMaxAgeDays: 30\n- runCount: 77\n\n### Required Action\n\n1. Confirm current artifact retention strategy is still valid.\n2. Update `configs/artifact-retention/policy.json` `review.lastReviewedAt`.\n3. Commit the policy update and let autopilot regenerate reports.\n\n### Tracking Key\n\n- uniqueKey: [artifact-retention-review]\n<!-- artifact-retention-review-key: [artifact-retention-review] -->\n",
-    "closeComment": "Artifact retention policy review is no longer overdue.\n\n- resolvedAt: 2026-03-28T18:13:36.862Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
+    "body": "## Artifact Retention Review Overdue\n\nArtifact retention policy review has exceeded the configured max age.\n\n- detectedAt: 2026-03-30T18:24:41.129Z\n- summaryPath: reports/ae-framework-runs-summary.json\n- policyPath: configs/artifact-retention/policy.json\n- mode: keep_all_on_github\n- preserveAllArtifacts: true\n- lastReviewedAt: 2026-02-14\n- reviewAgeDays: 44\n- reviewMaxAgeDays: 30\n- runCount: 78\n\n### Required Action\n\n1. Confirm current artifact retention strategy is still valid.\n2. Update `configs/artifact-retention/policy.json` `review.lastReviewedAt`.\n3. Commit the policy update and let autopilot regenerate reports.\n\n### Tracking Key\n\n- uniqueKey: [artifact-retention-review]\n<!-- artifact-retention-review-key: [artifact-retention-review] -->\n",
+    "closeComment": "Artifact retention policy review is no longer overdue.\n\n- resolvedAt: 2026-03-30T18:24:41.129Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
   },
   "policy": {
     "path": "configs/artifact-retention/policy.json",
@@ -18,7 +18,7 @@
     "review": {
       "lastReviewedAt": "2026-02-14",
       "maxAgeDays": 30,
-      "ageDays": 42,
+      "ageDays": 44,
       "overdue": true
     }
   }
