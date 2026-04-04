@@ -1,0 +1,43 @@
+{
+  "phases": {
+    "setup": {
+      "code": 0,
+      "log": "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/.tools/ae-framework/artifacts/ae/setup/build.log",
+      "timestamp": "2026-04-04T18:09:25.545Z"
+    },
+    "qa": {
+      "code": 0,
+      "log": "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/.tools/ae-framework/artifacts/ae/qa/qa-light.log",
+      "timestamp": "2026-04-04T18:13:59.086Z"
+    },
+    "spec": {
+      "code": 0,
+      "log": "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/.tools/ae-framework/artifacts/ae/spec/spec-compile.log",
+      "output": "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/.tools/ae-framework/artifacts/ae/spec/ir.json",
+      "input": "spec/0_first_valid_spec.md",
+      "timestamp": "2026-04-04T18:13:59.823Z"
+    },
+    "sim": {
+      "code": 0,
+      "log": "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/.tools/ae-framework/artifacts/ae/sim/sim.log",
+      "output": "/home/runner/work/ae-framework-test-04-Booking-Inventory-Hold-Service/ae-framework-test-04-Booking-Inventory-Hold-Service/.tools/ae-framework/artifacts/ae/sim/sim.json",
+      "timestamp": "2026-04-04T18:13:59.986Z"
+    },
+    "formal": {
+      "code": 0,
+      "skipped": true,
+      "timestamp": "2026-04-04T18:13:59.987Z"
+    },
+    "coverage": {
+      "code": 0,
+      "note": "coverage summary not found",
+      "timestamp": "2026-04-04T18:13:59.988Z"
+    },
+    "adapters": {
+      "code": 0,
+      "reports": [],
+      "warnings": 0,
+      "timestamp": "2026-04-04T18:13:59.989Z"
+    }
+  }
+}
