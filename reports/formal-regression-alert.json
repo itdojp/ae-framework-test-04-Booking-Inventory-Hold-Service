@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-06T18:24:10.936Z",
+  "generatedAt": "2026-04-07T18:24:31.269Z",
   "summaryPath": "reports/ae-framework-runs-summary.json",
   "issue": {
     "uniqueKey": "[formal-regression-alert]",
@@ -7,7 +7,7 @@
     "shouldOpen": false,
     "reason": "no_regression",
     "body": null,
-    "closeComment": "Formal verification regression is no longer detected.\n\n- resolvedAt: 2026-04-06T18:24:10.936Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
+    "closeComment": "Formal verification regression is no longer detected.\n\n- resolvedAt: 2026-04-07T18:24:31.269Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
   },
   "regression": {
     "hasBaseline": true,
