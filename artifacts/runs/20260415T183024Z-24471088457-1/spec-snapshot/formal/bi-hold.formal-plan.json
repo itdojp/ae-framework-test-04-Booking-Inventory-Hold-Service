@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0.0",
+  "metadata": {
+    "source": "spec/BI-SPEC-001.md",
+    "generatedAt": "2026-02-14T00:00:00Z",
+    "model": {
+      "name": "bi-hold-safety-core",
+      "version": "0.1.0"
+    }
+  },
+  "requirements": [
+    { "id": "BI-INV-001", "text": "CANCELLED/EXPIRED hold は line を保持しない" },
+    { "id": "BI-INV-002", "text": "CONFIRMED hold は booking/reservation を生成済み" },
+    { "id": "BI-INV-010", "text": "available_quantity は常に 0 以上" },
+    { "id": "BI-CC-003", "text": "同時 confirm でも二重生成されない" }
+  ],
+  "variables": [
+    { "name": "Holds", "type": "[HoldId -> HoldState]", "description": "Hold 状態" },
+    { "name": "HoldLines", "type": "[HoldLineId -> HoldLineState]", "description": "Hold 明細状態" },
+    { "name": "Bookings", "type": "SUBSET BookingRecord", "description": "確定予約集合" },
+    { "name": "Reservations", "type": "SUBSET ReservationRecord", "description": "確定引当集合" },
+    { "name": "Now", "type": "Time", "description": "論理時刻" }
+  ],
+  "constants": [
+    { "name": "MAX_QTY", "type": "Nat", "value": "100" },
+    { "name": "TENANTS", "type": "SUBSET TenantId" }
+  ],
+  "actions": [
+    {
+      "name": "CreateHold",
+      "tla": "CreateHold == /\\ holdId \\notin DOMAIN Holds /\\ Holds' = [Holds EXCEPT ![holdId] = [status |-> \"ACTIVE\", expiresAt |-> expiry]]",
+      "description": "ACTIVE hold を作成"
+    },
+    {
+      "name": "ConfirmHold",
+      "tla": "ConfirmHold == /\\ Holds[holdId].status = \"ACTIVE\" /\\ Now < Holds[holdId].expiresAt /\\ Holds' = [Holds EXCEPT ![holdId].status = \"CONFIRMED\"]",
+      "description": "Hold を確定し booking/reservation を生成"
+    },
+    {
+      "name": "CancelHold",
+      "tla": "CancelHold == /\\ Holds[holdId].status = \"ACTIVE\" /\\ Holds' = [Holds EXCEPT ![holdId].status = \"CANCELLED\"]",
+      "description": "Hold を取消"
+    },
+    {
+      "name": "ExpireHold",
+      "tla": "ExpireHold == /\\ Holds[holdId].status = \"ACTIVE\" /\\ Now >= Holds[holdId].expiresAt /\\ Holds' = [Holds EXCEPT ![holdId].status = \"EXPIRED\"]",
+      "description": "期限切れ遷移"
+    }
+  ],
+  "invariants": [
+    {
+      "name": "NoOverlapConfirmedBooking",
+      "tla": "\\A b1, b2 \\in Bookings : (b1 # b2 /\\ b1.resourceId = b2.resourceId) => ~Overlap(b1.start, b1.end, b2.start, b2.end)",
+      "description": "同一 resource の確定予約重複禁止"
+    },
+    {
+      "name": "NoOverAllocation",
+      "tla": "\\A item \\in Items : ConfirmedQty(item) + ActiveHoldQty(item) <= TotalQty(item)",
+      "description": "在庫過剰引当禁止"
+    },
+    {
+      "name": "TerminalHoldReleased",
+      "tla": "\\A h \\in DOMAIN Holds : Holds[h].status \\in {\"CANCELLED\",\"EXPIRED\"} => AllLinesReleased(h)",
+      "description": "終端 hold の line 解放"
+    },
+    {
+      "name": "ConfirmIdempotent",
+      "tla": "\\A h \\in DOMAIN Holds : Holds[h].status = \"CONFIRMED\" => Cardinality(ArtifactsByHold(h)) = 1",
+      "description": "confirm 冪等性"
+    }
+  ],
+  "liveness": [
+    {
+      "name": "ExpiredEventuallyReleased",
+      "tla": "\\A h \\in DOMAIN Holds : [](Expired(h) => <>AllLinesReleased(h))",
+      "description": "期限切れ hold は最終的に解放される"
+    }
+  ],
+  "assumptions": [
+    {
+      "name": "TenantIsolation",
+      "tla": "\\A op \\in Ops : op.tenantId = CurrentTenant",
+      "description": "テナント境界を越える操作は許可しない"
+    }
+  ]
+}
