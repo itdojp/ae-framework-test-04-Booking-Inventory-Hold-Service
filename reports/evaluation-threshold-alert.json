@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-27T18:33:00.954Z",
+  "generatedAt": "2026-04-28T18:37:18.295Z",
   "summaryPath": "reports/ae-framework-runs-summary.json",
   "thresholds": {
     "minRunCount": 1,
@@ -14,17 +14,17 @@
   "evaluation": {
     "score": 100,
     "rating": "A",
-    "runCount": 104,
-    "workflowCount": 104,
+    "runCount": 105,
+    "workflowCount": 105,
     "formal": {
       "ready": 4,
       "healthy": 4,
       "total": 4
     },
     "latestRun": {
-      "runId": "25012375787",
+      "runId": "25070720970",
       "runAttempt": "1",
-      "generatedAt": "2026-04-27T18:33:00Z"
+      "generatedAt": "2026-04-28T18:37:17Z"
     },
     "artifactPolicy": {
       "configured": true,
@@ -46,7 +46,7 @@
     "title": "[evaluation-threshold-alert] ae-framework evaluation threshold breached",
     "shouldOpen": true,
     "reason": "threshold_breached",
-    "body": "## ae-framework Evaluation Threshold Breach\n\nLatest ae-framework evaluation metrics are below configured thresholds.\n\n- detectedAt: 2026-04-27T18:33:00.954Z\n- summaryPath: reports/ae-framework-runs-summary.json\n- latestRunId: 25012375787\n- latestRunAttempt: 1\n- latestRunGeneratedAt: 2026-04-27T18:33:00Z\n- runCount: 104\n- score: 100\n- rating: A\n- formalReady: 4 / 4\n- formalHealthy: 4 / 4\n\n### Thresholds\n\n- minRunCount: 1\n- minScore: 90\n- minRating: A\n- minFormalReady: 4\n- minFormalHealthy: 4\n- requirePolicyValid: true\n- requirePreserveAllArtifacts: true\n- requireReviewNotOverdue: true\n\n### Breaches\n\n- review_overdue: expected false, actual true\n\n### Required Action\n\n1. Inspect latest run artifacts and evaluation report for root cause.\n2. Restore formal verification health and/or evaluation score.\n3. Re-run autopilot and confirm thresholds are satisfied.\n\n### Tracking Key\n\n- uniqueKey: [evaluation-threshold-alert]\n<!-- evaluation-threshold-alert-key: [evaluation-threshold-alert] -->\n",
-    "closeComment": "ae-framework evaluation is back within configured thresholds.\n\n- resolvedAt: 2026-04-27T18:33:00.954Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
+    "body": "## ae-framework Evaluation Threshold Breach\n\nLatest ae-framework evaluation metrics are below configured thresholds.\n\n- detectedAt: 2026-04-28T18:37:18.295Z\n- summaryPath: reports/ae-framework-runs-summary.json\n- latestRunId: 25070720970\n- latestRunAttempt: 1\n- latestRunGeneratedAt: 2026-04-28T18:37:17Z\n- runCount: 105\n- score: 100\n- rating: A\n- formalReady: 4 / 4\n- formalHealthy: 4 / 4\n\n### Thresholds\n\n- minRunCount: 1\n- minScore: 90\n- minRating: A\n- minFormalReady: 4\n- minFormalHealthy: 4\n- requirePolicyValid: true\n- requirePreserveAllArtifacts: true\n- requireReviewNotOverdue: true\n\n### Breaches\n\n- review_overdue: expected false, actual true\n\n### Required Action\n\n1. Inspect latest run artifacts and evaluation report for root cause.\n2. Restore formal verification health and/or evaluation score.\n3. Re-run autopilot and confirm thresholds are satisfied.\n\n### Tracking Key\n\n- uniqueKey: [evaluation-threshold-alert]\n<!-- evaluation-threshold-alert-key: [evaluation-threshold-alert] -->\n",
+    "closeComment": "ae-framework evaluation is back within configured thresholds.\n\n- resolvedAt: 2026-04-28T18:37:18.295Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
   }
 }

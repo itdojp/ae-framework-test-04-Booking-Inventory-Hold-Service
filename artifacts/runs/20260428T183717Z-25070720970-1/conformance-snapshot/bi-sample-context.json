@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-02-14T00:00:00Z",
+  "executionId": "bi-conformance-sample-001",
+  "environment": "repo-local",
+  "version": "1.0.0",
+  "metadata": {
+    "source": "booking-inventory-hold-service",
+    "tool": "ae-framework conformance",
+    "spec": "BI-SPEC-001"
+  }
+}
