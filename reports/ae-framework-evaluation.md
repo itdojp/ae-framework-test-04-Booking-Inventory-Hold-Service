@@ -1,18 +1,18 @@
 # ae-framework Evaluation Report
 
-- generatedAt: 2026-04-30T18:35:12.296Z
+- generatedAt: 2026-05-01T18:28:38.582Z
 - score: 100 / 100
 - rating: A
-- runCount: 107
-- totalArtifactSizeMB: 181.3
-- autopilotRuns: 107
+- runCount: 108
+- totalArtifactSizeMB: 183
+- autopilotRuns: 108
 
 ## Snapshot
 
-- latestRunId: 25182437061
-- latestRunGeneratedAt: 2026-04-30T18:35:11Z
-- latestSource: itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@695c9e2488eb215de68e4d26d2a1123338fcc4c9
-- latestArtifactPath: artifacts/runs/20260430T183511Z-25182437061-1
+- latestRunId: 25226965606
+- latestRunGeneratedAt: 2026-05-01T18:28:38Z
+- latestSource: itdojp/ae-framework-test-04-Booking-Inventory-Hold-Service@766ab974c84bd1b556734212f96c51d751ab60ef
+- latestArtifactPath: artifacts/runs/20260501T182837Z-25226965606-1
 
 ## Formal Readiness
 
