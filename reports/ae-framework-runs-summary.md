@@ -1,30 +1,30 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-05-05T18:35:46.728Z
-- runCount: 112
-- totalSize: 190 MB (198984637 bytes)
-- totalFiles: 36879
-- latestRun: 20260505T183545Z-25394753144-1 (runId=25394753144, generatedAt=2026-05-05T18:35:46Z)
+- generatedAt: 2026-05-06T18:39:15.999Z
+- runCount: 113
+- totalSize: 191 MB (200761931 bytes)
+- totalFiles: 37212
+- latestRun: 20260506T183915Z-25453779496-1 (runId=25453779496, generatedAt=2026-05-06T18:39:15Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 112 |
+| ae-framework-autopilot | 113 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
-| alloy | ran | 85 |
+| alloy | ran | 86 |
 | alloy | tool_not_available | 27 |
-| csp | ran | 83 |
+| csp | ran | 84 |
 | csp | tool_not_available | 29 |
-| smt | ran | 86 |
+| smt | ran | 87 |
 | smt | file_not_found | 24 |
 | smt | solver_not_available | 2 |
-| tla | ran | 84 |
+| tla | ran | 85 |
 | tla | tool_not_available | 27 |
 | tla | failed | 1 |
 
@@ -62,7 +62,8 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260505T183545Z-25394753144-1 | 25394753144 | 1 | 2026-05-05T18:35:46Z | 2.6 MB | 339 | e0bff537fe77 | csp:ran, tla:ran |
+| 20260506T183915Z-25453779496-1 | 25453779496 | 1 | 2026-05-06T18:39:15Z | 2.6 MB | 339 | 179c2dbe0a58 | csp:ran, tla:ran |
+| 20260505T183545Z-25394753144-1 | 25394753144 | 1 | 2026-05-05T18:35:46Z | 1.7 MB | 333 | e0bff537fe77 | csp:ran, tla:ran |
 | 20260504T183757Z-25336214854-1 | 25336214854 | 1 | 2026-05-04T18:37:57Z | 1.7 MB | 333 | 7b50356b79fc | csp:ran, tla:ran |
 | 20260503T182404Z-25286960666-1 | 25286960666 | 1 | 2026-05-03T18:24:05Z | 1.7 MB | 333 | 8a3caf07ff60 | csp:ran, tla:ran |
 | 20260502T182335Z-25258601328-1 | 25258601328 | 1 | 2026-05-02T18:23:35Z | 1.7 MB | 333 | e3c1cbddbe2b | csp:ran, tla:ran |
@@ -81,4 +82,3 @@
 | 20260419T181820Z-24635760146-1 | 24635760146 | 1 | 2026-04-19T18:18:20Z | 1.7 MB | 333 | ec5c01756350 | csp:ran, tla:ran |
 | 20260417T182335Z-24580117264-1 | 24580117264 | 1 | 2026-04-17T18:23:35Z | 1.7 MB | 333 | ea65e0d46a1e | csp:ran, tla:ran |
 | 20260415T183024Z-24471088457-1 | 24471088457 | 1 | 2026-04-15T18:30:24Z | 1.7 MB | 333 | a3a21237a9ba | csp:ran, tla:ran |
-| 20260414T183401Z-24415878899-1 | 24415878899 | 1 | 2026-04-14T18:34:01Z | 1.7 MB | 333 | ae0b01a7a876 | csp:ran, tla:ran |
