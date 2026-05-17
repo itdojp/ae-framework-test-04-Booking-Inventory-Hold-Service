@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-16T18:25:21.285Z",
+  "generatedAt": "2026-05-17T18:28:40.425Z",
   "summaryPath": "reports/ae-framework-runs-summary.json",
   "thresholds": {
     "baselineWindow": 10,
@@ -14,17 +14,17 @@
     "reason": "no_regression",
     "breaches": [],
     "latest": {
-      "runId": "25969348744",
+      "runId": "25998949720",
       "runAttempt": "1",
-      "generatedAt": "2026-05-16T18:25:20Z",
-      "totalBytes": 2725918,
+      "generatedAt": "2026-05-17T18:28:39Z",
+      "totalBytes": 2721977,
       "fileCount": 339
     },
     "baseline": {
       "sampleCount": 10,
       "medianBytes": 1775822,
       "medianFiles": 333,
-      "bytesRatio": 1.5350175862220425,
+      "bytesRatio": 1.5327983322652834,
       "filesRatio": 1.018018018018018
     }
   },
@@ -34,6 +34,6 @@
     "shouldOpen": false,
     "reason": "no_regression",
     "body": null,
-    "closeComment": "Artifact footprint regression is no longer detected.\n\n- resolvedAt: 2026-05-16T18:25:21.285Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
+    "closeComment": "Artifact footprint regression is no longer detected.\n\n- resolvedAt: 2026-05-17T18:28:40.425Z\n- summaryPath: reports/ae-framework-runs-summary.json\nAuto-closing this tracking issue.\n"
   }
 }
