@@ -1,0 +1,23 @@
+Command                                  Safety
+Solution index                           0
+Trace length                             1
+Loop state                               0
+
+State index                              0
+Loop back                                true
+┌─────────┬─────────┬──┐
+│sig      │fields   │<-│
+├─────────┼─────────┤  │
+│$Safety_s│$Safety_s│  │
+│         ├─────────┤  │
+│         │State²   │  │
+├─────────┼─────────┤  │
+│         │         │  │
+└─────────┴─────────┴──┘
+
+┌─────────┬─────────┐
+│skolem   │value    │
+├─────────┼─────────┤
+│$Safety_s│{State$0}│
+└─────────┴─────────┘
+

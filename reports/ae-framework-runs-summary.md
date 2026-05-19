@@ -1,30 +1,30 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-05-18T18:42:32.301Z
-- runCount: 125
-- totalSize: 212 MB (222075193 bytes)
-- totalFiles: 41199
-- latestRun: 20260518T184231Z-26052866540-1 (runId=26052866540, generatedAt=2026-05-18T18:42:31Z)
+- generatedAt: 2026-05-19T18:43:36.399Z
+- runCount: 126
+- totalSize: 213 MB (223857068 bytes)
+- totalFiles: 41532
+- latestRun: 20260519T184335Z-26117488531-1 (runId=26117488531, generatedAt=2026-05-19T18:43:35Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 125 |
+| ae-framework-autopilot | 126 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
-| alloy | ran | 98 |
+| alloy | ran | 99 |
 | alloy | tool_not_available | 27 |
-| csp | ran | 96 |
+| csp | ran | 97 |
 | csp | tool_not_available | 29 |
-| smt | ran | 99 |
+| smt | ran | 100 |
 | smt | file_not_found | 24 |
 | smt | solver_not_available | 2 |
-| tla | ran | 97 |
+| tla | ran | 98 |
 | tla | tool_not_available | 27 |
 | tla | failed | 1 |
 
@@ -62,7 +62,8 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260518T184231Z-26052866540-1 | 26052866540 | 1 | 2026-05-18T18:42:31Z | 2.6 MB | 339 | cc3cc44783dd | csp:ran, tla:ran |
+| 20260519T184335Z-26117488531-1 | 26117488531 | 1 | 2026-05-19T18:43:35Z | 2.6 MB | 339 | f3126fe37c54 | csp:ran, tla:ran |
+| 20260518T184231Z-26052866540-1 | 26052866540 | 1 | 2026-05-18T18:42:31Z | 1.7 MB | 333 | cc3cc44783dd | csp:ran, tla:ran |
 | 20260517T182839Z-25998949720-1 | 25998949720 | 1 | 2026-05-17T18:28:39Z | 1.7 MB | 333 | ac46f59e06ab | csp:ran, tla:ran |
 | 20260516T182520Z-25969348744-1 | 25969348744 | 1 | 2026-05-16T18:25:20Z | 1.7 MB | 333 | fc02232822ef | csp:ran, tla:ran |
 | 20260515T183904Z-25934697029-1 | 25934697029 | 1 | 2026-05-15T18:39:05Z | 1.7 MB | 333 | abde4819bfbf | csp:ran, tla:ran |
@@ -81,4 +82,3 @@
 | 20260502T182335Z-25258601328-1 | 25258601328 | 1 | 2026-05-02T18:23:35Z | 1.7 MB | 333 | e3c1cbddbe2b | csp:ran, tla:ran |
 | 20260501T182837Z-25226965606-1 | 25226965606 | 1 | 2026-05-01T18:28:38Z | 1.7 MB | 333 | 766ab974c84b | csp:ran, tla:ran |
 | 20260430T183511Z-25182437061-1 | 25182437061 | 1 | 2026-04-30T18:35:11Z | 1.7 MB | 333 | 695c9e2488eb | csp:ran, tla:ran |
-| 20260429T183600Z-25126701753-1 | 25126701753 | 1 | 2026-04-29T18:36:01Z | 1.7 MB | 333 | 0242205a013b | csp:ran, tla:ran |
