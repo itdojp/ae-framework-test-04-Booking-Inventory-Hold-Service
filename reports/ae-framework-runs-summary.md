@@ -1,30 +1,30 @@
 # ae-framework Run Summary
 
-- generatedAt: 2026-05-23T18:27:09.932Z
-- runCount: 130
-- totalSize: 220 MB (230958438 bytes)
-- totalFiles: 42864
-- latestRun: 20260523T182709Z-26340101987-1 (runId=26340101987, generatedAt=2026-05-23T18:27:09Z)
+- generatedAt: 2026-05-24T18:28:04.063Z
+- runCount: 131
+- totalSize: 222 MB (232738774 bytes)
+- totalFiles: 43197
+- latestRun: 20260524T182803Z-26369142240-1 (runId=26369142240, generatedAt=2026-05-24T18:28:03Z)
 - oldestRun: 20260214T002433Z-22007398683-1 (runId=22007398683, generatedAt=2026-02-14T00:24:33Z)
 
 ## Workflow Counts
 
 | workflow | count |
 | --- | ---: |
-| ae-framework-autopilot | 130 |
+| ae-framework-autopilot | 131 |
 
 ## Formal Status Counts
 
 | tool | status | count |
 | --- | --- | ---: |
-| alloy | ran | 103 |
+| alloy | ran | 104 |
 | alloy | tool_not_available | 27 |
-| csp | ran | 101 |
+| csp | ran | 102 |
 | csp | tool_not_available | 29 |
-| smt | ran | 104 |
+| smt | ran | 105 |
 | smt | file_not_found | 24 |
 | smt | solver_not_available | 2 |
-| tla | ran | 102 |
+| tla | ran | 103 |
 | tla | tool_not_available | 27 |
 | tla | failed | 1 |
 
@@ -62,7 +62,8 @@
 
 | runFolder | runId | attempt | generatedAt | size | files | sourceSha | formal(csp/tla) |
 | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| 20260523T182709Z-26340101987-1 | 26340101987 | 1 | 2026-05-23T18:27:09Z | 2.6 MB | 339 | 1135353eea38 | csp:ran, tla:ran |
+| 20260524T182803Z-26369142240-1 | 26369142240 | 1 | 2026-05-24T18:28:03Z | 2.6 MB | 339 | 9555f78e68b9 | csp:ran, tla:ran |
+| 20260523T182709Z-26340101987-1 | 26340101987 | 1 | 2026-05-23T18:27:09Z | 1.7 MB | 333 | 1135353eea38 | csp:ran, tla:ran |
 | 20260522T184240Z-26305388332-1 | 26305388332 | 1 | 2026-05-22T18:42:40Z | 1.7 MB | 333 | 57ee494e368b | csp:ran, tla:ran |
 | 20260521T184438Z-26245735919-1 | 26245735919 | 1 | 2026-05-21T18:44:39Z | 1.7 MB | 333 | d42f76f265f1 | csp:ran, tla:ran |
 | 20260520T185334Z-26182901665-1 | 26182901665 | 1 | 2026-05-20T18:53:34Z | 1.7 MB | 333 | bbeb24d9242d | csp:ran, tla:ran |
@@ -81,4 +82,3 @@
 | 20260507T184007Z-25514746500-1 | 25514746500 | 1 | 2026-05-07T18:40:08Z | 1.7 MB | 333 | e5e00c18112c | csp:ran, tla:ran |
 | 20260506T183915Z-25453779496-1 | 25453779496 | 1 | 2026-05-06T18:39:15Z | 1.7 MB | 333 | 179c2dbe0a58 | csp:ran, tla:ran |
 | 20260505T183545Z-25394753144-1 | 25394753144 | 1 | 2026-05-05T18:35:46Z | 1.7 MB | 333 | e0bff537fe77 | csp:ran, tla:ran |
-| 20260504T183757Z-25336214854-1 | 25336214854 | 1 | 2026-05-04T18:37:57Z | 1.7 MB | 333 | 7b50356b79fc | csp:ran, tla:ran |
